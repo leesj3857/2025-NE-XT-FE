@@ -10,7 +10,7 @@ function App() {
         <Link to="/" style={{ marginRight: '10px' }}>Home</Link>
         <Link to="/about" style={{ marginRight: '10px' }}>About</Link>
         <Link to="/aboutpage" style={{ marginRight: '10px' }}>AboutPage</Link>
-        <Link to="/counter">Counterr</Link>
+        <Link to="/counter">Counter</Link>
       </nav>
 
       <Routes>
