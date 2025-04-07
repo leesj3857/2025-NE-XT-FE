@@ -6,6 +6,8 @@
 
 ## ⚙️ 설치 및 실행 방법
 
+1. index.html의 script에 내 JavaScript API key 설정 및  hooks의 파일에 내 REST API key 설정
+
 ```bash
 # 1. 필요한 패키지 설치
 npm install

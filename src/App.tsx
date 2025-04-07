@@ -1,24 +1,18 @@
 // src/App.tsx
-import { Routes, Route, Link } from 'react-router-dom';
-import Home from './pages/Home';
-import { AboutPage, About } from './pages/About';
-import Counter from './pages/Counter';
+import { Routes, Route } from 'react-router-dom';
+// import Places from './pages/Places';
+import Homepage from "./pages/Homepage.tsx";
+import Header from './components/Header';
+import Footer from './components/Footer';
+
 function App() {
   return (
     <div>
-      <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
-        <Link to="/" style={{ marginRight: '10px' }}>Home</Link>
-        <Link to="/about" style={{ marginRight: '10px' }}>About</Link>
-        <Link to="/aboutpage" style={{ marginRight: '10px' }}>AboutPage</Link>
-        <Link to="/counter">Counter</Link>
-      </nav>
-
+      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/aboutpage" element={<AboutPage />} />
-        <Route path="/counter" element={<Counter />} />
+        <Route path="/" element={<Homepage />} />
       </Routes>
+      <Footer />
     </div>
   );
 }

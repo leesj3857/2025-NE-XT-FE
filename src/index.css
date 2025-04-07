@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'DefaultFont';
+  src: url('PretendardVariable.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+body{
+  font-family: 'DefaultFont', sans-serif;
+}
+@font-face {
+  font-family: 'HomepageFont';
+  src: url('ChungjuKimSaeng.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.homepage{
+  font-family: 'HomepageFont', sans-serif;
+}
