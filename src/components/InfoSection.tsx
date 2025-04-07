@@ -8,7 +8,7 @@ const InfoSection = () => {
       transition={{ duration: 0.6 }}
       className="flex flex-col md:flex-row items-start justify-between bg-[#B2BFC2] px-8 py-8 gap-8">
       <img
-        src="/InfoSection.jpg"
+        src="/InfoSection.webp"
         alt="Korean Food"
         loading="lazy"
         className="w-full md:w-[600px] rounded-2xl"

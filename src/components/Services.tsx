@@ -5,17 +5,17 @@ const Services = () => {
     {
       title: 'KOREAT: 한국 맛집과 장소 안내',
       description: '한국을 여행하거나 방문한 외국인을 위한 다양한 맛집 정보 안내.',
-      image: '/Services1.jpg',
+      image: '/Services1.webp',
     },
     {
       title: '한국 맛집 추천: 주목해야 할 장소',
       description: '현지인이 추천하는 특별한 한식 맛집들을 소개합니다.',
-      image: '/Services2.jpg',
+      image: '/Services2.webp',
     },
     {
       title: '한국 여행지 추천: 인기 있는 관광명소',
       description: '외국인들이 좋아할 인기 있는 한국 관광 명소를 알려드려요.',
-      image: '/Services3.jpg',
+      image: '/Services3.webp',
     },
   ];
 

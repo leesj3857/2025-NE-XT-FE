@@ -15,7 +15,7 @@ const Hero = () => {
           KOREAT는 외국인을 위한 한국의 맛집, 놀거리, 볼거리를 소개하는 사이트입니다.
         </p>
       </div>
-      <img src="/HeroImage.jpg" alt="Korean Meat" loading="lazy" className="w-full md:w-1/3 rounded-2xl" />
+      <img src="/HeroImage.webp" alt="Korean Meat" loading="lazy" className="w-full md:w-1/3 rounded-2xl" />
     </motion.section>
   );
 };
