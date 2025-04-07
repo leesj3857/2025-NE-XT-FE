@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'DefaultFont';
-  src: url('PretendardVariable.ttf') format('truetype');
+  src: url('/public/PretendardVariable.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -11,7 +11,7 @@ body{
 }
 @font-face {
   font-family: 'HomepageFont';
-  src: url('ChungjuKimSaeng.ttf') format('truetype');
+  src: url('/public/ChungjuKimSaeng.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
