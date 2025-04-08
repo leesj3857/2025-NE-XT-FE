@@ -61,7 +61,7 @@ const Step = () => {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               className="h-full"
             >
               <StepOne city={city} setCity={setCity} onNext={nextStep} />
@@ -75,7 +75,7 @@ const Step = () => {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               className="h-full"
             >
               <StepTwo region={region} setRegion={setRegion} onNext={nextStep} onBack={prevStep} />
@@ -89,7 +89,7 @@ const Step = () => {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               className="h-full"
             >
               <StepThree categories={categories} setCategories={setCategories} onNext={nextStep} onBack={prevStep}  />
@@ -103,7 +103,7 @@ const Step = () => {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               className="h-full"
             >
               <StepSummary city={city} region={region} categories={categories} onBack={prevStep} />
