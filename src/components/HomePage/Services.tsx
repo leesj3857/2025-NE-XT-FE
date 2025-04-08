@@ -31,7 +31,8 @@ const Services = () => {
           <motion.section
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}>
+            transition={{ duration: 0.6 }}
+            key={idx}>
             <div key={idx} className="flex flex-col md:flex-row gap-6 bg-[#1A1E1D] rounded-lg p-4 md:w-2/3 mx-auto">
               <img src={item.image} alt={item.title} loading="lazy" className="w-full md:w-1/3 object-cover rounded-md" />
               <div className="flex-1 pt-2">

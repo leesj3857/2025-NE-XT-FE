@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useKakaoPlaces } from '../hooks/findPlacesWithKeyword';
-import KakaoMap from '../components/KakaoMap';
+import KakaoMap from '../components/Map/KakaoMap.tsx';
 import type { KakaoPlaceSearchParams } from '../types'
 export default function Places() {
   const [input, setInput] = useState('');

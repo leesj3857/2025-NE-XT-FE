@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { mdiEarth } from '@mdi/js';
 import Icon from '@mdi/react';
+import {useNavigate} from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate()
   const [showDropdown, setShowDropdown] = useState(false);
   const [language, setLanguage] = useState('한국어');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -25,9 +27,13 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const goHomePage = () => {
+    navigate('/');
+  }
+
   return (
-    <header className="bg-[#DCE7EB] px-6 py-4 flex items-center justify-between relative">
-      <h1 className="text-3xl">KOREAT</h1>
+    <header className="bg-[#DCE7EB] text-xl px-6 py-4 flex items-center justify-between relative max-md:h-12 h-16">
+      <h1 className="md:text-3xl cursor-pointer" onClick={goHomePage}>KOREAT</h1>
 
       {/* 언어 선택 아이콘 및 드롭다운 */}
       <div className="relative" ref={dropdownRef}>

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { KakaoPlaceSearchParams } from '../types';
-const KAKAO_API_KEY = '내 RESTAPI 키';
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
 export function useKakaoPlaces(params: KakaoPlaceSearchParams, enabled: boolean) {
 

@@ -6,7 +6,12 @@
 
 ## ⚙️ 설치 및 실행 방법
 
-1. index.html의 script에 내 JavaScript API key 설정 및  hooks의 파일에 내 REST API key 설정
+1. .env 파일 생성
+
+   VITE_KAKAO_REST_API_KEY= 발급받은 REST_API_KEY
+   VITE_KAKAO_JS_KEY= 발급받은 JAVASCRIPT_API_KEY
+    
+
 
 ```bash
 # 1. 필요한 패키지 설치

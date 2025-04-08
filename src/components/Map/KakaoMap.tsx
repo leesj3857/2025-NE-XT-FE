@@ -43,5 +43,5 @@ export default function KakaoMap({ markers }: KakaoMapProps) {
     }
   }, [markers]);
 
-  return <div ref={mapRef} className="w-full h-[400px] rounded-lg shadow-md" />;
+  return <div ref={mapRef} className="w-full h-full" />;
 }
