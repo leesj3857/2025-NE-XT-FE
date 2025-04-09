@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSearchParams } from '../../store/slices/searchSlice';
 
+
 const StepSummary = ({ city, region, categories, onBack }: {
   city: string;
   region: string;
@@ -14,12 +15,14 @@ const StepSummary = ({ city, region, categories, onBack }: {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     dispatch(setSearchParams({ city, region, categories }));
     setIsSearching(true);
-    setTimeout(() => {
-      navigate('/map');
-    }, 4000);
+
+    const delay = new Promise((resolve) => setTimeout(resolve, 4000));
+    await delay;
+
+    navigate('/map'); // 결과 페이지에서 첫 페이지 API 자동 호출
   };
 
   return (

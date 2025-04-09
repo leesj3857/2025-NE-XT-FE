@@ -5,6 +5,7 @@ export const store = configureStore({
   reducer: {
     search: searchReducer,
   },
+  devTools: import.meta.env.DEV,
 });
 
 export type RootState = ReturnType<typeof store.getState>;
