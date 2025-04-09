@@ -27,7 +27,7 @@ export default function KakaoMap({ markers }: KakaoMapProps) {
         center: new window.kakao.maps.LatLng(37.5665, 126.9780),
         level: 3,
       });
-
+      const bounds = new window.kakao.maps.LatLngBounds();
       markers.forEach(({ lat, lng, title }) => {
         const markerPosition = new window.kakao.maps.LatLng(lat, lng);
         const marker = new window.kakao.maps.Marker({
@@ -35,11 +35,13 @@ export default function KakaoMap({ markers }: KakaoMapProps) {
           position: markerPosition,
           title,
         });
+        marker.setMap(map);
+        bounds.extend(markerPosition);
       });
-
-      if (markers.length > 0) {
-        map.setCenter(new window.kakao.maps.LatLng(markers[0].lat, markers[0].lng));
-      }
+      map.setBounds(bounds);
+      // if (markers.length > 0) {
+      //   map.setCenter(new window.kakao.maps.LatLng(markers[0].lat, markers[0].lng));
+      // }
     };
 
     if (!window.kakao || !window.kakao.maps) {
