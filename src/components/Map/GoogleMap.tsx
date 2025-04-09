@@ -1,4 +1,4 @@
-import { useState,useRef } from 'react';
+import { useState,useRef, useEffect } from 'react';
 import {
   GoogleMap as GoogleMapComponent,
   LoadScript,
@@ -39,6 +39,18 @@ const GoogleMapWrapper = ({ keyword, markers }: Props) => {
   const [selected, setSelected] = useState<MarkerType | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (mapRef.current && markers.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+
+      markers.forEach((marker) => {
+        bounds.extend(new window.google.maps.LatLng(marker.lat, marker.lng));
+      });
+
+      mapRef.current.fitBounds(bounds);
+    }
+  }, [markers]);
 
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
