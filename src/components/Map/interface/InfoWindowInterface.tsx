@@ -1,8 +1,8 @@
 interface InfoWindowProps {
   title: string;
   category?: string;
-  roadAddress: string;
-  address: string;
+  roadAddress?: string;
+  address?: string;
   phone?: string;
   placeUrl?: string;
 }

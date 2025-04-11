@@ -3,8 +3,8 @@ export interface MarkerType {
   lat: number;
   lng: number;
   title: string;
-  address: string;
-  roadAddress: string;
+  address?: string;
+  roadAddress?: string;
   phone?: string;
   category?: string;
   placeUrl?: string;

@@ -20,13 +20,13 @@ export function useKakaoPlaces(params: KakaoPlaceSearchParams, enabled: boolean)
       });
       console.log('호출');
 
-      if (params.page === 1 && res.data.meta) {
+      if (params && params.page === 1 && res.data.meta) {
         dispatch(setSearchMeta(res.data.meta));
       }
 
       return res.data.documents;
     },
-    enabled: enabled && !!params.query,
+    enabled: enabled && !!params?.query,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
