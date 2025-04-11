@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setSearchParams } from '../../store/slices/searchSlice';
-
+import queryString from 'query-string';
 
 const StepSummary = ({ city, region, categories, onBack }: {
   city: string;
@@ -16,13 +15,19 @@ const StepSummary = ({ city, region, categories, onBack }: {
   const dispatch = useDispatch();
 
   const handleSearch = async () => {
-    dispatch(setSearchParams({ city, region, categories }));
     setIsSearching(true);
 
     const delay = new Promise((resolve) => setTimeout(resolve, 4000));
     await delay;
 
-    navigate('/map'); // 결과 페이지에서 첫 페이지 API 자동 호출
+    const query = queryString.stringify({
+      city,
+      region,
+      food: categories.food,
+      sights: categories.sights,
+    });
+
+    navigate(`/map?${query}`);
   };
 
   return (

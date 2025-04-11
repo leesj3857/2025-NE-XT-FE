@@ -1,101 +1,167 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
 import { RootState } from '../store';
+import { setSearchResults, setCurrentPage, setSearchParams } from '../store/slices/searchSlice';
+import NaverMap from '../components/Map/NaverMap.tsx';
 import BottomSheet from "../components/Map/BottomSheet.tsx";
+import { useKakaoPlaces } from '../hooks/findPlacesWithKeyword';
 import Pagination from '../components/Map/Pagination';
-import {motion} from "framer-motion";
-import GoogleMapWrapper from '../components/Map/GoogleMap';
+import PlaceItem from "../components/Map/interface/PlaceItem.tsx";
+import { MarkerType } from "../types/map/type.ts";
+import { PlaceItemType } from "../types/place/type.ts";
+import queryString from 'query-string';
 
 const ResultPage = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const { results, keyword } = useSelector((state: RootState) => state.search);
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentResults = results.slice(startIndex, endIndex);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { keyword, currentPage, resultsByPage, meta, categories } = useSelector((state: RootState) => state.search);
+  const listRef = useRef<HTMLUListElement>(null);
+  const [readyToSearch, setReadyToSearch] = useState(false);
+  const pageSize = 10;
+  let categoryGroupCode: string | undefined = undefined;
+  if (categories.food && !categories.sights) {
+    categoryGroupCode = 'FD6'; // 맛집
+  } else if (!categories.food && categories.sights) {
+    categoryGroupCode = 'AT4'; // 볼거리
+  }
+
+  const toCamelCase = (place: any): PlaceItemType => ({
+    id: place.id,
+    placeName: place.place_name,
+    addressName: place.address_name,
+    roadAddressName: place.road_address_name,
+    phone: place.phone,
+    categoryName: place.category_name,
+    placeUrl: place.place_url,
+    categoryGroupCode: place.category_group_code,
+    x: place.x,
+    y: place.y,
+  });
+  console.log(keyword);
+  const { data, refetch } = useKakaoPlaces(
+    readyToSearch
+      ? {
+        query: keyword,
+        page: currentPage,
+        size: pageSize,
+        category_group_code: categoryGroupCode,
+      }
+      : undefined, // 준비 안 됐으면 undefined
+    readyToSearch // 조건이 맞을 때만 fetch하도록
+  );
+
+
+  const currentResults: PlaceItemType[] = resultsByPage[currentPage] ?? [];
+  const markers: MarkerType[] = currentResults.map((place) => ({
+    id: place.id,
+    lat: parseFloat(place.y ?? '0'),
+    lng: parseFloat(place.x ?? '0'),
+    title: place.placeName,
+    address: place.addressName,
+    roadAddress: place.roadAddressName,
+    phone: place.phone,
+    category: place.categoryName,
+    placeUrl: place.placeUrl,
+  }));
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    dispatch(setCurrentPage(page));
   };
+
+  useEffect(() => {
+    const { city, region, food, sights } = queryString.parse(location.search);
+    if (city && region) {
+      const categories = {
+        food: food === 'true',
+        sights: sights === 'true',
+      };
+
+      dispatch(
+        setSearchParams({
+          city: String(city),
+          region: String(region),
+          categories,
+        })
+      );
+
+      setReadyToSearch(true);
+    }
+  }, []);
+
+  //키워드로 데이터 최초로 받아오는 훅. readyToSearch로 리렌더링 유발해서 저장된 키워드로 useKakaoPlaces 실행시키게
+  useEffect(() => {
+    if (readyToSearch) {
+      refetch().then(({ data }) => {
+        if (data) {
+          const normalized = data.map(toCamelCase);
+          dispatch(setSearchResults({ page: currentPage, results: normalized }));
+        }
+      });
+    }
+  }, [readyToSearch]);
+
+  useEffect(() => {
+
+    if (currentPage === 1) return; // ✅ 첫 페이지는 위에서 호출하므로 생략
+
+    if (!resultsByPage[currentPage]) {
+      refetch().then(({ data }) => {
+        if (data) {
+          console.log(data);
+          const normalized = data.map(toCamelCase);
+          dispatch(setSearchResults({ page: currentPage, results: normalized }));
+        }
+      });
+    }
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
 
   return (
     <div className="flex flex-col md:flex-row max-md:h-[calc(100vh-96px)] h-[calc(100vh-128px)] bg-[#DCE7EB]">
       {/* 모바일: 리스트는 바텀시트로 */}
       <div className="hidden md:block w-full md:w-[400px] bg-white p-4 overflow-auto shadow-lg relative">
         <h2 className="text-2xl font-bold mb-4">추천 장소</h2>
-        <ul className="list-none space-y-4 overflow-auto h-[calc(100%-100px)]">
-          {currentResults.length === 0 ? (
-            <li className="text-center text-gray-500 mt-10">로딩 중...</li>
-          ) : (
-            currentResults.map((place: google.maps.places.PlaceResult, index: number) => (
-              <motion.li
-                key={place.place_id}
-                className="bg-[#E9F1F4] p-3 rounded-xl relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <h3 className="font-bold text-base mb-1 pr-8">{place.name}</h3>
-                <p className="text-sm">{place.formatted_address}</p>
-                {place.icon && (
-                  <img
-                    src={place.icon}
-                    alt="category icon"
-                    className="w-4 ml-3 flex-shrink-0 mt-1 absolute top-1 right-3"
-                  />
-                )}
-              </motion.li>
-            ))
-          )}
+        <ul ref={listRef}
+            className="space-y-4 overflow-auto h-[calc(100%-100px)] pr-3 py-4">
+          {currentResults.map((place, index) => (
+            <PlaceItem
+              key={index}
+              id={place.id}
+              placeName={place.placeName}
+              roadAddressName={place.roadAddressName}
+              phone={place.phone}
+              categoryName={place.categoryName}
+              placeUrl={place.placeUrl}
+              categoryGroupCode={place.categoryGroupCode}
+              index={index}
+            />
+          ))}
         </ul>
 
-        {currentResults.length > 0 && (
+        {meta && (
           <Pagination
             currentPage={currentPage}
-            totalCount={60}
-            itemsPerPage={10}
+            totalCount={meta.pageable_count}
+            itemsPerPage={pageSize}
             onPageChange={handlePageChange}
           />
         )}
-
 
       </div>
 
       {/* 지도 영역 */}
       <div className="flex-1">
-        {/*<KakaoMap*/}
-        {/*  markers={currentResults.map((place) => ({*/}
-        {/*    lat: parseFloat(place.y),*/}
-        {/*    lng: parseFloat(place.x),*/}
-        {/*    title: place.place_name,*/}
-        {/*  }))}*/}
-        {/*/>*/}
-        <GoogleMapWrapper
-          keyword={keyword}
-          markers={currentResults.map((place) => ({
-            lat: place.geometry?.location?.lat() ?? 0,
-            lng: place.geometry?.location?.lng() ?? 0,
-            title: place.name,
-            category_name: place.types?.[0] || '',
-            road_address_name: place.formatted_address || '',
-            photo: place.photos?.[0],
-            place_id: place.place_id,
-          }))}
-          // markers={currentResults.map((place) => ({
-          //   lat: parseFloat(place.y),
-          //   lng: parseFloat(place.x),
-          //   title: place.place_name,
-          //   category_name: place.category_name,
-          //   road_address_name: place.road_address_name,
-          // }))}
-        />
+        <NaverMap markers={markers} />
       </div>
 
-
+      {/* 모바일 전용 바텀시트 */}
       <BottomSheet  results={currentResults}
                     currentPage={currentPage}
-                    totalCount={60}
+                    totalCount={meta?.pageable_count || 0}
                     onPageChange={handlePageChange}
       />
     </div>

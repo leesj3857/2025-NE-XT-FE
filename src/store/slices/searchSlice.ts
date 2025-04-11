@@ -1,33 +1,6 @@
+// store/searchSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface PlaceItem {
-  id: string; // place_id
-  name: string;
-  formatted_address: string;
-  lat: number;
-  lng: number;
-  types?: string[];
-  business_status?: string;
-  icon?: string;
-  icon_background_color?: string;
-  icon_mask_base_uri?: string;
-  opening_hours?: {
-    open_now: boolean;
-  };
-  photos?: any[];
-  plus_code?: {
-    compound_code?: string;
-    global_code?: string;
-  };
-  price_level?: number;
-  rating?: number;
-  reference?: string;
-  scope?: string;
-  user_ratings_total?: number;
-  vicinity?: string;
-  phone?: string; // 추가 정보 얻은 경우
-  [key: string]: any;
-}
+import { PlaceItemType } from "../../types/place/type.ts";
 
 interface SearchParamsPayload {
   city: string;
@@ -38,12 +11,26 @@ interface SearchParamsPayload {
   };
 }
 
+export interface KakaoPlaceMeta {
+  total_count: number; // 검색된 전체 문서 수
+  pageable_count: number; // 출력 가능한 문서 수 (최대 45)
+  is_end: boolean; // 마지막 페이지 여부
+  same_name: {
+    region: string[]; // 인식된 지역 리스트
+    keyword: string; // 지역 제외 키워드
+    selected_region: string; // 실제 검색에 사용된 지역
+  };
+}
+
 interface SearchState {
   city: string;
   region: string;
   categories: { food: boolean; sights: boolean };
   keyword: string;
-  results: google.maps.places.PlaceResult[];
+  resultsByPage: Record<number, PlaceItemType[]>;
+  currentPage: number;
+  meta: KakaoPlaceMeta | null;
+  selectedPlaceId: string | null;
 }
 
 const initialState: SearchState = {
@@ -54,7 +41,10 @@ const initialState: SearchState = {
     sights: false,
   },
   keyword: '',
-  results: [],
+  resultsByPage: {},
+  currentPage: 1,
+  meta: null,
+  selectedPlaceId: null
 };
 
 export const searchSlice = createSlice({
@@ -69,14 +59,24 @@ export const searchSlice = createSlice({
       state.keyword = [city, region, categories.food && '맛집', categories.sights && '볼거리']
         .filter(Boolean)
         .join(' ');
-      state.results = [];
+      state.resultsByPage = {};
+      state.currentPage = 1;
     },
-    setSearchResults: (state, action: PayloadAction<{ results: google.maps.places.PlaceResult[] }>) => {
-      const { results } = action.payload;
-      state.results = results;
+    setSearchResults: (state, action: PayloadAction<{ page: number; results: PlaceItemType[] }>) => {
+      const { page, results } = action.payload;
+      state.resultsByPage[page] = results;
+    },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.currentPage = action.payload;
+    },
+    setSearchMeta: (state, action: PayloadAction<KakaoPlaceMeta>) => {
+      state.meta = action.payload;
+    },
+    setSelectedPlaceId(state, action) {
+      state.selectedPlaceId = action.payload;
     },
   },
 });
 
-export const { setSearchParams, setSearchResults } = searchSlice.actions;
+export const { setSearchParams, setSearchResults, setCurrentPage, setSearchMeta, setSelectedPlaceId } = searchSlice.actions;
 export default searchSlice.reducer;

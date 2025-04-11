@@ -7,4 +7,4 @@ export type KakaoPlaceSearchParams = {
   page?: number;                    // 페이지 번호
   size?: number;                    // 결과 수
   sort?: 'accuracy' | 'distance';   // 정렬 기준
-};
+} | undefined;
