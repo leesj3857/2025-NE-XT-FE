@@ -24,7 +24,7 @@ export default function PlaceItem({
   return (
     <motion.li
       key={id}
-      className="bg-[#E9F1F4] p-4 rounded-xl flex items-start justify-between gap-2 cursor-pointer"
+      className="bg-[#E9F1F4] p-4 rounded-xl flex items-start justify-between gap-4 cursor-pointer"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
