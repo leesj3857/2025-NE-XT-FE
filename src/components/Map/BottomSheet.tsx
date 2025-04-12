@@ -42,7 +42,7 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomS
         <>
           <h2 className="text-lg font-semibold mb-2">추천 장소</h2>
           <ul ref={listRef}
-              className="space-y-3 max-h-[45vh] mb-16 overflow-auto pr-4">
+              className="space-y-3 max-h-[45dvh] mb-16 overflow-auto pr-4">
             {results.map((place, index) => (
               <PlaceItem
                 key={place.id}

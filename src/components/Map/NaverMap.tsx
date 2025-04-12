@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
 import { createMarkersOnMap } from './utils/markerCreator';
-import { MarkerType, NaverMapProps } from "../../types/map/type.ts";
+import { NaverMapProps } from "../../types/map/type.ts";
 import { mapCenterResearch } from './utils/mapCenterResearch';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Icon from '@mdi/react';
@@ -99,7 +99,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
     {/* 하단 버튼 */}
     <button
       onClick={() => mapCenterResearch(mapInstanceRef.current, navigate, location.search)}
-      className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer"
+      className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer"
     >
       현재 지도 중심으로 다시 검색
     </button>
@@ -119,7 +119,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
           );
         }
       }}
-      className="absolute bottom-4 right-4 bg-white p-2 md:p-3 shadow-md border
+      className="absolute bottom-6 right-4 bg-white p-2 md:p-3 shadow-md border
       border-[#2D3433] hover:bg-gray-100 transition cursor-pointer outline-0"
       aria-label="내 위치로 이동"
       style={{borderRadius: '50%'}}

@@ -48,7 +48,7 @@ const Step = () => {
   };
 
   return (
-    <div className="bg-[#DCE7EB] max-md:h-[calc(100vh-96px)] h-[calc(100vh-128px)] p-6 flex items-center justify-center">
+    <div className="bg-[#DCE7EB] max-md:h-[calc(100dvh-96px)] h-[calc(100dvh-128px)] p-6 flex items-center justify-center">
       <div className="w-full md:w-xl mx-auto bg-white rounded-xl shadow-lg pt-16 p-10 px-6 relative max-md:h-5/6 md:-translate-y-1/2">
         <StepProgress current={step} total={4} />
 
