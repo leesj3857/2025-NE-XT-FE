@@ -4,73 +4,93 @@ export const getCategoryIcon = (
 ): string => {
   if (!category) {
     return categoryGroupCode === 'FD6'
-      ? '/Icons/fooddefault.webp'
-      : '';
+      ? '/Icons/food/fooddefault.webp'
+      : categoryGroupCode === 'AT4'
+        ? '/Icons/sight/sightdefault.webp'
+        : '';
   }
 
-  // ✅ 레벨 3 (우선순위 가장 높음)
-  const level3Icons: { [key: string]: string } = {
-    조개: 'shell.webp',
-    냉면: 'noodle.webp',
-    떡: 'mochi.webp',
-    돈까스: 'tonkatsu.webp',
-    국수: 'noodle2.webp',
-    닭: 'chicken.webp',
-    피자: 'pizza.webp',
-    초밥: 'onigiri.webp',
-    햄버거: 'hamburger.webp',
-    치킨: 'friedchicken.webp',
-    보쌈: 'bossam.webp',
-    샌드위치: 'sandwich.webp',
-    태국: 'thailand.webp',
-    튀르키예: 'turkey.webp',
+  // 🍽️ FD6: 맛집 전용 아이콘 (레벨 3 > 2 > 1)
+  const foodIcons = {
+    level3: {
+      조개: 'shell.webp',
+      냉면: 'noodle.webp',
+      떡: 'mochi.webp',
+      돈까스: 'tonkatsu.webp',
+      국수: 'noodle2.webp',
+      닭: 'chicken.webp',
+      피자: 'pizza.webp',
+      초밥: 'onigiri.webp',
+      햄버거: 'hamburger.webp',
+      치킨: 'friedchicken.webp',
+      보쌈: 'bossam.webp',
+      샌드위치: 'sandwich.webp',
+      태국: 'thailand.webp',
+      튀르키예: 'turkey.webp',
+    },
+    level2: {
+      고기: 'meat.webp',
+      육류: 'meat.webp',
+      생선: 'fish.webp',
+      샤브샤브: 'shabu.webp',
+      제과: 'bread.webp',
+      베이커리: 'bread.webp',
+      뷔페: 'buffet.webp',
+      패스트푸드: 'fastfood.webp',
+      분식: 'tteokbokki.webp',
+      술집: 'beer.webp',
+      인도: 'india.webp',
+    },
+    level1: {
+      한식: 'korea.webp',
+      일식: 'japan.webp',
+      중식: 'china.webp',
+      이탈리안: 'italy.webp',
+      베트남: 'vietnam.webp',
+      멕시칸: 'mexico.webp',
+      양식: 'western.webp',
+    }
   };
 
-  for (const keyword in level3Icons) {
-    if (category.includes(keyword)) {
-      return `/Icons/${level3Icons[keyword]}`;
+  if (categoryGroupCode === 'FD6') {
+    for (const level of ['level3', 'level2', 'level1']) {
+      const icons = (foodIcons as any)[level];
+      for (const keyword in icons) {
+        if (category.includes(keyword)) {
+          return `/Icons/food/${icons[keyword]}`;
+        }
+      }
     }
+    return '/Icons/food/fooddefault.webp';
   }
 
-  // ✅ 레벨 2 (중간 우선순위)
-  const level2Icons: { [key: string]: string } = {
-    고기: 'meat.webp',
-    육류: 'meat.webp',
-    생선: 'fish.webp',
-    샤브샤브: 'shabu.webp',
-    제과: 'bread.webp',
-    베이커리: 'bread.webp',
-    뷔페: 'buffet.webp',
-    패스트푸드: 'fastfood.webp',
-    분식: 'tteokbokki.webp',
-    술집: 'beer.webp',
-    인도: 'india.webp',
+  // 🗺️ AT4: 볼거리 전용 아이콘
+  const sightIcons: { [key: string]: string } = {
+    산책: 'trail.webp',
+    전망대: 'tower.webp',
+    놀이공원: 'amusement.webp',
+    테마파크: 'amusement.webp',
+    호수: 'lake.webp',
+    카페: 'cafe.webp',
+    온천: 'hot.webp',
+    도보: 'trail.webp',
+    거리: 'street.webp',
+    도자기: 'porcelain.webp',
+    도예촌: 'porcelain.webp',
+    숲: 'forest.webp',
+    산: 'mountain.webp',
   };
 
-  for (const keyword in level2Icons) {
-    if (category.includes(keyword)) {
-      return `/Icons/${level2Icons[keyword]}`;
+  if (categoryGroupCode === 'AT4') {
+    for (const keyword in sightIcons) {
+      console.log(keyword)
+      if (category.includes(keyword)) {
+        return `/Icons/sight/${sightIcons[keyword]}`;
+      }
     }
+    return '/Icons/sight/defaultsight.webp';
   }
 
-  // ✅ 레벨 1 (낮은 우선순위)
-  const level1Icons: { [key: string]: string } = {
-    한식: 'korea.webp',
-    일식: 'japan.webp',
-    중식: 'china.webp',
-    이탈리안: 'italy.webp',
-    베트남: 'vietnam.webp',
-    멕시칸: 'mexico.webp',
-    양식: 'western.webp',
-  };
-
-  for (const keyword in level1Icons) {
-    if (category.includes(keyword)) {
-      return `/Icons/${level1Icons[keyword]}`;
-    }
-  }
-
-  return categoryGroupCode === 'FD6'
-    ? '/Icons/fooddefault.webp'
-    : '';
+  // 기본값 (예외 케이스)
+  return '';
 };

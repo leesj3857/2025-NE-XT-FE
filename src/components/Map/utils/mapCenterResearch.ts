@@ -9,7 +9,7 @@ import { NavigateFunction } from 'react-router-dom';
 export const mapCenterResearch = (
   mapInstance: any,
   navigate: NavigateFunction,
-  locationSearch: string
+  selected: 'food' | 'sights'
 ) => {
   if (!mapInstance) return;
 
@@ -17,16 +17,14 @@ export const mapCenterResearch = (
   const x = center.lng();
   const y = center.lat();
 
-  // 현재 URL에서 쿼리 파라미터 추출
-  const { food, sights } = queryString.parse(locationSearch);
-
   const query = queryString.stringify({
     type: 'coord',
     x,
     y,
-    food,
-    sights,
+    food: selected === 'food' ? true : undefined,
+    sights: selected === 'sights' ? true : undefined,
   });
+
 
   navigate(`/map?${query}`);
 };

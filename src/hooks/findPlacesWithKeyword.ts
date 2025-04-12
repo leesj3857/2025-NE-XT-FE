@@ -26,7 +26,9 @@ export function useKakaoPlaces(params: KakaoPlaceSearchParams, enabled: boolean)
 
       return res.data.documents;
     },
-    enabled: enabled && typeof params?.query === 'string' && params.query.trim() !== '',
+    enabled: enabled &&
+      typeof params?.query === 'string' &&
+      params.query.trim().length > 0,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,

@@ -5,11 +5,9 @@ import { RootState } from '../../store';
 import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
 import { createMarkersOnMap } from './utils/markerCreator';
 import { NaverMapProps } from "../../types/map/type.ts";
-import { mapCenterResearch } from './utils/mapCenterResearch';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Icon from '@mdi/react';
-import { mdiCrosshairsGps } from '@mdi/js';
-import { moveToUserPosition } from "./utils/moveToUserPosition.ts";
+import ResearchButton from "./interface/ResearchButton.tsx";
+import MoveToMyLocationButton from "./interface/MoveToMyLocationButton.tsx";
 
 declare global {
   interface Window {
@@ -98,25 +96,10 @@ export default function NaverMap({ markers }: NaverMapProps) {
     <div ref={mapRef} className="w-full h-full" />
 
     {/* 하단 버튼 */}
-    <button
-      onClick={() => mapCenterResearch(mapInstanceRef.current, navigate, location.search)}
-      className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer"
-    >
-      현재 지도 중심으로 다시 검색
-    </button>
-    <button
-      onClick={() => moveToUserPosition(mapInstanceRef.current)}
-      className="absolute bottom-4 right-4 bg-white p-2 md:p-3 shadow-md border
-      border-[#2D3433] hover:bg-gray-100 transition cursor-pointer outline-0"
-      aria-label="내 위치로 이동"
-      style={{borderRadius: '50%'}}
-    >
-      <Icon
-        path={mdiCrosshairsGps}
-        size={0.7}        // 기본 사이즈
-        className="md:!size-[1.2rem]" // md 이상에서는 더 크게
-        color="#2D3433"
-      />
-    </button>
+    <ResearchButton
+      mapInstance={mapInstanceRef.current}
+    />
+
+    <MoveToMyLocationButton mapInstance={mapInstanceRef.current} />
   </div>
 }
