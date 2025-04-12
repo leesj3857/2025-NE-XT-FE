@@ -22,6 +22,8 @@ export const getCategoryIcon = (
     치킨: 'friedchicken.webp',
     보쌈: 'bossam.webp',
     샌드위치: 'sandwich.webp',
+    태국: 'thailand.webp',
+    튀르키예: 'turkey.webp',
   };
 
   for (const keyword in level3Icons) {

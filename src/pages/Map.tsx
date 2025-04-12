@@ -11,49 +11,128 @@ import Pagination from '../components/Map/Pagination';
 import PlaceItem from "../components/Map/interface/PlaceItem.tsx";
 import { MarkerType } from "../types/map/type.ts";
 import { PlaceItemType } from "../types/place/type.ts";
+import { toCamelCase } from "../components/Map/utils/placeResponseKeyToCamelCase.ts";
+
 import queryString from 'query-string';
 
 const ResultPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { keyword, currentPage, resultsByPage, meta, categories } = useSelector((state: RootState) => state.search);
+  // const { keyword, currentPage, resultsByPage, meta, categories } = useSelector((state: RootState) => state.search);
   const listRef = useRef<HTMLUListElement>(null);
-  const [readyToSearch, setReadyToSearch] = useState(false);
   const pageSize = 10;
-  let categoryGroupCode: string | undefined = undefined;
-  if (categories.food && !categories.sights) {
-    categoryGroupCode = 'FD6'; // 맛집
-  } else if (!categories.food && categories.sights) {
-    categoryGroupCode = 'AT4'; // 볼거리
-  }
-
-  const toCamelCase = (place: any): PlaceItemType => ({
-    id: place.id,
-    placeName: place.place_name,
-    addressName: place.address_name,
-    roadAddressName: place.road_address_name,
-    phone: place.phone,
-    categoryName: place.category_name,
-    placeUrl: place.place_url,
-    categoryGroupCode: place.category_group_code,
-    x: place.x,
-    y: place.y,
-  });
-  console.log(keyword);
-  const { data, refetch } = useKakaoPlaces(
-    readyToSearch
-      ? {
-        query: keyword,
-        page: currentPage,
-        size: pageSize,
-        category_group_code: categoryGroupCode,
-      }
-      : undefined, // 준비 안 됐으면 undefined
-    readyToSearch // 조건이 맞을 때만 fetch하도록
+  // 1. Redux 상태
+  const { keyword, currentPage, resultsByPage,meta, categories } = useSelector(
+    (state: RootState) => state.search
   );
 
+  // 2. 쿼리 파싱 및 조건 설정
+  const parsed = queryString.parse(location.search);
+  const isCoordSearch = parsed.type === 'coord' && parsed.x && parsed.y;
+  const categoryGroupCode =
+    categories.food && !categories.sights
+      ? 'FD6'
+      : !categories.food && categories.sights
+        ? 'AT4'
+        : undefined;
 
-  const currentResults: PlaceItemType[] = resultsByPage[currentPage] ?? [];
+  // 3. API 요청 파라미터 준비
+  const searchParams = isCoordSearch
+    ? {
+      x: parsed.x as string,
+      y: parsed.y as string,
+      radius: 1000,
+      page: currentPage,
+      size: pageSize,
+      category_group_code: categoryGroupCode,
+      query:
+        categories.food && !categories.sights
+          ? '주변 맛집'
+          : !categories.food && categories.sights
+            ? '주변 볼거리'
+            : '주변 장소',
+    }
+    : {
+      query: keyword,
+      page: currentPage,
+      size: pageSize,
+      category_group_code: categoryGroupCode,
+    };
+
+  // 4. API 요청 훅
+  const { data, refetch } = useKakaoPlaces(searchParams, true);
+
+  // 5. location.search 바뀔 때 Redux 상태 초기화
+  useEffect(() => {
+    const { city, region, food, sights, type } = parsed;
+    const categories = {
+      food: food === 'true',
+      sights: sights === 'true',
+    };
+
+    if(type === 'keyword' && city && region)
+    {
+      dispatch(
+        setSearchParams({
+          city: String(city ?? ''),
+          region: String(region ?? ''),
+          categories,
+        })
+      );
+    }
+    if(type === 'coord'){
+      dispatch(
+        setSearchParams({
+          city: String(city ?? ''),
+          region: String(region ?? ''),
+          categories,
+        })
+      );
+    }
+    dispatch(setCurrentPage(1)); // 항상 1페이지부터 시작
+
+    // 바로 API 요청
+    refetch().then(({ data }) => {
+      if (data) {
+        const normalized = data.map(toCamelCase);
+        dispatch(setSearchResults({ page: 1, results: normalized }));
+      }
+    });
+  }, [location.search]);
+
+  // 6. data가 들어오고 1페이지면 저장 (보조적 처리)
+  useEffect(() => {
+    if (data && currentPage === 1 && !resultsByPage[1]) {
+      const normalized = data.map(toCamelCase);
+      dispatch(setSearchResults({ page: 1, results: normalized }));
+    }
+  }, [data, currentPage, dispatch, resultsByPage]);
+
+  // 7. 페이지 변경 시 API 요청
+  useEffect(() => {
+    if (currentPage === 1) return;
+
+    if (!resultsByPage[currentPage]) {
+      refetch().then(({ data }) => {
+        if (data) {
+          const normalized = data.map(toCamelCase);
+          dispatch(setSearchResults({ page: currentPage, results: normalized }));
+        }
+      });
+    }
+
+    // 8. 리스트 스크롤 상단 이동
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
+
+  // 9. 데이터 메모이제이션
+  const currentResults: PlaceItemType[] = useMemo(() => {
+    return resultsByPage[currentPage] ?? [];
+  }, [resultsByPage, currentPage]);
+
+  // 10. 마커 데이터 변환
   const markers: MarkerType[] = currentResults.map((place) => ({
     id: place.id,
     lat: parseFloat(place.y ?? '0'),
@@ -66,59 +145,10 @@ const ResultPage = () => {
     placeUrl: place.placeUrl,
   }));
 
+  // 11. 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
     dispatch(setCurrentPage(page));
   };
-
-  useEffect(() => {
-    const { city, region, food, sights } = queryString.parse(location.search);
-    if (city && region) {
-      const categories = {
-        food: food === 'true',
-        sights: sights === 'true',
-      };
-
-      dispatch(
-        setSearchParams({
-          city: String(city),
-          region: String(region),
-          categories,
-        })
-      );
-
-      setReadyToSearch(true);
-    }
-  }, []);
-
-  //키워드로 데이터 최초로 받아오는 훅. readyToSearch로 리렌더링 유발해서 저장된 키워드로 useKakaoPlaces 실행시키게
-  useEffect(() => {
-    if (readyToSearch) {
-      refetch().then(({ data }) => {
-        if (data) {
-          const normalized = data.map(toCamelCase);
-          dispatch(setSearchResults({ page: currentPage, results: normalized }));
-        }
-      });
-    }
-  }, [readyToSearch]);
-
-  useEffect(() => {
-
-    if (currentPage === 1) return; // ✅ 첫 페이지는 위에서 호출하므로 생략
-
-    if (!resultsByPage[currentPage]) {
-      refetch().then(({ data }) => {
-        if (data) {
-          console.log(data);
-          const normalized = data.map(toCamelCase);
-          dispatch(setSearchResults({ page: currentPage, results: normalized }));
-        }
-      });
-    }
-    if (listRef.current) {
-      listRef.current.scrollTop = 0;
-    }
-  }, [currentPage]);
 
   return (
     <div className="flex flex-col md:flex-row max-md:h-[calc(100vh-96px)] h-[calc(100vh-128px)] bg-[#DCE7EB]">

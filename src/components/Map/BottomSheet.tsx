@@ -26,7 +26,9 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomS
       listRef.current.scrollTop = 0;
     }
   }, [currentPage]);
-
+  useEffect(()=>{
+    setIsOpen(true)
+  },[results]);
   return (
     <div className="md:hidden fixed bottom-0 left-0 w-full bg-white shadow-xl rounded-t-xl z-50 pt-2 px-4">
       {/* 바텀시트 내부의 화살표 토글 */}

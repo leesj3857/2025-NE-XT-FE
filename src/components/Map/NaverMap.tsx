@@ -5,6 +5,10 @@ import { RootState } from '../../store';
 import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
 import { createMarkersOnMap } from './utils/markerCreator';
 import { MarkerType, NaverMapProps } from "../../types/map/type.ts";
+import { mapCenterResearch } from './utils/mapCenterResearch';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Icon from '@mdi/react';
+import { mdiCrosshairsGps } from '@mdi/js';
 
 declare global {
   interface Window {
@@ -18,9 +22,10 @@ export default function NaverMap({ markers }: NaverMapProps) {
   const markerRefs = useRef<any[]>([]);
   const infoWindowRef = useRef<any>(null);
   const selectedMarkerRef = useRef<any>(null);
-
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
   const currentPage = useSelector((state: RootState) => state.search.currentPage);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Close InfoWindow when page changes
   useEffect(() => {
@@ -88,5 +93,43 @@ export default function NaverMap({ markers }: NaverMapProps) {
     }
   }, [markers]);
 
-  return <div ref={mapRef} className="w-full h-full" />;
+  return <div className="relative w-full h-full">
+    <div ref={mapRef} className="w-full h-full" />
+
+    {/* 하단 버튼 */}
+    <button
+      onClick={() => mapCenterResearch(mapInstanceRef.current, navigate, location.search)}
+      className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer"
+    >
+      현재 지도 중심으로 다시 검색
+    </button>
+    <button
+      onClick={() => {
+        if (navigator.geolocation && mapInstanceRef.current) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              const newCenter = new window.naver.maps.LatLng(latitude, longitude);
+              mapInstanceRef.current.setCenter(newCenter);
+            },
+            (error) => {
+              alert('위치 정보를 가져오지 못했습니다.');
+              console.error(error);
+            }
+          );
+        }
+      }}
+      className="absolute bottom-4 right-4 bg-white p-2 md:p-3 shadow-md border
+      border-[#2D3433] hover:bg-gray-100 transition cursor-pointer outline-0"
+      aria-label="내 위치로 이동"
+      style={{borderRadius: '50%'}}
+    >
+      <Icon
+        path={mdiCrosshairsGps}
+        size={0.7}        // 기본 사이즈
+        className="md:!size-[1.2rem]" // md 이상에서는 더 크게
+        color="#2D3433"
+      />
+    </button>
+  </div>
 }

@@ -21,6 +21,7 @@ const StepSummary = ({ city, region, categories, onBack }: {
     await delay;
 
     const query = queryString.stringify({
+      type: 'keyword',
       city,
       region,
       food: categories.food,
