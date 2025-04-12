@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Pagination from './Pagination';
@@ -30,7 +29,7 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomS
     setIsOpen(true)
   },[results]);
   return (
-    <div className="md:hidden fixed bottom-0 left-0 w-full bg-white shadow-xl rounded-t-xl z-50 pt-2 px-4">
+    <div className={`md:hidden fixed bottom-0 left-0 w-full bg-white shadow-xl ${isOpen && 'rounded-t-xl'} z-50 px-4`}>
       {/* 바텀시트 내부의 화살표 토글 */}
       <div onClick={toggleOpen} className="w-full flex justify-center h-12">
         <button >
