@@ -9,7 +9,7 @@ import Map from "./pages/Map.tsx";
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-dvh">
       <Header />
       <div className="flex-grow">
         <Routes>
