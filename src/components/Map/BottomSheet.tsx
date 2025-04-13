@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import Pagination from './Pagination';
 import PlaceItem from "./interface/PlaceItem.tsx";
 import { PlaceItemType } from '../../types/place/type';
-
+import InfoHeader from "./interface/InfoHeader.tsx";
 interface BottomSheetProps {
   results: PlaceItemType[];
   currentPage: number;
@@ -40,7 +40,7 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomS
       {/* 컨텐츠 */}
       {isOpen && (
         <>
-          <h2 className="text-lg font-semibold mb-2">추천 장소</h2>
+          <InfoHeader/>
           <ul ref={listRef}
               className="space-y-3 max-h-[45dvh] mb-16 overflow-auto pr-4">
             {results.map((place, index) => (
@@ -53,6 +53,8 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomS
                 categoryName={place.categoryName}
                 placeUrl={place.placeUrl}
                 categoryGroupCode={place.categoryGroupCode}
+                lat={place.y}
+                lng={place.x}
                 index={index}
               />
             ))}

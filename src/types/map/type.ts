@@ -8,6 +8,7 @@ export interface MarkerType {
   phone?: string;
   category?: string;
   placeUrl?: string;
+  [key: string]: any;
 }
 
 export interface NaverMapProps {
@@ -19,4 +20,5 @@ export interface CreateMarkersProps {
   markers: MarkerType[];
   infoWindowRef: any;
   selectedMarkerRef: React.MutableRefObject<any>;
+  dispatch: any;
 }

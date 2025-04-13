@@ -1,6 +1,6 @@
 // src/components/Map/NaverMap.tsx
 import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
 import { createMarkersOnMap } from './utils/markerCreator';
@@ -8,6 +8,8 @@ import { NaverMapProps } from "../../types/map/type.ts";
 import { useNavigate, useLocation } from 'react-router-dom';
 import ResearchButton from "./interface/ResearchButton.tsx";
 import MoveToMyLocationButton from "./interface/MoveToMyLocationButton.tsx";
+import { renderKakaoRouteOnNaverMap } from "./utils/renderKakaoRoute.ts";
+import { setRouteInfo } from "../../store/slices/searchSlice.ts";
 
 declare global {
   interface Window {
@@ -21,14 +23,17 @@ export default function NaverMap({ markers }: NaverMapProps) {
   const markerRefs = useRef<any[]>([]);
   const infoWindowRef = useRef<any>(null);
   const selectedMarkerRef = useRef<any>(null);
+  const routeLineRef = useRef<naver.maps.Polyline | null>(null);
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
+  const { origin, destination } = useSelector((state: RootState) => state.search.selectedPlacePair);
   const currentPage = useSelector((state: RootState) => state.search.currentPage);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const dispatch = useDispatch();
   // Close InfoWindow when page changes
   useEffect(() => {
     if (infoWindowRef.current) {
+      console.log('닫힘')
       infoWindowRef.current.close();
       infoWindowRef.current = null;
     }
@@ -80,6 +85,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
       markers,
       infoWindowRef,
       selectedMarkerRef,
+      dispatch
     });
 
     // Fit bounds to new markers
@@ -91,6 +97,35 @@ export default function NaverMap({ markers }: NaverMapProps) {
       mapInstanceRef.current.fitBounds(bounds);
     }
   }, [markers]);
+
+  useEffect(() => {
+    if (routeLineRef.current) {
+      routeLineRef.current.setMap(null);
+      routeLineRef.current = null;
+    }
+
+    const updateRoute = async () => {
+      // 기존 선 제거
+      if (origin && destination && mapInstanceRef.current) {
+        const result = await renderKakaoRouteOnNaverMap(
+          mapInstanceRef.current,
+          { lat: origin.lat, lng: origin.lng },
+          { lat: destination.lat, lng: destination.lng }
+        );
+        if (result?.polyline) {
+          routeLineRef.current = result.polyline;
+        }
+        if (result?.duration && result?.distance) {
+          dispatch(setRouteInfo({
+            duration: result.duration,
+            distance: result.distance,
+          }));
+        }
+      }
+    };
+
+    updateRoute();
+  }, [origin, destination]);
 
   return <div className="relative w-full h-full">
     <div ref={mapRef} className="w-full h-full" />

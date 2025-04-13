@@ -1,6 +1,6 @@
 // store/searchSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PlaceItemType } from "../../types/place/type.ts";
+import { PlaceItemType, SelectedPlacePair } from "../../types/place/type.ts";
 
 interface SearchParamsPayload {
   city: string;
@@ -31,6 +31,7 @@ interface SearchState {
   currentPage: number;
   meta: KakaoPlaceMeta | null;
   selectedPlaceId: string | null;
+  selectedPlacePair: SelectedPlacePair;
 }
 
 const initialState: SearchState = {
@@ -44,7 +45,12 @@ const initialState: SearchState = {
   resultsByPage: {},
   currentPage: 1,
   meta: null,
-  selectedPlaceId: null
+  selectedPlaceId: null,
+  selectedPlacePair: {
+    origin: null,
+    destination: null,
+    routeInfo: null,
+  },
 };
 
 export const searchSlice = createSlice({
@@ -75,8 +81,40 @@ export const searchSlice = createSlice({
     setSelectedPlaceId(state, action) {
       state.selectedPlaceId = action.payload;
     },
+    setOriginPlace(state, action: PayloadAction<PlaceItemType>) {
+      state.selectedPlacePair.origin = action.payload;
+    },
+    setDestinationPlace(state, action: PayloadAction<PlaceItemType>) {
+      state.selectedPlacePair.destination = action.payload;
+    },
+    setRouteInfo(
+      state,
+      action: PayloadAction<{ duration: number; distance: number }>
+    ) {
+      if (state.selectedPlacePair) {
+        state.selectedPlacePair.routeInfo = {
+          duration: action.payload.duration,
+          distance: action.payload.distance,
+        };
+      }
+    },
+    clearSelectedPlacePair(state) {
+      state.selectedPlacePair = { origin: null, destination: null };
+    },
+    clearOriginPlace(state) {
+      state.selectedPlacePair.origin = null;
+    },
+    clearDestinationPlace(state) {
+      state.selectedPlacePair.destination = null;
+    },
+    clearRouteInfo(state) {
+      if (state.selectedPlacePair) {
+        state.selectedPlacePair.routeInfo = null;
+      }
+    }
   },
 });
 
-export const { setSearchParams, setSearchResults, setCurrentPage, setSearchMeta, setSelectedPlaceId } = searchSlice.actions;
+export const { setSearchParams, setSearchResults, setCurrentPage, setSearchMeta, setSelectedPlaceId, setOriginPlace,
+  setDestinationPlace, clearSelectedPlacePair, clearOriginPlace, clearDestinationPlace, setRouteInfo, clearRouteInfo } = searchSlice.actions;
 export default searchSlice.reducer;

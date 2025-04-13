@@ -15,6 +15,7 @@ export const getCategoryIcon = (
     level3: {
       조개: 'shell.webp',
       냉면: 'noodle.webp',
+      떡볶이: 'tteokbokki.webp',
       떡: 'mochi.webp',
       돈까스: 'tonkatsu.webp',
       국수: 'noodle2.webp',
@@ -79,6 +80,13 @@ export const getCategoryIcon = (
     도예촌: 'porcelain.webp',
     숲: 'forest.webp',
     산: 'mountain.webp',
+    동물원: 'zoo.webp',
+    식물원: 'plant.webp',
+    계곡: 'landscape.webp',
+    천문대: 'heliostat.webp',
+    저수지: 'waterstore.webp',
+    공원: 'park.webp',
+    유원지: 'park.webp',
   };
 
   if (categoryGroupCode === 'AT4') {

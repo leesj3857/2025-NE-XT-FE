@@ -12,19 +12,31 @@ import PlaceItem from "../components/Map/interface/PlaceItem.tsx";
 import { MarkerType } from "../types/map/type.ts";
 import { PlaceItemType } from "../types/place/type.ts";
 import { toCamelCase } from "../components/Map/utils/placeResponseKeyToCamelCase.ts";
-
+import InfoHeader from "../components/Map/interface/InfoHeader.tsx";
 import queryString from 'query-string';
 
 const ResultPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  // const { keyword, currentPage, resultsByPage, meta, categories } = useSelector((state: RootState) => state.search);
   const listRef = useRef<HTMLUListElement>(null);
   const pageSize = 10;
   // 1. Redux 상태
   const { keyword, currentPage, resultsByPage,meta, categories } = useSelector(
     (state: RootState) => state.search
   );
+  const { origin, destination } = useSelector((state: RootState) => state.search.selectedPlacePair);
+  const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
+  useEffect(() => {
+    if (selectedPlaceId) {
+      const targetEl = document.getElementById(`place-item-${selectedPlaceId}`);
+      if (targetEl) {
+        targetEl.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+    }
+  }, [selectedPlaceId]);
 
   // 2. 쿼리 파싱 및 조건 설정
   const parsed = queryString.parse(location.search);
@@ -41,7 +53,7 @@ const ResultPage = () => {
     ? {
       x: parsed.x as string,
       y: parsed.y as string,
-      radius: 1000,
+      radius: 1500,
       page: currentPage,
       size: pageSize,
       category_group_code: categoryGroupCode,
@@ -128,9 +140,24 @@ const ResultPage = () => {
   }, [currentPage]);
 
   // 9. 데이터 메모이제이션
+  function normalizePlaceItem(place: PlaceItemType): PlaceItemType {
+    return {
+      ...place,
+      x: place.lng?.toString() ?? '',
+      y: place.lat?.toString() ?? '',
+    };
+  }
+
   const currentResults: PlaceItemType[] = useMemo(() => {
-    return resultsByPage[currentPage] ?? [];
-  }, [resultsByPage, currentPage]);
+    const base = resultsByPage[currentPage] ?? [];
+    const ids = new Set(base.map((p) => p.id));
+    const additions: PlaceItemType[] = [];
+
+    if (origin && !ids.has(origin.id)) additions.push(normalizePlaceItem(origin));
+    if (destination && !ids.has(destination.id)) additions.push(normalizePlaceItem(destination));
+
+    return [...base, ...additions];
+  }, [resultsByPage, currentPage, origin, destination]);
 
   // 10. 마커 데이터 변환
   const markers: MarkerType[] = currentResults.map((place) => ({
@@ -153,10 +180,10 @@ const ResultPage = () => {
   return (
     <div className="flex flex-col md:flex-row max-md:h-[calc(100dvh-96px)] h-[calc(100dvh-128px)] bg-[#DCE7EB]">
       {/* 모바일: 리스트는 바텀시트로 */}
-      <div className="hidden md:block w-full md:w-[400px] bg-white p-4 overflow-auto shadow-lg relative">
-        <h2 className="text-2xl font-bold mb-4">추천 장소</h2>
+      <div className="hidden md:block w-full md:w-[420px] bg-white p-4 overflow-auto shadow-lg relative">
+        <InfoHeader/>
         <ul ref={listRef}
-            className="space-y-4 overflow-auto h-[calc(100%-100px)] pr-3 py-4">
+            className="space-y-4 overflow-auto h-[calc(100%-170px)] pr-3 py-4">
           {currentResults.map((place, index) => (
             <PlaceItem
               key={index}
@@ -167,6 +194,8 @@ const ResultPage = () => {
               categoryName={place.categoryName}
               placeUrl={place.placeUrl}
               categoryGroupCode={place.categoryGroupCode}
+              lat={place.y}
+              lng={place.x}
               index={index}
             />
           ))}
