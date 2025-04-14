@@ -19,4 +19,5 @@ export interface SelectedPlacePair {
     duration: number; // milliseconds
     distance: number; // meters
   } | null;
+  errorMessage?: string | null;
 }

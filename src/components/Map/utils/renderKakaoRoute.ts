@@ -1,5 +1,7 @@
 // src/components/Map/utils/renderKakaoRoute.ts
 import axios from "axios";
+import {kakaoRouteErrorMap} from "../static/errorCodeMap.ts";
+import {setRouteErrorMessage} from "../../../store/slices/searchSlice.ts";
 
 interface Coordinate {
   lat: number;
@@ -12,6 +14,7 @@ export const renderKakaoRouteOnNaverMap = async (
   mapInstance: any,
   origin: Coordinate,
   destination: Coordinate,
+  dispatch: any,
 ) => {
   if (!mapInstance || !window.naver) return;
   const url = "https://apis-navi.kakaomobility.com/v1/directions";
@@ -29,6 +32,14 @@ export const renderKakaoRouteOnNaverMap = async (
       },
       params,
     });
+    const route = response.data?.routes?.[0];
+    if (!route || !route.sections?.[0]?.roads?.length) {
+      const errorCode = route?.result_code || response.data?.routes?.[0]?.result_code || 104;
+      const errorMsg = kakaoRouteErrorMap[errorCode] || "Unknown error occurred during route search.";
+
+      dispatch(setRouteErrorMessage(errorMsg)); // 새 액션 필요
+      return;
+    }
 
     const roads = response.data?.routes?.[0]?.sections?.[0]?.roads || [];
     const { summary } = response.data?.routes?.[0] || {};
@@ -56,7 +67,7 @@ export const renderKakaoRouteOnNaverMap = async (
 
     routeLine = new window.naver.maps.Polyline({
       path,
-      strokeColor: "#FF4B4B",
+      strokeColor: "\t#6366F1",
       strokeWeight: 6,
       strokeOpacity: 0.8,
       strokeLineCap: "round",

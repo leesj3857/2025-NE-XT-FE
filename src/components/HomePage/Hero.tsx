@@ -9,10 +9,10 @@ const Hero = () => {
       className="flex flex-col md:flex-row items-start justify-between bg-[#CBCCCC] px-8 py-16 gap-8">
       <div className="flex-1 ">
         <h2 className="text-xl md:text-[45px] mb-10">
-          한국 맛집, 놀거리, 볼거리 추천
+          Discover Korea’s Best Food and Attractions
         </h2>
         <p className="mb-4 text-sm md:text-xl">
-          KOREAT는 외국인을 위한 한국의 맛집, 놀거리, 볼거리를 소개하는 사이트입니다.
+          KOREAT is a platform that introduces the best restaurants and must-see spots in Korea for foreigners.
         </p>
       </div>
       <img src="/HeroImage.webp" alt="Korean Meat" loading="lazy" className="w-full md:w-1/3 rounded-2xl" />

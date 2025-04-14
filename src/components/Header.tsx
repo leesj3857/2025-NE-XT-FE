@@ -36,27 +36,27 @@ const Header = () => {
       <h1 className="md:text-3xl cursor-pointer" onClick={goHomePage}>KOREAT</h1>
 
       {/* 언어 선택 아이콘 및 드롭다운 */}
-      <div className="relative" ref={dropdownRef}>
-        <button onClick={toggleDropdown} className="flex items-center gap-2 cursor-pointer ">
-          <Icon path={mdiEarth} size={1} />
-          <span className="text-sm">{language}</span>
-        </button>
+      {/*<div className="relative" ref={dropdownRef}>*/}
+      {/*  <button onClick={toggleDropdown} className="flex items-center gap-2 cursor-pointer ">*/}
+      {/*    <Icon path={mdiEarth} size={1} />*/}
+      {/*    <span className="text-sm">{language}</span>*/}
+      {/*  </button>*/}
 
-        {showDropdown && (
-          <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-300 shadow-md z-10 rounded-md overflow-hidden">
-            <button
-              onClick={() => selectLanguage('한국어')}
-              className="block w-full px-4 py-2 text-left cursor-pointer hover:bg-gray-100">
-              한국어
-            </button>
-            <button
-              onClick={() => selectLanguage('English')}
-              className="block w-full px-4 py-2 text-left cursor-pointer hover:bg-gray-100">
-              English
-            </button>
-          </div>
-        )}
-      </div>
+      {/*  {showDropdown && (*/}
+      {/*    <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-300 shadow-md z-10 rounded-md overflow-hidden">*/}
+      {/*      <button*/}
+      {/*        onClick={() => selectLanguage('한국어')}*/}
+      {/*        className="block w-full px-4 py-2 text-left cursor-pointer hover:bg-gray-100">*/}
+      {/*        한국어*/}
+      {/*      </button>*/}
+      {/*      <button*/}
+      {/*        onClick={() => selectLanguage('English')}*/}
+      {/*        className="block w-full px-4 py-2 text-left cursor-pointer hover:bg-gray-100">*/}
+      {/*        English*/}
+      {/*      </button>*/}
+      {/*    </div>*/}
+      {/*  )}*/}
+      {/*</div>*/}
     </header>
   );
 };

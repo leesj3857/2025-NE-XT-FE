@@ -1,19 +1,31 @@
 import { CreateMarkersProps } from "../../../types/map/type.ts";
 import { InfoWindowInterface } from "../interface/InfoWindowInterface.tsx";
-import {setSelectedPlaceId} from "../../../store/slices/searchSlice.ts";
+import {setSelectedPlaceId, setOriginPlace, setDestinationPlace} from "../../../store/slices/searchSlice.ts";
 
 export const createMarkersOnMap = ({
                                      map,
                                      markers,
                                      infoWindowRef,
                                      selectedMarkerRef,
-                                     dispatch
-                                   }: CreateMarkersProps) => {
-  return markers.map(({ id, lat, lng, title, address, roadAddress, phone, category, placeUrl }) => {
+                                     dispatch,
+                                     origin,
+                                     destination
+                                   }: CreateMarkersProps ) => {
+  return markers.map(({ id, lat, lng, title, address, roadAddress, phone, category, placeUrl, categoryGroupCode }) => {
+
+    let icon: string | undefined = undefined;
+
+    if (id === origin?.id) {
+      icon = '/public/greenmarker.webp';
+    } else if (id === destination?.id) {
+      icon = '/public/redmarker.webp';
+    }
+
     const marker = new window.naver.maps.Marker({
       position: new window.naver.maps.LatLng(lat, lng),
       map,
       title,
+      icon,
       clickable: true,
     });
 
@@ -21,7 +33,6 @@ export const createMarkersOnMap = ({
       title,
       category,
       roadAddress,
-      address,
       phone,
       placeUrl,
     });
@@ -50,6 +61,34 @@ export const createMarkersOnMap = ({
       setTimeout(() => marker.setAnimation(null), 700);
     });
 
+    setTimeout(() => {
+      const container = infoWindow.getContentElement?.();
+      if (!container) return;
+
+      container.querySelectorAll("button[data-type]").forEach((btn:Element) => {
+        btn.addEventListener("click", () => {
+          const type = (btn as HTMLElement).getAttribute("data-type");
+
+          if (type === "origin") {
+            dispatch(setOriginPlace({
+              id, placeName: title, roadAddressName: roadAddress,
+              addressName: address, phone, categoryName: category,
+              placeUrl, categoryGroupCode, lat, lng
+            }));
+          } else if (type === "destination") {
+            dispatch(setDestinationPlace({
+              id, placeName: title, roadAddressName: roadAddress,
+              addressName: address, phone, categoryName: category,
+              placeUrl, categoryGroupCode, lat, lng
+            }));
+          } else if (type === "details") {
+            dispatch(setSelectedPlaceId(id));
+          }
+
+          infoWindow.close(); // 버튼 누르면 닫기
+        });
+      });
+    }, 0);
     return marker;
   });
 };

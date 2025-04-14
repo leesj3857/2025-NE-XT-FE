@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import queryString from 'query-string';
+import { clearOriginPlace, clearDestinationPlace, clearRouteInfo, clearRouteErrorMessage } from "../../store/slices/searchSlice.ts";
 
 const StepSummary = ({ city, region, categories, onBack }: {
   city: string;
@@ -16,7 +17,10 @@ const StepSummary = ({ city, region, categories, onBack }: {
 
   const handleSearch = async () => {
     setIsSearching(true);
-
+    dispatch(clearOriginPlace());
+    dispatch(clearDestinationPlace());
+    dispatch(clearRouteInfo());
+    dispatch(clearRouteErrorMessage())
     const delay = new Promise((resolve) => setTimeout(resolve, 4000));
     await delay;
 

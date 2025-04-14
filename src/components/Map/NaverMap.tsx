@@ -9,7 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ResearchButton from "./interface/ResearchButton.tsx";
 import MoveToMyLocationButton from "./interface/MoveToMyLocationButton.tsx";
 import { renderKakaoRouteOnNaverMap } from "./utils/renderKakaoRoute.ts";
-import { setRouteInfo } from "../../store/slices/searchSlice.ts";
+import {clearRouteErrorMessage, clearRouteInfo, setRouteInfo} from "../../store/slices/searchSlice.ts";
 
 declare global {
   interface Window {
@@ -85,7 +85,9 @@ export default function NaverMap({ markers }: NaverMapProps) {
       markers,
       infoWindowRef,
       selectedMarkerRef,
-      dispatch
+      dispatch,
+      origin,
+      destination
     });
 
     // Fit bounds to new markers
@@ -96,7 +98,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
       });
       mapInstanceRef.current.fitBounds(bounds);
     }
-  }, [markers]);
+  }, [markers, origin, destination]);
 
   useEffect(() => {
     if (routeLineRef.current) {
@@ -107,10 +109,13 @@ export default function NaverMap({ markers }: NaverMapProps) {
     const updateRoute = async () => {
       // 기존 선 제거
       if (origin && destination && mapInstanceRef.current) {
+        dispatch(clearRouteInfo())
+        dispatch(clearRouteErrorMessage())
         const result = await renderKakaoRouteOnNaverMap(
           mapInstanceRef.current,
           { lat: origin.lat, lng: origin.lng },
-          { lat: destination.lat, lng: destination.lng }
+          { lat: destination.lat, lng: destination.lng },
+          dispatch
         );
         if (result?.polyline) {
           routeLineRef.current = result.polyline;

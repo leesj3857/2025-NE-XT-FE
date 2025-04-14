@@ -50,6 +50,7 @@ const initialState: SearchState = {
     origin: null,
     destination: null,
     routeInfo: null,
+    errorMessage: null,
   },
 };
 
@@ -98,6 +99,11 @@ export const searchSlice = createSlice({
         };
       }
     },
+    setRouteErrorMessage(state, action: PayloadAction<string>) {
+      if (state.selectedPlacePair) {
+        state.selectedPlacePair.errorMessage = action.payload;
+      }
+    },
     clearSelectedPlacePair(state) {
       state.selectedPlacePair = { origin: null, destination: null };
     },
@@ -111,10 +117,15 @@ export const searchSlice = createSlice({
       if (state.selectedPlacePair) {
         state.selectedPlacePair.routeInfo = null;
       }
+    },
+    clearRouteErrorMessage(state) {
+      if (state.selectedPlacePair) {
+        state.selectedPlacePair.errorMessage = null;
+      }
     }
   },
 });
 
 export const { setSearchParams, setSearchResults, setCurrentPage, setSearchMeta, setSelectedPlaceId, setOriginPlace,
-  setDestinationPlace, clearSelectedPlacePair, clearOriginPlace, clearDestinationPlace, setRouteInfo, clearRouteInfo } = searchSlice.actions;
+  setDestinationPlace, clearSelectedPlacePair, clearOriginPlace, clearDestinationPlace, setRouteInfo, clearRouteInfo, setRouteErrorMessage, clearRouteErrorMessage } = searchSlice.actions;
 export default searchSlice.reducer;

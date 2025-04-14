@@ -169,6 +169,7 @@ const ResultPage = () => {
     roadAddress: place.roadAddressName,
     phone: place.phone,
     category: place.categoryName,
+    categoryGroupCode: place.categoryGroupCode,
     placeUrl: place.placeUrl,
   }));
 

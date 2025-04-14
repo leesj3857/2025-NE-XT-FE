@@ -6,21 +6,23 @@ const StartButton = ({ onClick }: { onClick?: () => void }) => {
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="flex flex-col items-start justify-between bg-[#DCE7EB] p-8 md:py-16 gap-8">
-
-      {/* 상단 텍스트 */}
+      className="flex flex-col items-start justify-between bg-[#DCE7EB] p-8 md:py-16 gap-8"
+    >
+      {/* Header Text */}
       <div className="text-left">
-        <h2 className="text-xl md:text-[45px] mb-4">시작하기</h2>
-        <p className="text-sm md:text-lg">KOREAT의 세계로 들어가 다양한 한국의 맛과 문화를 탐험해보세요.</p>
+        <h2 className="text-xl md:text-[45px] mb-4">Get Started</h2>
+        <p className="text-sm md:text-lg">
+          Step into the world of KOREAT and explore the rich flavors and culture of Korea.
+        </p>
       </div>
 
-      {/* 버튼 영역 */}
+      {/* Button Area */}
       <div className="w-full flex justify-center">
         <button
           onClick={onClick}
           className="bg-[#2D3433] text-white text-lg font-semibold px-12 py-4 rounded-lg hover:opacity-90 transition cursor-pointer"
         >
-          시작하기
+          Start Now
         </button>
       </div>
     </motion.section>

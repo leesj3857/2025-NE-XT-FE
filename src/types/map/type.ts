@@ -1,3 +1,5 @@
+import {PlaceItemType} from "../place/type.ts";
+
 export interface MarkerType {
   id: string;
   lat: number;
@@ -21,4 +23,6 @@ export interface CreateMarkersProps {
   infoWindowRef: any;
   selectedMarkerRef: React.MutableRefObject<any>;
   dispatch: any;
+  origin: PlaceItemType | null;
+  destination: PlaceItemType | null;
 }

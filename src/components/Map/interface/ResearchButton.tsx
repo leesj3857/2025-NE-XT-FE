@@ -2,12 +2,15 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mapCenterResearch } from '../utils/mapCenterResearch';
 import { motion, AnimatePresence } from 'framer-motion';
+import {clearDestinationPlace, clearOriginPlace, clearRouteInfo, clearRouteErrorMessage} from "../../../store/slices/searchSlice.ts";
+import {useDispatch} from "react-redux";
 
 interface Props {
   mapInstance: any;
 }
 
 const ResearchButton: FC<Props> = ({ mapInstance }) => {
+  const dispatch = useDispatch()
   const navigate = useNavigate();
   const [isSelecting, setIsSelecting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,6 +21,10 @@ const ResearchButton: FC<Props> = ({ mapInstance }) => {
 
   const handleOptionClick = (type: 'food' | 'sights') => {
     mapCenterResearch(mapInstance, navigate, type);
+    dispatch(clearOriginPlace());
+    dispatch(clearDestinationPlace());
+    dispatch(clearRouteInfo())
+    dispatch(clearRouteErrorMessage())
     setIsSelecting(false);
   };
 
