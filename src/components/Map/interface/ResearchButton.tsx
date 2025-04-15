@@ -66,15 +66,15 @@ const ResearchButton: FC<Props> = ({ mapInstance }) => {
           >
             <button
               onClick={() => handleOptionClick('food')}
-              className=" px-3 py-1 rounded bg-[#cbcccc] text-black font-semibold hover:bg-[#2d3433] hover:text-white transition cursor-pointer"
+              className=" px-3 py-1 rounded bg-[#cbcccc] text-black font-semibold hover:bg-[#2d3433] hover:text-white transition cursor-pointer text-nowrap"
             >
-              맛집
+              Food spots
             </button>
             <button
               onClick={() => handleOptionClick('sights')}
-              className=" px-3 py-1 rounded bg-[#cbcccc] text-black font-semibold hover:bg-[#2d3433] hover:text-white transition cursor-pointer"
+              className=" px-3 py-1 rounded bg-[#cbcccc] text-black font-semibold hover:bg-[#2d3433] hover:text-white transition cursor-pointer text-nowrap"
             >
-              볼거리
+              Places to visit
             </button>
           </motion.div>
         )}
@@ -84,7 +84,7 @@ const ResearchButton: FC<Props> = ({ mapInstance }) => {
         onClick={handleSearchClick}
         className="bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer"
       >
-        현재 지도 중심으로 다시 검색
+        Search this area
       </button>
     </div>
   );

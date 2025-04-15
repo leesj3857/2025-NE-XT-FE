@@ -59,13 +59,20 @@ export const searchSlice = createSlice({
   initialState,
   reducers: {
     setSearchParams: (state, action: PayloadAction<SearchParamsPayload>) => {
-      const { city, region, categories } = action.payload;
+      let { city, region, categories } = action.payload;
+
+      // '기타'는 빈 문자열로 대체
+      city = city === '기타' ? '' : city;
+      region = region === '기타' ? '' : region;
+
       state.city = city;
       state.region = region;
       state.categories = categories;
+
       state.keyword = [city, region, categories.food && '맛집', categories.sights && '볼거리']
         .filter(Boolean)
         .join(' ');
+
       state.resultsByPage = {};
       state.currentPage = 1;
     },

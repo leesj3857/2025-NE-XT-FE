@@ -13,7 +13,7 @@ const MoveToMyLocationButton: FC<Props> = ({ mapInstance }) => {
       onClick={() => moveToUserPosition(mapInstance)}
       className="absolute bottom-4 right-4 bg-white p-2 md:p-3 shadow-md border
       border-[#2D3433] hover:bg-gray-100 transition cursor-pointer outline-0"
-      aria-label="내 위치로 이동"
+      aria-label="Move to my location"
       style={{ borderRadius: '50%' }}
     >
       <Icon

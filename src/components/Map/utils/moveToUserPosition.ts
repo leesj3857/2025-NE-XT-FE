@@ -14,7 +14,7 @@ export const moveToUserPosition = (
     (error) => {
       console.error('위치 정보를 가져오지 못했습니다:', error);
       if (onError) onError(error);
-      else alert('위치 정보를 가져오지 못했습니다.');
+      else alert('Failed to get location information.');
     }
   );
 };

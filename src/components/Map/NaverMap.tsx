@@ -48,8 +48,12 @@ export default function NaverMap({ markers }: NaverMapProps) {
     const position = new window.naver.maps.LatLng(markers[markerIndex].lat, markers[markerIndex].lng);
     if (!marker) return;
     window.naver.maps.Event.trigger(marker, 'click');
+
+    // 중심을 살짝 아래쪽으로 조정 (위도를 감소시키면 화면상 더 위쪽으로 올라가게 됨)
+    const adjustedPosition = new window.naver.maps.LatLng(markers[markerIndex].lat + 0.002, markers[markerIndex].lng);
+
     setTimeout(() => {
-      mapInstanceRef.current.setCenter(position);
+      mapInstanceRef.current.setCenter(adjustedPosition);
     }, 0);
   }, [selectedPlaceId]);
 
