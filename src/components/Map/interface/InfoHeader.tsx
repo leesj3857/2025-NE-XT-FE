@@ -49,7 +49,10 @@ export default function InfoHeader() {
 
   
   return (
-    <div className="flex flex-col justify-start items-start w-full min-h-[130px] md:min-h-[135px]">
+    <motion.div
+      layout
+      className="flex flex-col justify-start items-start w-full mb-3"
+    >
       <div className="flex items-start justify-between w-full">
         <div className="flex flex-col pr-4">
           <h2 className="text-lg md:text-2xl font-bold ">Top Picks</h2>
@@ -119,6 +122,7 @@ export default function InfoHeader() {
       <AnimatePresence>
         {routeInfo && (
           <motion.div
+            layout
             className="flex items-center justify-between my-2 pb-1 text-sm text-[#1A1E1D] font-medium w-full gap-4 mt-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -176,6 +180,7 @@ export default function InfoHeader() {
       <AnimatePresence>
         {errorMessage && (
           <motion.div
+            layout
             className="bg-red-50 text-red-700 border border-red-300 rounded-md p-3 py-1.5 text-sm max-md:text-xs w-full mt-2"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -186,6 +191,6 @@ export default function InfoHeader() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

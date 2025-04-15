@@ -184,7 +184,7 @@ const ResultPage = () => {
       <div className="hidden md:block w-full md:w-[420px] bg-white p-4 overflow-auto shadow-lg relative">
         <InfoHeader/>
         <ul ref={listRef}
-            className="space-y-4 overflow-auto h-[calc(100%-180px)] pr-3 py-4">
+            className="space-y-4 overflow-auto h-[calc(100%-190px)] pr-3 py-4">
           {currentResults.map((place, index) => (
             <PlaceItem
               key={index}
