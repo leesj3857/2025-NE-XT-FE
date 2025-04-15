@@ -62,7 +62,14 @@ const StepSummary = ({ city, region, categories, onBack }: {
             transition={{ duration: 4 }}
             className="text-4xl mb-6"
           >
-            <img src="/airplane.webp" width="150px" alt=""/>
+            <img
+              src="/airplane.webp"
+              width="150px"
+              alt=""
+              draggable={false}
+              tabIndex={-1}
+              style={{ outline: 'none' }}
+            />
           </motion.div>
           <motion.p
             initial={{ opacity: 0 }}
