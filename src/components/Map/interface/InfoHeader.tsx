@@ -58,12 +58,12 @@ export default function InfoHeader() {
           </span>
         </div>
         <div>
-          <div className="flex items-start flex-col max-w-48 ">
+          <div className="flex items-start flex-col ">
             {/* 출발지/도착지 정보 */}
 
             <div className="flex flex-col gap-1.5 w-full relative">
               {/* 출발지 */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between max-w-40">
                 <div className="flex items-center gap-3" onClick={() => handleClickPlace(origin?.id)}>
                   <div className="w-3 h-3 rounded-full border-2 border-green-600 bg-white shadow-[0_0px_8px_2px_rgba(34,197,94,0.5)]" />
                   <span className={`text-sm md:text-base truncate whitespace-nowrap overflow-hidden ${origin?.placeName ? 'text-[#1A1E1D]' : 'text-gray-400'}`}>
@@ -87,7 +87,7 @@ export default function InfoHeader() {
               <hr />
 
               {/* 도착지 */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between max-w-40">
                 <div className="flex items-center gap-3" onClick={() => handleClickPlace(destination?.id)}>
                   <div className="w-3 h-3 rounded-full border-2 border-red-500 bg-white shadow-[0_0px_8px_2px_rgba(239,68,68,0.5)]" />
 
