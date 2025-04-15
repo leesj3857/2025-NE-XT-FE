@@ -49,7 +49,7 @@ export default function InfoHeader() {
 
   
   return (
-    <div className="flex flex-col justify-start items-start w-full min-h-[130px] md:min-h-[140px]">
+    <div className="flex flex-col justify-start items-start w-full min-h-[130px] md:min-h-[135px]">
       <div className="flex items-start justify-between w-full">
         <div className="flex flex-col pr-4">
           <h2 className="text-lg md:text-2xl font-bold ">Top Picks</h2>
