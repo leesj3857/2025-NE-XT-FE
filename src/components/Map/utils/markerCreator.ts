@@ -16,9 +16,9 @@ export const createMarkersOnMap = ({
     let icon: string | undefined = undefined;
 
     if (id === origin?.id) {
-      icon = '/public/greenmarker.webp';
+      icon = '/greenmarker.webp';
     } else if (id === destination?.id) {
-      icon = '/public/redmarker.webp';
+      icon = '/redmarker.webp';
     }
 
     const marker = new window.naver.maps.Marker({
