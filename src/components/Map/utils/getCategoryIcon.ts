@@ -41,6 +41,7 @@ export const getCategoryIcon = (
       분식: 'tteokbokki.webp',
       술집: 'beer.webp',
       인도: 'india.webp',
+      탕: 'tang.webp',
     },
     level1: {
       한식: 'korea.webp',
@@ -91,7 +92,6 @@ export const getCategoryIcon = (
 
   if (categoryGroupCode === 'AT4') {
     for (const keyword in sightIcons) {
-      console.log(keyword)
       if (category.includes(keyword)) {
         return `/Icons/sight/${sightIcons[keyword]}`;
       }

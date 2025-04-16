@@ -3,6 +3,7 @@ export interface PlaceItemType {
   placeName: string;
   addressName?: string;
   roadAddressName?: string;
+  roadAddressNameEN?: string;
   phone?: string;
   categoryName?: string;
   placeUrl?: string;

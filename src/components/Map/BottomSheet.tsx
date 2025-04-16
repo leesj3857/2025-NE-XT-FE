@@ -5,14 +5,17 @@ import Pagination from './Pagination';
 import PlaceItem from "./interface/PlaceItem.tsx";
 import { PlaceItemType } from '../../types/place/type';
 import InfoHeader from "./interface/InfoHeader.tsx";
+import FetchingUI from "./interface/FetchingUI.tsx";
+
 interface BottomSheetProps {
   results: PlaceItemType[];
   currentPage: number;
   totalCount: number;
   onPageChange: (page: number) => void;
+  isFetching: boolean;
 }
 
-const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomSheetProps) => {
+const BottomSheet = ({ results, currentPage, totalCount, onPageChange, isFetching }: BottomSheetProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -43,12 +46,15 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange }: BottomS
           <InfoHeader/>
           <ul ref={listRef}
               className="space-y-3 max-h-[45dvh] mb-16 overflow-auto pr-4">
-            {results.map((place, index) => (
+            {isFetching
+              ? Array.from({ length: 5 }).map((_, i) => <FetchingUI key={i} />)
+              : results.map((place, index) => (
               <PlaceItem
                 key={place.id}
                 id={place.id}
                 placeName={place.placeName}
                 roadAddressName={place.roadAddressName}
+                roadAddressNameEN={place.roadAddressNameEN}
                 phone={place.phone}
                 categoryName={place.categoryName}
                 placeUrl={place.placeUrl}

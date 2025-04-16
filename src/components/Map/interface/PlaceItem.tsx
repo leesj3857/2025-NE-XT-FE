@@ -15,6 +15,7 @@ export default function PlaceItem({
                                     id,
                                     placeName,
                                     roadAddressName,
+                                    roadAddressNameEN,
                                     phone,
                                     categoryName,
                                     placeUrl,
@@ -85,7 +86,7 @@ export default function PlaceItem({
           {categoryName && (
             <p className="text-xs text-gray-600">{categoryName}</p>
           )}
-          <p className="text-sm">{roadAddressName}</p>
+          <p className="text-sm">{roadAddressNameEN}</p>
           {phone && <p className="text-sm text-gray-600">📞 {phone}</p>}
           {placeUrl && (
             <a

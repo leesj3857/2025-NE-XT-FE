@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { KakaoPlaceSearchParams } from '../types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
 import { setSearchMeta } from '../store/slices/searchSlice';
+import {convertKoreanToEnglishAddress} from "./utils/convertKoreanToEnglishAddress.ts";
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
-export function useKakaoPlaces(params: KakaoPlaceSearchParams, enabled: boolean) {
+export function useKakaoPlaces(params:  KakaoPlaceSearchParams, enabled: boolean) {
   const dispatch = useDispatch();
+  const { categories } = useSelector((state: RootState) => state.search);
 
   return useQuery({
     queryKey: ['kakaoPlaces', params],
@@ -18,13 +21,31 @@ export function useKakaoPlaces(params: KakaoPlaceSearchParams, enabled: boolean)
         },
         params,
       });
-      console.log('호출');
 
-      if (params && params.page === 1 && res.data.meta) {
-        dispatch(setSearchMeta(res.data.meta));
+      const meta = res.data?.meta;
+      if ( params && meta ) {
+        dispatch(setSearchMeta(meta));
       }
 
-      return res.data.documents;
+
+      const places = res.data.documents;
+
+      // 각 장소의 road_address_name을 영어로 변환하여 추가
+      const placesWithEnglishAddress = await Promise.all(
+        places.map(async (place: any) => {
+          const roadAddr = place.road_address_name;
+          const roadAddressNameEN = roadAddr
+            ? await convertKoreanToEnglishAddress(roadAddr)
+            : null;
+
+          return {
+            ...place,
+            roadAddressNameEN,
+          };
+        })
+      );
+
+      return placesWithEnglishAddress;
     },
     enabled: enabled &&
       typeof params?.query === 'string' &&

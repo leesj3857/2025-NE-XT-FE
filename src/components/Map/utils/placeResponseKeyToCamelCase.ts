@@ -5,6 +5,7 @@ export const toCamelCase = (place: any): PlaceItemType => ({
   placeName: place.place_name,
   addressName: place.address_name,
   roadAddressName: place.road_address_name,
+  roadAddressNameEN: place.roadAddressNameEN,
   phone: place.phone,
   categoryName: place.category_name,
   placeUrl: place.place_url,

@@ -7,10 +7,10 @@ export interface MarkerType {
   title: string;
   address?: string;
   roadAddress?: string;
+  roadAddressEN?: string;
   phone?: string;
   category?: string;
   placeUrl?: string;
-  [key: string]: any;
 }
 
 export interface NaverMapProps {
