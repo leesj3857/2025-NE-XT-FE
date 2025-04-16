@@ -23,6 +23,7 @@ const Step = () => {
 
   const [city, setCity] = useState('');
   const [region, setRegion] = useState('');
+  const [regionEN, setRegionEN] = useState('');
   const [categories, setCategories] = useState({ food: false, sights: false });
 
   const nextStep = () => {
@@ -78,7 +79,8 @@ const Step = () => {
               transition={{ duration: 0.3 }}
               className="h-full"
             >
-              <StepTwo region={region} setRegion={setRegion} onNext={nextStep} onBack={prevStep} />
+              <StepTwo region={region} setRegion={setRegion} regionEN={regionEN}
+                       setRegionEN={setRegionEN}onNext={nextStep} onBack={prevStep} />
             </motion.div>
           )}
           {step === 3 && (
@@ -106,7 +108,7 @@ const Step = () => {
               transition={{ duration: 0.3 }}
               className="h-full"
             >
-              <StepSummary city={city} region={region} categories={categories} onBack={prevStep} />
+              <StepSummary city={city} region={region} regionEN={regionEN} categories={categories} onBack={prevStep} />
             </motion.div>
           )}
         </AnimatePresence>

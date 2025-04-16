@@ -1,18 +1,24 @@
 import { useEffect, useState, useCallback } from 'react';
+import { translateRegionToKorean } from './utils/translateRegionToKorean.ts';
 
 const StepTwo = ({
                    region,
                    setRegion,
+                   regionEN,
+                   setRegionEN,
                    onNext,
                    onBack,
                  }: {
   region: string;
   setRegion: (val: string) => void;
+  regionEN: string;
+  setRegionEN: (val: string) => void;
   onNext: () => void;
   onBack: () => void;
 }) => {
   const [showButton, setShowButton] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isFirstLoad) {
@@ -21,17 +27,33 @@ const StepTwo = ({
       }
       setIsFirstLoad(false);
     }
-    setShowButton(region.trim() !== '');
-  }, [region]);
+    setShowButton(regionEN.trim() !== '');
+  }, [regionEN]);
 
   const backButton = useCallback(() => {
     setRegion('');
+    setRegionEN('');
     onBack();
-  }, [setRegion, onBack]);
+  }, [setRegion, setRegionEN, onBack]);
 
   const handleSkipRegion = () => {
     setRegion('기타');
+    setRegionEN('Etc');
     onNext();
+  };
+
+  const handleNextClick = async () => {
+    setIsLoading(true);
+    try {
+      const translated = await translateRegionToKorean(regionEN);
+      setRegion(translated);
+      onNext();
+    } catch (e) {
+      console.error('Region translation failed:', e);
+      alert('Failed to translate region. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -41,8 +63,8 @@ const StepTwo = ({
       <input
         type="text"
         placeholder="e.g., Gangnam Station, Mapo-gu, Haeundae-gu"
-        value={region}
-        onChange={(e) => setRegion(e.target.value)}
+        value={regionEN}
+        onChange={(e) => setRegionEN(e.target.value)}
         className="w-full p-3 border border-[#CBCCCC] rounded outline-none focus:border-[#2D3433] transition-all"
       />
 
@@ -70,10 +92,11 @@ const StepTwo = ({
         </button>
         {showButton && (
           <button
-            onClick={onNext}
+            onClick={handleNextClick}
             className="bg-[#2D3433] text-white px-6 py-2 rounded cursor-pointer w-28"
+            disabled={isLoading}
           >
-            Next
+            {isLoading ? 'Loading...' : 'Next'}
           </button>
         )}
       </div>

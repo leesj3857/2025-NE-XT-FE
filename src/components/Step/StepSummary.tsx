@@ -6,9 +6,10 @@ import queryString from 'query-string';
 import { clearOriginPlace, clearDestinationPlace, clearRouteInfo, clearRouteErrorMessage } from "../../store/slices/searchSlice.ts";
 import cityLabelMap from "./static/cityLabelMap.ts";
 
-const StepSummary = ({ city, region, categories, onBack }: {
+const StepSummary = ({ city, region, regionEN, categories, onBack }: {
   city: string;
   region: string;
+  regionEN: string;
   categories: { food: boolean; sights: boolean };
   onBack: () => void;
 }) => {
@@ -37,7 +38,7 @@ const StepSummary = ({ city, region, categories, onBack }: {
   };
 
   const cityLabel = city ? (cityLabelMap[city] || city) : 'Not specified';
-  const regionLabel = region === '기타' || !region ? 'Not specified' : region;
+  const regionLabel = regionEN === 'Not specified' || !regionEN ? 'Not specified' : regionEN;
 
   return (
     <div className="flex flex-col relative h-full overflow-hidden">
