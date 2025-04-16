@@ -7,9 +7,10 @@
 
 ## 🚀 현재 개발 현황
 
-🔍 **장소 키워드 기반 검색 및 지도 표시 기능까지 구현 완료**  
-📌 **선택된 장소는 네이버 지도를 통해 마커로 시각화**  
-📖 **카카오 API를 활용한 장소 검색 및 정보 조회**
+- 🔍 **장소 키워드 및 지도 좌표 기반 검색 / 표시 기능 구현**
+- 📌 **선택된 장소는 네이버 지도를 통해 마커로 시각화**
+- 🚗 **차를 이용한 경로 및 시간 계산 기능 구현**
+- 🌐 **카테고리 및 주소 영문 변환 기능 구현**
 
 ---
 
@@ -34,8 +35,10 @@
 
 ### 🗺 지도 및 API
 
-- ![Naver Map](https://img.shields.io/badge/Naver%20Map-2DB400?style=for-the-badge&logoColor=white)
-- ![Kakao Local API](https://img.shields.io/badge/Kakao%20Local%20API-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=000000)
+- ![Naver Map](https://img.shields.io/badge/Naver%20Map-2DB400?style=for-the-badge&logoColor=white): **지도 시각화**
+- ![Kakao Local API](https://img.shields.io/badge/Kakao%20Local%20API-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=000000): **장소 검색 및 길찾기**
+- ![DeepL](https://img.shields.io/badge/DeepL%20API-0E76A8?style=for-the-badge&logo=deepl&logoColor=white): **다국어 번역**
+- ![Perplexity](https://img.shields.io/badge/Perplexity%20API-7E3FF2?style=for-the-badge): **웹 정보 검색**
 
 ---
 
@@ -44,9 +47,11 @@
 ### 1. `.env` 파일 생성
 
 ```env
-VITE_KAKAO_REST_API_KEY=발급받은_REST_API_KEY
-VITE_KAKAO_JS_KEY=발급받은_JAVASCRIPT_API_KEY
-VITE_NAVER_CLIENT_ID=발급받은_NAVER_MAP_CLIENT_ID
+VITE_KAKAO_JS_KEY=
+VITE_KAKAO_REST_API_KEY=
+VITE_NAVER_CLIENT_ID=
+VITE_NAVER_CLIENT_SECRET=
+VITE_ADDRESS_KEY=
 ```
 
 ### 2. 의존성 설치
@@ -65,7 +70,77 @@ npm run dev
 
 ## 📷 향후 추가 기능 (예정)
 
-- 📍 현재 위치 기반 추천
-- 메뉴 및 가격 정보, 이미지, 리뷰 표시
-- 🔡 다국어 번역 (EN, CN, JP 등)
-- 📸 유저 사진 및 후기 업로드
+- 📝 장소 요약 상세보기 기능
+- 🔐 로그인 및 장소 저장 기능
+
+---
+
+# 🇺🇸 KOREAT
+
+**KOREAT** is a service that provides food and sightseeing recommendations for foreign travelers visiting Korea.  
+It allows users to view local reviews, menus, prices, and photos all in one place.
+
+---
+
+## 🚀 Current Development Status
+
+- 🔍 **Implemented place search and map display using keywords and coordinates**
+- 📌 **Visualized selected places using markers on Naver Map**
+- 🚗 **Implemented route and travel time calculation by car**
+- 🌐 **Converted categories and addresses into English**
+
+---
+
+## 🛠️ Technology Stack
+
+### 📚 Frontend
+
+- React, TypeScript, React Router, Redux, TanStack Query, Axios
+
+### 💄 Styling
+
+- Tailwind CSS
+
+### 📦 Bundling
+
+- Vite
+
+### 🗺 Maps & APIs
+
+- Naver Map: **Map visualization**
+- Kakao Local API: **Place search and directions**
+- DeepL API: **Multilingual translation**
+- Perplexity API: **Web information search**
+
+---
+
+## ⚙️ How to Run the Project
+
+### 1. Create `.env` file
+
+```env
+VITE_KAKAO_JS_KEY=
+VITE_KAKAO_REST_API_KEY=
+VITE_NAVER_CLIENT_ID=
+VITE_NAVER_CLIENT_SECRET=
+VITE_ADDRESS_KEY=
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the dev server
+
+```bash
+npm run dev
+```
+
+---
+
+## 📷 Upcoming Features
+
+- 📝 Place summary and detail view
+- 🔐 Login and place saving
