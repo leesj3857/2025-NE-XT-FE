@@ -11,8 +11,8 @@ export interface MarkerType {
   phone?: string;
   category?: string;
   categoryEN?: string;
-  categoryGroupCode: string;
   placeUrl?: string;
+  [key: string]: any;
 }
 
 export interface NaverMapProps {
