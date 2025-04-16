@@ -18,6 +18,7 @@ export default function PlaceItem({
                                     roadAddressNameEN,
                                     phone,
                                     categoryName,
+                                    categoryNameEN,
                                     placeUrl,
                                     categoryGroupCode,
                                     lat,
@@ -84,7 +85,7 @@ export default function PlaceItem({
             </AnimatePresence>
           </div>
           {categoryName && (
-            <p className="text-xs text-gray-600">{categoryName}</p>
+            <p className="text-xs text-gray-600">{categoryNameEN}</p>
           )}
           <p className="text-sm">{roadAddressNameEN}</p>
           {phone && <p className="text-sm text-gray-600">📞 {phone}</p>}

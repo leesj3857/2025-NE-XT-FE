@@ -6,6 +6,7 @@ export interface PlaceItemType {
   roadAddressNameEN?: string;
   phone?: string;
   categoryName?: string;
+  categoryNameEN?: string;
   placeUrl?: string;
   categoryGroupCode?: string;
   x?: string;

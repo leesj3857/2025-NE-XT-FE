@@ -4,6 +4,8 @@ import { mapCenterResearch } from '../utils/mapCenterResearch';
 import { motion, AnimatePresence } from 'framer-motion';
 import {clearDestinationPlace, clearOriginPlace, clearRouteInfo, clearRouteErrorMessage} from "../../../store/slices/searchSlice.ts";
 import {useDispatch} from "react-redux";
+import Icon from '@mdi/react';
+import { mdiRefresh } from '@mdi/js';
 
 interface Props {
   mapInstance: any;
@@ -82,8 +84,9 @@ const ResearchButton: FC<Props> = ({ mapInstance }) => {
 
       <button
         onClick={handleSearchClick}
-        className="bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer"
+        className="bg-[#2D3433] text-white text-xs md:text-sm px-4 py-2 rounded-md shadow-md hover:bg-[#1A1E1D] transition-all cursor-pointer flex items-center gap-1"
       >
+        <Icon path={mdiRefresh} size={0.7} />
         Search this area
       </button>
     </div>

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setSearchMeta } from '../store/slices/searchSlice';
 import {convertKoreanToEnglishAddress} from "./utils/convertKoreanToEnglishAddress.ts";
+import {translateCategoryToEnglish} from "./utils/translateCategoryToEnglish.ts";
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
@@ -31,21 +32,25 @@ export function useKakaoPlaces(params:  KakaoPlaceSearchParams, enabled: boolean
       const places = res.data.documents;
 
       // 각 장소의 road_address_name을 영어로 변환하여 추가
-      const placesWithEnglishAddress = await Promise.all(
+      const placesWithTranslatedData = await Promise.all(
         places.map(async (place: any) => {
           const roadAddr = place.road_address_name;
-          const roadAddressNameEN = roadAddr
-            ? await convertKoreanToEnglishAddress(roadAddr)
-            : null;
+          const category = place.category_name;
+
+          const [roadAddressNameEN, categoryNameEN] = await Promise.all([
+            roadAddr ? convertKoreanToEnglishAddress(roadAddr) : null,
+            category ? translateCategoryToEnglish(category) : null,
+          ]);
 
           return {
             ...place,
             roadAddressNameEN,
+            categoryNameEN,
           };
         })
       );
 
-      return placesWithEnglishAddress;
+      return placesWithTranslatedData;
     },
     enabled: enabled &&
       typeof params?.query === 'string' &&

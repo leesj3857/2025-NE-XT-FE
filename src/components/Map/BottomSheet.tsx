@@ -46,24 +46,32 @@ const BottomSheet = ({ results, currentPage, totalCount, onPageChange, isFetchin
           <InfoHeader/>
           <ul ref={listRef}
               className="space-y-3 max-h-[45dvh] mb-16 overflow-auto pr-4">
-            {isFetching
-              ? Array.from({ length: 5 }).map((_, i) => <FetchingUI key={i} />)
-              : results.map((place, index) => (
-              <PlaceItem
-                key={place.id}
-                id={place.id}
-                placeName={place.placeName}
-                roadAddressName={place.roadAddressName}
-                roadAddressNameEN={place.roadAddressNameEN}
-                phone={place.phone}
-                categoryName={place.categoryName}
-                placeUrl={place.placeUrl}
-                categoryGroupCode={place.categoryGroupCode}
-                lat={place.y}
-                lng={place.x}
-                index={index}
-              />
-            ))}
+            {isFetching ? (
+              Array.from({ length: 5 }).map((_, i) => <FetchingUI key={i} />)
+            ) : results.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                🔍 No results found.<br />
+                Try searching with a different keyword or location!
+              </div>
+            ) : (
+              results.map((place, index) => (
+                <PlaceItem
+                  key={index}
+                  id={place.id}
+                  placeName={place.placeName}
+                  roadAddressName={place.roadAddressName}
+                  roadAddressNameEN={place.roadAddressNameEN}
+                  phone={place.phone}
+                  categoryName={place.categoryName}
+                  categoryNameEN={place.categoryNameEN}
+                  placeUrl={place.placeUrl}
+                  categoryGroupCode={place.categoryGroupCode}
+                  lat={place.y}
+                  lng={place.x}
+                  index={index}
+                />
+              ))
+            )}
           </ul>
 
           {totalCount > 0 && (

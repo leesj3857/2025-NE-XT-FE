@@ -163,6 +163,7 @@ const ResultPage = () => {
     roadAddress: place.roadAddressName,
     phone: place.phone,
     category: place.categoryName,
+    categoryEN: place.categoryNameEN,
     categoryGroupCode: place.categoryGroupCode,
     placeUrl: place.placeUrl,
   }));
@@ -176,9 +177,15 @@ const ResultPage = () => {
       <div className="hidden md:block w-full md:w-[420px] bg-white p-4 overflow-auto shadow-lg relative">
         <InfoHeader />
         <ul ref={listRef} className="space-y-4 overflow-auto h-[calc(100%-190px)] pr-3 py-4">
-          {isFetching
-            ? Array.from({ length: 5 }).map((_, i) => <FetchingUI key={i} />)
-            : currentResults.map((place, index) => (
+          {isFetching ? (
+            Array.from({ length: 5 }).map((_, i) => <FetchingUI key={i} />)
+          ) : currentResults.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">
+              🔍 No results found.<br />
+              Try searching with a different keyword or location!
+            </div>
+          ) : (
+            currentResults.map((place, index) => (
               <PlaceItem
                 key={index}
                 id={place.id}
@@ -187,13 +194,15 @@ const ResultPage = () => {
                 roadAddressNameEN={place.roadAddressNameEN}
                 phone={place.phone}
                 categoryName={place.categoryName}
+                categoryNameEN={place.categoryNameEN}
                 placeUrl={place.placeUrl}
                 categoryGroupCode={place.categoryGroupCode}
                 lat={place.y}
                 lng={place.x}
                 index={index}
               />
-            ))}
+            ))
+          )}
         </ul>
 
         {meta && (

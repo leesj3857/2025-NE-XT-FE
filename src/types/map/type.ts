@@ -10,6 +10,7 @@ export interface MarkerType {
   roadAddressEN?: string;
   phone?: string;
   category?: string;
+  categoryEN?: string;
   placeUrl?: string;
 }
 
