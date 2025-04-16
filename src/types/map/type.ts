@@ -11,6 +11,7 @@ export interface MarkerType {
   phone?: string;
   category?: string;
   categoryEN?: string;
+  categoryGroupCode: string;
   placeUrl?: string;
 }
 
