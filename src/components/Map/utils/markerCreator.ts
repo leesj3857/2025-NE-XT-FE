@@ -1,6 +1,7 @@
 import { CreateMarkersProps } from "../../../types/map/type.ts";
 import { InfoWindowInterface } from "../interface/InfoWindowInterface.tsx";
-import {setSelectedPlaceId, setOriginPlace, setDestinationPlace} from "../../../store/slices/searchSlice.ts";
+import {setSelectedPlaceId, setOriginPlace, setDestinationPlace, setSelectedDetailedPlace} from "../../../store/slices/searchSlice.ts";
+import convertMarkerToPlaceItem from "./convertMarkerTypeToPlaceItemType.ts";
 
 export const createMarkersOnMap = ({
                                      map,
@@ -11,7 +12,20 @@ export const createMarkersOnMap = ({
                                      origin,
                                      destination
                                    }: CreateMarkersProps ) => {
-  return markers.map(({ id, lat, lng, title, address, roadAddress, phone, category, placeUrl, categoryGroupCode }) => {
+  return markers.map((markerProp) => {
+
+    const {
+      id,
+      lat,
+      lng,
+      title,
+      address,
+      roadAddress,
+      phone,
+      category,
+      placeUrl,
+      categoryGroupCode,
+    } = markerProp;
 
     let icon: string | undefined = undefined;
 
@@ -29,13 +43,7 @@ export const createMarkersOnMap = ({
       clickable: true,
     });
 
-    const contentHtml = InfoWindowInterface({
-      title,
-      category,
-      roadAddress,
-      phone,
-      placeUrl,
-    });
+    const contentHtml = InfoWindowInterface({ ...markerProp });
 
     const infoWindow = new window.naver.maps.InfoWindow({
       content: contentHtml,
@@ -82,10 +90,11 @@ export const createMarkersOnMap = ({
               placeUrl, categoryGroupCode, lat, lng
             }));
           } else if (type === "details") {
-            dispatch(setSelectedPlaceId(id));
+            const detailedPlace = convertMarkerToPlaceItem(markerProp);
+            dispatch(setSelectedDetailedPlace(detailedPlace));
           }
 
-          infoWindow.close(); // 버튼 누르면 닫기
+          // infoWindow.close(); // 버튼 누르면 닫기
         });
       });
     }, 0);

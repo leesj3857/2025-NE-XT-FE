@@ -11,7 +11,8 @@ export interface PlaceItemType {
   categoryGroupCode?: string;
   x?: string;
   y?: string;
-  [key: string]: any;
+  lat?: string | number;
+  lng?: string | number;
 }
 
 export interface SelectedPlacePair {

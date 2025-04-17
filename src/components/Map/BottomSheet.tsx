@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import { useSelector } from 'react-redux';
+import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import Pagination from './Pagination';
 import PlaceItem from "./interface/PlaceItem.tsx";
 import { PlaceItemType } from '../../types/place/type';
 import InfoHeader from "./interface/InfoHeader.tsx";
 import FetchingUI from "./interface/FetchingUI.tsx";
+import {RootState} from "../../store";
 
 interface BottomSheetProps {
   results: PlaceItemType[];
@@ -18,25 +20,32 @@ interface BottomSheetProps {
 const BottomSheet = ({ results, currentPage, totalCount, onPageChange, isFetching }: BottomSheetProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const listRef = useRef<HTMLUListElement>(null);
-
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
-  };
+  const selectedDetailedPlace = useSelector((state: RootState) => state.search.selectedDetailedPlace);
 
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = 0;
     }
   }, [currentPage]);
+
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
+  };
+
   useEffect(()=>{
     setIsOpen(true)
   },[results]);
+
   return (
-    <div className={`md:hidden fixed bottom-0 left-0 w-full bg-white shadow-xl ${isOpen && 'rounded-t-xl'} z-50 px-4`}>
+    <div className={`${selectedDetailedPlace && 'hidden'} md:hidden fixed bottom-0 left-0 w-full bg-white shadow-xl ${isOpen && 'rounded-t-xl'} z-50 px-4`}>
       {/* 바텀시트 내부의 화살표 토글 */}
       <div onClick={toggleOpen} className="w-full flex justify-center h-12">
-        <button >
-          <Icon path={isOpen ? mdiChevronDown : mdiChevronUp} size={1.2} />
+        <button>
+          <Icon
+            path={mdiChevronDown}
+            size={1.2}
+            className={`transition-transform duration-300 ${isOpen ? 'rotate-0' : 'rotate-180'}`}
+          />
         </button>
       </div>
 

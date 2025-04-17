@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import {AnimatePresence} from "framer-motion";
 import queryString from 'query-string';
 
 import { RootState } from '../store';
@@ -19,6 +20,7 @@ import Pagination from '../components/Map/Pagination';
 import PlaceItem from '../components/Map/interface/PlaceItem.tsx';
 import InfoHeader from '../components/Map/interface/InfoHeader.tsx';
 import FetchingUI from '../components/Map/interface/FetchingUI.tsx';
+import PlaceDetail from '../components/Map/interface/PlaceDetail.tsx';
 
 import { MarkerType } from '../types/map/type.ts';
 import { PlaceItemType } from '../types/place/type.ts';
@@ -37,6 +39,8 @@ const ResultPage = () => {
   );
   const { origin, destination } = useSelector((state: RootState) => state.search.selectedPlacePair);
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
+  const selectedDetailedPlace = useSelector((state: RootState) => state.search.selectedDetailedPlace);
+
 
   // 쿼리 파싱
   const parsed = useMemo(() => queryString.parse(location.search), [location.search]);
@@ -161,6 +165,7 @@ const ResultPage = () => {
     title: place.placeName,
     address: place.addressName,
     roadAddress: place.roadAddressName,
+    roadAddressEN: place.roadAddressNameEN,
     phone: place.phone,
     category: place.categoryName,
     categoryEN: place.categoryNameEN,
@@ -174,7 +179,7 @@ const ResultPage = () => {
     <div className="flex flex-col md:flex-row max-md:h-[calc(100dvh-96px)] h-[calc(100dvh-128px)] bg-[#DCE7EB]">
 
       {/* 리스트 영역 (모바일 제외) */}
-      <div className="hidden md:block w-full md:w-[420px] bg-white p-4 overflow-auto shadow-lg relative">
+      <div className="hidden md:block w-full md:w-[360px] lg:w-[420px] bg-white p-4 overflow-auto shadow-lg relative">
         <InfoHeader />
         <ul ref={listRef} className="space-y-4 overflow-auto h-[calc(100%-190px)] pr-3 py-4">
           {isFetching ? (
@@ -216,11 +221,15 @@ const ResultPage = () => {
       </div>
 
       {/* 지도 영역 */}
-      <div className="flex-1">
+      <div className="flex-1 relative">
         <NaverMap markers={markers} />
+        <AnimatePresence>
+          {selectedDetailedPlace && <PlaceDetail key="place-detail" />}
+        </AnimatePresence>
       </div>
 
       {/* 모바일 전용 바텀시트 */}
+
       <BottomSheet
         results={currentResults}
         currentPage={currentPage}
@@ -228,6 +237,7 @@ const ResultPage = () => {
         onPageChange={handlePageChange}
         isFetching={isFetching}
       />
+
     </div>
   );
 };

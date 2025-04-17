@@ -2,8 +2,6 @@ import {PlaceItemType} from "../place/type.ts";
 
 export interface MarkerType {
   id: string;
-  lat: number;
-  lng: number;
   title: string;
   address?: string;
   roadAddress?: string;
@@ -11,8 +9,12 @@ export interface MarkerType {
   phone?: string;
   category?: string;
   categoryEN?: string;
+  categoryGroupCode?: string;
   placeUrl?: string;
-  [key: string]: any;
+  x?: string;
+  y?: string;
+  lat: number;
+  lng: number;
 }
 
 export interface NaverMapProps {

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedPlaceId } from '../../../store/slices/searchSlice.ts'
 import { PlaceItemType } from "../../../types/place/type.ts";
 import { getCategoryIcon } from "../utils/getCategoryIcon.ts";
-import { setOriginPlace, setDestinationPlace } from "../../../store/slices/searchSlice";
+import { setOriginPlace, setDestinationPlace, setSelectedDetailedPlace } from "../../../store/slices/searchSlice";
 import { useEffect, useState } from "react";
 import { RootState } from "../../../store";
 import Icon from "@mdi/react";
@@ -11,21 +11,20 @@ import { mdiContentCopy } from "@mdi/js";
 
 type PlaceItemProps = PlaceItemType & { index: number };
 
-export default function PlaceItem({
-                                    id,
-                                    placeName,
-                                    roadAddressName,
-                                    roadAddressNameEN,
-                                    phone,
-                                    categoryName,
-                                    categoryNameEN,
-                                    placeUrl,
-                                    categoryGroupCode,
-                                    lat,
-                                    lng,
-                                    index,
-                                  }: PlaceItemProps) {
-
+export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
+  const {
+    id,
+    placeName,
+    roadAddressName,
+    roadAddressNameEN,
+    phone,
+    categoryName,
+    categoryNameEN,
+    placeUrl,
+    categoryGroupCode,
+    lat,
+    lng,
+  } = placeData;
   const iconSrc = getCategoryIcon(categoryName, categoryGroupCode);
   const dispatch = useDispatch();
   const [showDetails, setShowDetails] = useState(false);
@@ -126,6 +125,7 @@ export default function PlaceItem({
             <div
               onClick={(e) => {
                 e.stopPropagation();
+                dispatch(setSelectedDetailedPlace(placeData));
                 // To be implemented later
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-lg border border-blue-500 text-blue-700 hover:bg-blue-100 cursor-pointer transition"

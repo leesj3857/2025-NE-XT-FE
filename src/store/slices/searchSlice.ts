@@ -32,6 +32,7 @@ interface SearchState {
   meta: KakaoPlaceMeta | null;
   selectedPlaceId: string | null;
   selectedPlacePair: SelectedPlacePair;
+  selectedDetailedPlace: PlaceItemType | null;
 }
 
 const initialState: SearchState = {
@@ -52,6 +53,7 @@ const initialState: SearchState = {
     routeInfo: null,
     errorMessage: null,
   },
+  selectedDetailedPlace: null,
 };
 
 export const searchSlice = createSlice({
@@ -111,6 +113,9 @@ export const searchSlice = createSlice({
         state.selectedPlacePair.errorMessage = action.payload;
       }
     },
+    setSelectedDetailedPlace(state, action) {
+      state.selectedDetailedPlace = action.payload;
+    },
     clearSelectedPlacePair(state) {
       state.selectedPlacePair = { origin: null, destination: null };
     },
@@ -129,10 +134,15 @@ export const searchSlice = createSlice({
       if (state.selectedPlacePair) {
         state.selectedPlacePair.errorMessage = null;
       }
+    },
+    clearSelectedDetailedPlace(state) {
+      if (state.selectedDetailedPlace) {
+        state.selectedDetailedPlace = null;
+      }
     }
   },
 });
 
 export const { setSearchParams, setSearchResults, setCurrentPage, setSearchMeta, setSelectedPlaceId, setOriginPlace,
-  setDestinationPlace, clearSelectedPlacePair, clearOriginPlace, clearDestinationPlace, setRouteInfo, clearRouteInfo, setRouteErrorMessage, clearRouteErrorMessage } = searchSlice.actions;
+  setDestinationPlace, clearSelectedPlacePair, clearOriginPlace, clearDestinationPlace, setRouteInfo, clearRouteInfo, setRouteErrorMessage, clearRouteErrorMessage, setSelectedDetailedPlace, clearSelectedDetailedPlace } = searchSlice.actions;
 export default searchSlice.reducer;

@@ -5,7 +5,6 @@ import { RootState } from '../../store';
 import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
 import { createMarkersOnMap } from './utils/markerCreator';
 import { NaverMapProps } from "../../types/map/type.ts";
-import { useNavigate, useLocation } from 'react-router-dom';
 import ResearchButton from "./interface/ResearchButton.tsx";
 import MoveToMyLocationButton from "./interface/MoveToMyLocationButton.tsx";
 import { renderKakaoRouteOnNaverMap } from "./utils/renderKakaoRoute.ts";
@@ -21,14 +20,13 @@ export default function NaverMap({ markers }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRefs = useRef<any[]>([]);
+  const prevMarkersRef = useRef<typeof markers>([]);
   const infoWindowRef = useRef<any>(null);
   const selectedMarkerRef = useRef<any>(null);
   const routeLineRef = useRef<naver.maps.Polyline | null>(null);
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
   const { origin, destination } = useSelector((state: RootState) => state.search.selectedPlacePair);
   const currentPage = useSelector((state: RootState) => state.search.currentPage);
-  const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
   // Close InfoWindow when page changes
   useEffect(() => {
@@ -61,7 +59,9 @@ export default function NaverMap({ markers }: NaverMapProps) {
   useEffect(() => {
     if (window.naver && window.naver.maps) {
       initializeMap(mapRef, mapInstanceRef);
-      registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+      setTimeout(() => {
+        registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+      }, 0);
     } else {
       const script = document.createElement('script');
       script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_CLIENT_ID}`;
@@ -69,7 +69,9 @@ export default function NaverMap({ markers }: NaverMapProps) {
       script.onload = () => {
         window.naver.maps.onJSContentLoaded = () => {
           initializeMap(mapRef, mapInstanceRef);
-          registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+          setTimeout(() => {
+            registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+          }, 0);
         };
       };
       document.head.appendChild(script);
@@ -79,7 +81,18 @@ export default function NaverMap({ markers }: NaverMapProps) {
   // Render markers when markers data changes
   useEffect(() => {
     if (!mapInstanceRef.current || !window.naver) return;
+    const prev = prevMarkersRef.current;
 
+    const isSameMarkers =
+      prev.length === markers.length &&
+      prev.every((prevMarker, i) => {
+        const next = markers[i];
+        return (
+          prevMarker.id === next.id &&
+          prevMarker.lat === next.lat &&
+          prevMarker.lng === next.lng
+        );
+      });
     // Clear old markers
     markerRefs.current.forEach((m) => m.setMap(null));
 
@@ -95,13 +108,14 @@ export default function NaverMap({ markers }: NaverMapProps) {
     });
 
     // Fit bounds to new markers
-    if (markers.length > 0) {
+    if (markers.length > 0 && !isSameMarkers) {
       const bounds = new window.naver.maps.LatLngBounds();
       markers.forEach(({ lat, lng }) => {
         bounds.extend(new window.naver.maps.LatLng(lat, lng));
       });
       mapInstanceRef.current.fitBounds(bounds);
     }
+    prevMarkersRef.current = markers;
   }, [markers, origin, destination]);
 
   useEffect(() => {
