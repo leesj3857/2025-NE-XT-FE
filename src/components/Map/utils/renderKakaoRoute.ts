@@ -4,8 +4,8 @@ import {kakaoRouteErrorMap} from "../static/errorCodeMap.ts";
 import {setRouteErrorMessage} from "../../../store/slices/searchSlice.ts";
 
 interface Coordinate {
-  lat: number;
-  lng: number;
+  lat?: number | string;
+  lng?: number | string;
 }
 
 let routeLine: naver.maps.Polyline | null = null;
