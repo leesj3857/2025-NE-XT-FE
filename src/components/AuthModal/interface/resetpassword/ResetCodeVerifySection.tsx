@@ -1,0 +1,40 @@
+interface Props {
+  code: string;
+  onChange: (value: string) => void;
+  onVerify: () => void;
+  loading: boolean;
+  error: string;
+  timer: number;
+}
+
+const ResetCodeVerifySection = ({ code, onChange, onVerify, loading, error, timer }: Props) => (
+  <>
+    <div className="relative flex gap-2 flex-col">
+      <input
+        type="text"
+        value={code}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder=" "
+        className="peer p-3 py-1 border rounded w-full h-12 focus:border-blue-400 focus:outline-none text-sm md:text-base"
+      />
+      <label className={`absolute left-2 transition-all bg-white px-1 ${
+        code ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
+      } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-blue-500`}>
+        Verification Code
+      </label>
+    </div>
+    <button onClick={onVerify} disabled={loading}
+            className="bg-blue-300 hover:bg-blue-400 text-white py-2 rounded flex justify-center items-center text-sm md:text-base">
+      {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin cursor-pointer" /> : 'Next'}
+    </button>
+    {timer > 0 && (
+      <div className="pl-1 text-gray-500 text-xs">
+        Remaining time: {Math.floor(timer / 60)}:{('0' + (timer % 60)).slice(-2)}
+      </div>
+    )}
+
+    <div className="pl-1 text-red-500 text-sm min-h-[20px]">{error}</div>
+  </>
+);
+
+export default ResetCodeVerifySection;

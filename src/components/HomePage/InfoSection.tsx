@@ -12,7 +12,7 @@ const InfoSection = () => {
         src="/InfoSection.webp"
         alt="Korean Food"
         loading="lazy"
-        className="w-full md:w-[600px] rounded-2xl"
+        className="w-full md:w-1/3 rounded-2xl"
       />
       <div className="flex-1 md:px-12 flex flex-col items-end h-full justify-between">
         <div className="text-end">
