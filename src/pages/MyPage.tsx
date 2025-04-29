@@ -34,8 +34,12 @@ const MyPage = () => {
       // ✅ 성공 메시지 토스트 표시
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000); // 2초 뒤 사라짐
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('An unknown error occurred');
+      }
     }
   };
 
@@ -50,7 +54,11 @@ const MyPage = () => {
       localStorage.removeItem('user');
       alert('Account deleted successfully.');
     } catch (err) {
-      alert(err.message);
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('An unknown error occurred');
+      }
     }
   };
   return (
