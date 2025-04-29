@@ -43,10 +43,10 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
     setLoadingSend(true);
     try {
       const res = await sendResetCode({ email });
-      setEmailMessage(res.message || '인증번호가 이메일로 전송되었습니다.');
+      setEmailMessage(res.message || 'Verification code has been sent to your email.');
       setTimer(300);
     } catch (err: any) {
-      setEmailError(err.response?.data?.error || '이메일 전송 실패');
+      setEmailError(err.response?.data?.error || 'Failed to send email. Please try again.');
     } finally {
       setLoadingSend(false);
     }
@@ -60,7 +60,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       setToken(res.token);
       setStep(2);
     } catch (err: any) {
-      setCodeError(err.response?.data?.error || '인증 실패. 코드를 다시 확인해주세요.');
+      setCodeError(err.response?.data?.error || 'Verification failed. Please double-check the code.');
     } finally {
       setLoadingVerify(false);
     }
@@ -69,7 +69,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
   const handleResetPassword = async () => {
     setResetError('');
     if (password !== confirmPassword) {
-      setResetError('비밀번호가 일치하지 않습니다.');
+      setResetError('Passwords do not match.');
       return;
     }
     setLoadingReset(true);
@@ -77,14 +77,14 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       await resetPassword({ email, token, new_password: password });
       setResetSuccess(true);
     } catch (err: any) {
-      setResetError(err.response?.data?.message || '비밀번호 재설정 실패. 다시 시도해주세요.');
+      setResetError(err.response?.data?.message || 'Password reset failed. Please try again.');
     } finally {
       setLoadingReset(false);
     }
   };
 
   return (
-    <form className="flex flex-col gap-2 md:gap-4">
+    <form className="flex flex-col gap-2 md:gap-2">
       <h2 className="text-2xl font-bold mb-4">Password Reset</h2>
 
       {step === 1 && (
@@ -124,7 +124,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       <button
         type="button"
         onClick={() => onModeChange('login')}
-        className="text-blue-600 text-sm cursor-pointer hover:underline mt-2"
+        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2"
       >
         Back to Login
       </button>

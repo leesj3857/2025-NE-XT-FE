@@ -1,6 +1,6 @@
 // src/components/AuthModal/index.tsx
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import ResetPasswordForm from './ResetPasswordForm';
@@ -14,9 +14,14 @@ interface AuthModalProps {
 const AuthModal = ({ onClose }: AuthModalProps) => {
   type AuthMode = 'login' | 'register' | 'reset';
   const [mode, setMode] = useState<AuthMode>('login');
-
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
   return (
-    <div className="fixed inset-0 bg-[#00000078] bg-opacity-30 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-[#00000078] bg-opacity-30 flex items-center justify-center" style={{zIndex: 100}}>
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

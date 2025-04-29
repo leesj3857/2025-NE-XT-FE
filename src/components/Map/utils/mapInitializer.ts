@@ -11,7 +11,7 @@ export const initializeMap = (mapRef: React.RefObject<HTMLDivElement | null>, ma
     mapDataControl: false,
     logoControl: true,
     logoControlOptions: {
-      position: window.naver.maps.Position.TOP_RIGHT,
+      position: window.naver.maps.Position.TOP_LEFT,
     },
   });
 

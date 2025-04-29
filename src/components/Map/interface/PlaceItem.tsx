@@ -56,7 +56,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
     <motion.li
       key={id}
       id={`place-item-${id}`}
-      className="bg-[#E9F1F4] p-4 rounded-xl cursor-pointer"
+      className="bg-white border-2 border-[#B5CC88] p-4 rounded-xl cursor-pointer shadow-md "
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
@@ -112,7 +112,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
       </div>
       {showDetails && (
         <motion.div
-          className="bg-white rounded-xl mt-3 shadow-md overflow-hidden"
+          className="bg-white rounded-xl mt-3 overflow-hidden"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}

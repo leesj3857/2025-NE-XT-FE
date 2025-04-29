@@ -29,9 +29,15 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
         accessToken: res.access,
         refreshToken: res.refresh,
       }));
+      localStorage.setItem('user', JSON.stringify({
+        name: res.name,
+        email,
+        accessToken: res.access,
+        refreshToken: res.refresh,
+      }));
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.error || '로그인 실패. 다시 시도해주세요.');
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -50,8 +56,8 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
         error={error}
       />
       <div className="flex justify-between text-sm">
-        <button onClick={() => onModeChange('reset')} className="text-[#1A1E1D] cursor-pointer hover:underline">Forgot Password</button>
-        <button onClick={() => onModeChange('register')} className="text-[#1A1E1D] cursor-pointer hover:underline">Register</button>
+        <button onClick={() => onModeChange('reset')} className="text-[#34495E] cursor-pointer hover:underline">Forgot Password</button>
+        <button onClick={() => onModeChange('register')} className="text-[#34495E] cursor-pointer hover:underline">Register</button>
       </div>
     </form>
   );

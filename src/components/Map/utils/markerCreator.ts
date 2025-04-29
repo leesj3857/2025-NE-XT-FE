@@ -21,8 +21,10 @@ export const createMarkersOnMap = ({
       title,
       address,
       roadAddress,
+      roadAddressEN,
       phone,
       category,
+      categoryEN,
       placeUrl,
       categoryGroupCode,
     } = markerProp;
@@ -79,8 +81,8 @@ export const createMarkersOnMap = ({
 
           if (type === "origin") {
             dispatch(setOriginPlace({
-              id, placeName: title, roadAddressName: roadAddress,
-              addressName: address, phone, categoryName: category,
+              id, placeName: title, roadAddressName: roadAddress, roadAddressNameEN: roadAddressEN,
+              addressName: address, phone, categoryName: category, categoryNameEN: categoryEN,
               placeUrl, categoryGroupCode, lat, lng
             }));
           } else if (type === "destination") {

@@ -1,7 +1,9 @@
 interface InfoWindowProps {
   title: string;
   category?: string;
+  categoryEN?: string;
   roadAddress?: string;
+  roadAddressEN?: string;
   address?: string;
   phone?: string;
   placeUrl?: string;
@@ -9,8 +11,8 @@ interface InfoWindowProps {
 
 export const InfoWindowInterface = ({
                                       title,
-                                      category,
-                                      roadAddress,
+                                      categoryEN,
+                                      roadAddressEN,
                                       phone,
                                       placeUrl,
                                     }: InfoWindowProps): string => {
@@ -18,17 +20,19 @@ export const InfoWindowInterface = ({
     <div class="bg-white rounded-xl shadow-md p-4 w-[260px] font-sans text-[14px] text-[#1A1E1D]">
       <h3 class="font-bold text-base mb-1">${title}</h3>
 
-      ${category ? `<p class="text-xs text-gray-600 mb-1">${category}</p>` : ""}
-      <p class="text-sm mb-0.5">도로명: ${roadAddress || "-"}</p>
+      ${categoryEN ? `<p class="text-xs text-gray-600 mb-1">${categoryEN}</p>` : ""}
+      <p class="text-sm mb-0.5">
+        <span class="font-semibold">Road Address:</span> ${roadAddressEN || "-"}
+      </p>
       ${phone ? `<p class="text-sm text-gray-600 mb-0.5">📞 ${phone}</p>` : ""}
       ${
-    placeUrl
-      ? `<a href="${placeUrl}" target="_blank" rel="noopener noreferrer"
-              class="text-sm text-blue-600 underline inline-block mt-1">
-              카카오에서 보기
-            </a>`
-      : ""
-  }
+        placeUrl
+          ? `<a href="${placeUrl}" target="_blank" rel="noopener noreferrer"
+                  class="text-sm text-blue-600 underline inline-block mt-1">
+                  View in Kakao
+                </a>`
+          : ""
+      }
 
       <div class="mt-3 flex flex-col gap-2">
         <button data-type="details"

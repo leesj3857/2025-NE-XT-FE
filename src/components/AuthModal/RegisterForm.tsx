@@ -46,10 +46,10 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
     setLoadingSend(true);
     try {
       const res = await sendVerificationCode(email);
-      setEmailMessage(res.message || '인증번호가 이메일로 전송되었습니다.');
+      setEmailMessage(res.message || 'Verification code has been sent to your email.');
       setTimer(300);
     } catch (err: any) {
-      setEmailError(err.response?.data?.error || '이메일 전송 실패');
+      setEmailError(err.response?.data?.error || 'Failed to send email. Please try again.');
     } finally {
       setLoadingSend(false);
     }
@@ -63,7 +63,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       setToken(res.token);
       setStep(2);
     } catch (err: any) {
-      setCodeError(err.response?.data?.error || '인증 실패. 코드를 다시 확인해주세요.');
+      setCodeError(err.response?.data?.error || 'Verification failed. Please double-check the code.');
     } finally {
       setLoadingVerify(false);
     }
@@ -72,7 +72,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
   const handleRegister = async () => {
     setRegisterError('');
     if (password !== confirmPassword) {
-      setRegisterError('비밀번호가 일치하지 않습니다.');
+      setRegisterError('Passwords do not match.');
       return;
     }
     setLoadingRegister(true);
@@ -80,7 +80,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       await register({ email, name, password, token });
       setRegisterSuccess(true);
     } catch (err: any) {
-      setRegisterError(err.response?.data?.message || '회원가입 실패. 다시 시도해주세요.');
+      setRegisterError(err.response?.data?.message || 'Register failed. Please try again.');
     } finally {
       setLoadingRegister(false);
     }
@@ -129,7 +129,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       <button
         type="button"
         onClick={() => onModeChange('login')}
-        className="text-blue-600 text-sm cursor-pointer hover:underline mt-2"
+        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2"
       >
         Back to Login
       </button>

@@ -24,22 +24,22 @@ const ResetNewPasswordSection = ({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative mb-2">
         <input type="password" value={password} onChange={(e) => onChangePassword(e.target.value)} placeholder=" "
-               className="peer p-2 py-1 border rounded w-full h-12 focus:border-blue-400 focus:outline-none" />
+               className="peer p-2 py-1 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none" />
         <label className={`absolute left-2 transition-all bg-white px-1 ${
           password ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
-        } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-blue-500`}>
+        } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-[#D2B48C]`}>
           New Password
         </label>
       </div>
 
       <div className="relative">
         <input type="password" value={confirmPassword} onChange={(e) => onChangeConfirm(e.target.value)} placeholder=" "
-               className="peer p-2 py-1 border rounded w-full h-12 focus:border-blue-400 focus:outline-none" />
+               className="peer p-2 py-1 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none" />
         <label className={`absolute left-2 transition-all bg-white px-1 ${
           confirmPassword ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
-        } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-blue-500`}>
+        } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-[#D2B48C]`}>
           Confirm New Password
         </label>
       </div>
@@ -50,7 +50,7 @@ const ResetNewPasswordSection = ({
         type="button"
         onClick={onSubmit}
         disabled={loading}
-        className="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded text-sm md:text-base flex justify-center items-center"
+        className="bg-[#555555] hover:bg-[#555544] text-white py-2 rounded text-sm md:text-base flex justify-center items-center transition-all"
       >
         {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Password Reset'}
       </button>
