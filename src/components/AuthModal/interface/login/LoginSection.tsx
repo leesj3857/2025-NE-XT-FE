@@ -57,7 +57,7 @@ const LoginSection = ({
     <div className="text-red-500 text-sm">{error}</div>
 
     <button
-      type="button"
+      type="submit"
       onClick={onLogin}
       disabled={loading}
       className="bg-[#555555] hover:bg-[#555544] text-white text-[#1A1E1D] py-2 rounded flex justify-center items-center mt-2 cursor-pointer"

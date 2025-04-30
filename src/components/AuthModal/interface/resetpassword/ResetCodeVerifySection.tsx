@@ -14,6 +14,12 @@ const ResetCodeVerifySection = ({ code, onChange, onVerify, loading, error, time
         type="text"
         value={code}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // form submit 방지
+                onVerify();         // 인증번호 확인 함수 실행
+            }
+        }}
         placeholder=" "
         className="peer p-3 py-1 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none text-sm md:text-base"
       />

@@ -26,6 +26,7 @@ const UserProfile = ({ name, email, onChangeName }: UserProfileProps) => {
     try {
       setLoading(true);
       await onChangeName(newName); // 공백 포함 그대로 전달
+      setLoading(false);
       setEditMode(false);
     } catch (err: unknown) {
       if (err instanceof Error) {

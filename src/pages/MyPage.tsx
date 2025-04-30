@@ -8,6 +8,7 @@ import {login, logout} from "../store/slices/userSlice.ts";
 import UserProfile from "../components/User/interface/UserProfile.tsx";
 import {updateUserName, deleteAccount} from "../components/User/utils/user.ts";
 import { AnimatePresence, motion } from 'framer-motion';
+import {useNavigate} from "react-router-dom";
 
 const MyPage = () => {
   const { accessToken, name, email, refreshToken } = useSelector((state: RootState) => state.user);
@@ -21,7 +22,7 @@ const MyPage = () => {
   };
 
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const handleChangeName = async (newName: string) => {
     if (!newName || !accessToken || !email || !refreshToken) return;
 
@@ -30,10 +31,15 @@ const MyPage = () => {
 
       const updatedName = await updateUserName(newName, accessToken);
       dispatch(login({ name: updatedName, email, accessToken, refreshToken }));
-
+      const userString = localStorage.getItem('user');
+      if (userString) {
+        const user = JSON.parse(userString);
+        user.name = updatedName;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
       // ✅ 성공 메시지 토스트 표시
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 1000); // 2초 뒤 사라짐
+      setTimeout(() => setShowSuccess(false), 1000);
     } catch (err: unknown) {
       if (err instanceof Error) {
         alert(err.message);
@@ -52,6 +58,7 @@ const MyPage = () => {
       await deleteAccount(accessToken);
       dispatch(logout());
       localStorage.removeItem('user');
+      navigate('/');
       alert('Account deleted successfully.');
     } catch (err) {
       if (err instanceof Error) {

@@ -124,7 +124,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       <button
         type="button"
         onClick={() => onModeChange('login')}
-        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2"
+        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2 w-fit"
       >
         Back to Login
       </button>

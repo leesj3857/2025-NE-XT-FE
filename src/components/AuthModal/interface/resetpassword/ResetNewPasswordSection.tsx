@@ -47,7 +47,7 @@ const ResetNewPasswordSection = ({
       <div className="text-red-500 text-sm min-h-[20px] mt-1">{error}</div>
 
       <button
-        type="button"
+        type="submit"
         onClick={onSubmit}
         disabled={loading}
         className="bg-[#555555] hover:bg-[#555544] text-white py-2 rounded text-sm md:text-base flex justify-center items-center transition-all"
