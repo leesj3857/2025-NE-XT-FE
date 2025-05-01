@@ -21,11 +21,37 @@ const CategorySectionMobile = ({ savedPlaces }: CategorySectionMobileProps) => {
     <div className="relative w-full overflow-hidden p-2">
       <AnimatePresence mode="wait">
         {!selectedCategory ? (
+          <motion.h3
+            key="title-categories"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.4 }}
+            className="text-lg font-semibold text-[#1A1E1D] mb-5"
+          >
+            📂 Categories
+          </motion.h3>
+        ) : (
+          <motion.h3
+            key="title-places"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 30 }}
+            transition={{ duration: 0.4 }}
+            className="text-lg font-semibold mb-2"
+          >
+            {selectedCategory} Places
+          </motion.h3>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait">
+        {!selectedCategory ? (
           <motion.div
             key="categories"
-            initial={{ x: '-110%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-110%' }}
+            initial={{ x: '-110%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '-110%', opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="grid grid-cols-2 gap-4 px-1"
           >
@@ -53,21 +79,18 @@ const CategorySectionMobile = ({ savedPlaces }: CategorySectionMobileProps) => {
         ) : (
           <motion.div
             key="places"
-            initial={{ x: '110%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '110%' }}
+            initial={{ x: '110%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '110%', opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="flex flex-col gap-4"
           >
             <button
-              className="flex items-center text-sm text-[#0096C7] w-fit mb-2"
+              className="flex items-center text-base text-[#0096C7] w-fit"
               onClick={() => setSelectedCategory(null)}
             >
               <Icon path={mdiChevronLeft} size={1} /> Back
             </button>
-            <h3 className="text-lg font-semibold mb-2">
-              {selectedCategory} Places
-            </h3>
             {savedPlaces[selectedCategory].places.map((place) => (
               <div
                 key={place}
