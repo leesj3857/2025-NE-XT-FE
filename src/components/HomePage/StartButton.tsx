@@ -6,7 +6,7 @@ const StartButton = ({ onClick }: { onClick?: () => void }) => {
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="flex flex-col items-start justify-between bg-[#DCE7EB] p-8 md:py-16 gap-8"
+      className="flex flex-col items-start justify-between bg-[#DCE7EB] p-8 md:py-16 gap-8 "
     >
       {/* Header Text */}
       <div className="text-left">

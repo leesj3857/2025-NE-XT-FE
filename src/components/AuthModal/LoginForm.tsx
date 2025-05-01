@@ -20,6 +20,10 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
 
   const handleLogin = async () => {
     setError('');
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
     setLoading(true);
     try {
       const res = await login({ email, password });

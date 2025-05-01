@@ -3,14 +3,9 @@ import { motion } from 'framer-motion';
 const Services = () => {
   const services = [
     {
-      title: 'KOREAT: Guide to Korean Restaurants & Places',
-      description: 'Discover great dining spots for foreigners visiting or traveling in Korea.',
-      image: '/Services1.webp',
-    },
-    {
       title: 'Top Korean Restaurants You Shouldn’t Miss',
       description: 'Featuring special Korean restaurants loved and recommended by locals.',
-      image: '/Services2.webp',
+      image: '/Services1.webp',
     },
     {
       title: 'Recommended Travel Destinations in Korea',

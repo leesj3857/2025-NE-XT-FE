@@ -40,6 +40,12 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
   const handleSendCode = async () => {
     setEmailError('');
     setEmailMessage('');
+
+    if (!email) {
+      setEmailError('Please enter your email.');
+      return;
+    }
+
     setLoadingSend(true);
     try {
       const res = await sendResetCode({ email });
@@ -66,8 +72,15 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
     }
   };
 
-  const handleResetPassword = async () => {
+  const handleResetPassword = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setResetError('');
+
+    if (!password || !confirmPassword) {
+      setResetError('Please enter and confirm your new password.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setResetError('Passwords do not match.');
       return;
@@ -114,7 +127,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
           confirmPassword={confirmPassword}
           onChangePassword={setPassword}
           onChangeConfirm={setConfirmPassword}
-          onSubmit={resetSuccess ? () => onModeChange('login') : handleResetPassword}
+          onSubmit={handleResetPassword}
           loading={loadingReset}
           error={resetError}
           success={resetSuccess}
@@ -124,7 +137,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       <button
         type="button"
         onClick={() => onModeChange('login')}
-        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2 w-fit"
+        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2 w-fit mx-auto"
       >
         Back to Login
       </button>

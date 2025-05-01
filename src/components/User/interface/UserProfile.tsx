@@ -7,9 +7,11 @@ interface UserProfileProps {
   name: string | null;
   email: string | null;
   onChangeName: (newName: string) => Promise<void>;
+  isDeleting: boolean;
+  handleDeleteAccount: () => void;
 }
 
-const UserProfile = ({ name, email, onChangeName }: UserProfileProps) => {
+const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccount }: UserProfileProps) => {
   const [editMode, setEditMode] = useState(false);
   const [newName, setNewName] = useState(name || '');
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,13 @@ const UserProfile = ({ name, email, onChangeName }: UserProfileProps) => {
 
   return (
     <div className="flex items-center border border-gray-300 gap-6 p-6 rounded-xl shadow-lg bg-gradient-to-r from-[#FAFAFA] to-white">
-      <Icon path={mdiAccountCircle} size={3} className="text-blue-500" />
+      <Icon
+        path={mdiAccountCircle}
+        size={3}
+        className={`text-blue-500 
+                    ${editMode ? 'hidden md:block' : 'block'}
+                  `}
+      />
       <div className="flex-1">
         <p className="text-xl font-semibold text-[#1A1E1D]">{name}</p>
         <p className="text-sm text-[#1A1E1D]">{email}</p>
@@ -58,11 +66,11 @@ const UserProfile = ({ name, email, onChangeName }: UserProfileProps) => {
             {loading ? (
               <div className="w-5 h-5 border-2 border-[#0096C7] border-t-transparent rounded-full animate-spin" />
             ) : (
-              <div className="flex max-md:flex-col gap-2 items-end">
+              <div className="flex max-md:flex-col gap-2 items-end w-full">
                 <input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 max-md:w-full"
                 />
                 <button
                   onClick={handleSubmit}
@@ -74,6 +82,20 @@ const UserProfile = ({ name, email, onChangeName }: UserProfileProps) => {
             )}
           </div>
         )}
+        {/* 삭제 버튼 */}
+        <div className="flex mt-4">
+          <button
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+            className="text-red-500 hover:underline text-sm cursor-pointer flex items-center gap-2"
+          >
+            {isDeleting ? (
+              <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              'Delete Account'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
