@@ -77,7 +77,7 @@ export const renderKakaoRouteOnNaverMap = async (
 
     // 경로 중심으로 이동
     const middleIndex = Math.floor(path.length / 2);
-    mapInstance.setCenter(path[middleIndex]);
+    // mapInstance.setCenter(path[middleIndex]);
 
     return {
       polyline: routeLine,

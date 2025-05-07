@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import Icon from '@mdi/react';
-import { mdiChevronLeft, mdiFolderOutline } from '@mdi/js';
+import {mdiChevronLeft, mdiFolderOutline, mdiMap} from '@mdi/js';
 import { motion, AnimatePresence } from 'framer-motion';
+import {PlaceItemType} from "../../../types/place/type.ts";
 
-interface SavedPlaces {
-  [category: string]: {
-    color: string;
-    places: string[];
-  };
-}
+
 
 interface CategorySectionMobileProps {
-  savedPlaces: SavedPlaces;
+  savedPlaces: Record<string, { color: string; places: PlaceItemType[] }>;
+  handleCategoryClick: (category: string) => void;
 }
 
-const CategorySectionMobile = ({ savedPlaces }: CategorySectionMobileProps) => {
+const CategorySectionMobile = ({ savedPlaces, handleCategoryClick }: CategorySectionMobileProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   return (
@@ -27,7 +24,7 @@ const CategorySectionMobile = ({ savedPlaces }: CategorySectionMobileProps) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.4 }}
-            className="text-lg font-semibold text-[#1A1E1D] mb-5"
+            className="text-lg font-semibold text-[#1A1E1D] mb-5 "
           >
             📂 Categories
           </motion.h3>
@@ -38,9 +35,16 @@ const CategorySectionMobile = ({ savedPlaces }: CategorySectionMobileProps) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 30 }}
             transition={{ duration: 0.4 }}
-            className="text-lg font-semibold mb-2"
+            className="text-lg font-semibold mb-2 flex justify-between items-center"
           >
             {selectedCategory} Places
+            <span
+              onClick={() => selectedCategory && handleCategoryClick(selectedCategory)}
+              className="cursor-pointer hover:text-blue-600 transition"
+              title="View on Map"
+            >
+            <Icon path={mdiMap} size={1.3} className="transition" />
+          </span>
           </motion.h3>
         )}
       </AnimatePresence>
@@ -93,10 +97,10 @@ const CategorySectionMobile = ({ savedPlaces }: CategorySectionMobileProps) => {
             </button>
             {savedPlaces[selectedCategory].places.map((place) => (
               <div
-                key={place}
+                key={place.placeName}
                 className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition"
               >
-                <p className="font-medium text-[#1A1E1D]">{place}</p>
+                <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
               </div>
             ))}
           </motion.div>

@@ -1,13 +1,16 @@
 import Icon from '@mdi/react';
-import { mdiFolderOutline } from '@mdi/js';
+import { mdiFolderOutline, mdiMap } from '@mdi/js';
+import {PlaceItemType} from "../../../types/place/type.ts";
+
 
 interface CategorySectionPCProps {
   selectedCategory: string | null;
   onSelectCategory: (category: string) => void;
-  savedPlaces: Record<string, { color: string; places: string[] }>;
+  handleCategoryClick: (category: string) => void;
+  savedPlaces: Record<string, { color: string; places: PlaceItemType[] }>;
 }
 
-const CategorySectionPC = ({ selectedCategory, onSelectCategory, savedPlaces }: CategorySectionPCProps) => {
+const CategorySectionPC = ({ selectedCategory, onSelectCategory, savedPlaces, handleCategoryClick }: CategorySectionPCProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-2">
       {/* Categories */}
@@ -24,7 +27,7 @@ const CategorySectionPC = ({ selectedCategory, onSelectCategory, savedPlaces }: 
                 style={{ backgroundColor: isSelected ? `${color}20` : undefined }}
               >
                 <Icon path={mdiFolderOutline} size={3.5} style={{ color }} className="mb-2 transition" />
-                <span className="text-sm font-medium text-[#1A1E1D] truncate overflow-hidden w-full text-center break-words">{category}</span>
+                <span className="text-sm font-medium text-[#1A1E1D] truncate overflow-hidden w-full text-center break-words" >{category}</span>
               </div>
             );
           })}
@@ -33,14 +36,21 @@ const CategorySectionPC = ({ selectedCategory, onSelectCategory, savedPlaces }: 
 
       {/* Places */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1A1E1D] mb-5">
+        <h3 className="text-lg font-semibold text-[#1A1E1D] mb-5 flex justify-between items-center">
           {selectedCategory ? `${selectedCategory} Places` : 'Select a category'}
+          <span
+            onClick={() => selectedCategory && handleCategoryClick(selectedCategory)}
+            className="cursor-pointer hover:text-[#D2B48C] transition"
+            title="View on Map"
+          >
+            <Icon path={mdiMap} size={1.5} className="transition" />
+          </span>
         </h3>
         {selectedCategory && (
           <div className="flex flex-col gap-4">
             {savedPlaces[selectedCategory].places.map((place) => (
-              <div key={place} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition">
-                <p className="font-medium text-[#1A1E1D]">{place}</p>
+              <div key={place.placeName} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition">
+                <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
               </div>
             ))}
           </div>

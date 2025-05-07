@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import Step from "./pages/Step.tsx"
 import Map from "./pages/Map.tsx";
 import MyPage from "./pages/MyPage.tsx";
+import MyPageMap from "./pages/MyPageMap.tsx";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login, logout } from "./store/slices/userSlice.ts";
@@ -49,6 +50,7 @@ function App() {
           <Route path="/step" element={<Step />} />
           <Route path="/map" element={<Map />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/mypage/map" element={<MyPageMap />} />
         </Routes>
       </div>
       <Footer />

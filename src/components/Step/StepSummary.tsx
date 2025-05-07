@@ -5,6 +5,8 @@ import { useDispatch } from 'react-redux';
 import queryString from 'query-string';
 import { clearOriginPlace, clearDestinationPlace, clearRouteInfo, clearRouteErrorMessage } from "../../store/slices/searchSlice.ts";
 import cityLabelMap from "./static/cityLabelMap.ts";
+import DotLottiePlayer from './DotLottiePlayer';
+
 
 const StepSummary = ({ city, region, regionEN, categories, onBack }: {
   city: string;
@@ -23,7 +25,7 @@ const StepSummary = ({ city, region, regionEN, categories, onBack }: {
     dispatch(clearDestinationPlace());
     dispatch(clearRouteInfo());
     dispatch(clearRouteErrorMessage())
-    const delay = new Promise((resolve) => setTimeout(resolve, 4000));
+    const delay = new Promise((resolve) => setTimeout(resolve, 3000));
     await delay;
 
     const query = queryString.stringify({
@@ -39,6 +41,8 @@ const StepSummary = ({ city, region, regionEN, categories, onBack }: {
 
   const cityLabel = city ? (cityLabelMap[city] || city) : 'Not specified';
   const regionLabel = regionEN === 'Not specified' || !regionEN ? 'Not specified' : regionEN;
+
+
 
   return (
     <div className="flex flex-col relative h-full overflow-hidden">
@@ -61,21 +65,9 @@ const StepSummary = ({ city, region, regionEN, categories, onBack }: {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center h-full text-center">
-          <motion.div
-            initial={{ x: -500 }}
-            animate={{ x: [ -500, 550 ] }}
-            transition={{ duration: 4 }}
-            className="text-4xl mb-6"
-          >
-            <img
-              src="/airplane.webp"
-              width="150px"
-              alt=""
-              draggable={false}
-              tabIndex={-1}
-              style={{ outline: 'none' }}
-            />
-          </motion.div>
+         <div className="mb-6">
+          <DotLottiePlayer />
+        </div>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -3,6 +3,7 @@ import { RootState } from '../store';
 import { useState } from 'react';
 import Icon from '@mdi/react';
 import { mdiFolderOutline } from '@mdi/js';
+import {PlaceItemType} from "../types/place/type.ts";
 import {useDispatch} from "react-redux";
 import {login, logout} from "../store/slices/userSlice.ts";
 import UserProfile from "../components/User/interface/UserProfile.tsx";
@@ -11,16 +12,50 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {useNavigate} from "react-router-dom";
 import CategorySelectionMobile from "../components/User/interface/CategorySelectionMobile.tsx";
 import CategorySectionPC from "../components/User/interface/CategorySelectionPC.tsx";
+import {clearOriginPlace, clearDestinationPlace, clearRouteErrorMessage, clearRouteInfo} from "../store/slices/searchSlice.ts";
 const MyPage = () => {
   const { accessToken, name, email, refreshToken } = useSelector((state: RootState) => state.user);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const savedPlaces: Record<string, { color: string; places: string[] }> = {
-    Restaurant: { color: '#F59E0B', places: ['Bokseonggak'] }, // Amber-500
-    Cafe: { color: '#10B981', places: ['Starbucks', 'Twosome Place'] }, // Emerald-500
-    Museum: { color: '#3B82F6', places: ['National Museum of Korea'] }, // Blue-500
-    Restaurant4Restaurant4Restaurant4: { color: '#F59E0B', places: ['Bokseonggak'] }, // Amber-500
+  const savedPlaces: Record<string, { color: string; places: PlaceItemType[] }> = {
+    Restaurant: {
+      color: '#F59E0B',
+      places: [
+        {
+          id:"1678391738",
+          placeName:"수작나베 석촌호수직영점",
+          addressName:"서울 송파구 석촌동 158-7",
+          roadAddressName:"서울 송파구 석촌호수로 234",
+          roadAddressNameEN:"234 Seokchonhosu-ro, Songpa-gu, Seoul",
+          phone:"02-423-3767",
+          categoryName:"음식점 > 퓨전요리 > 퓨전일식",
+          categoryNameEN:"Restaurants > Fusion > Fusion Japanese",
+          placeUrl:"http://place.map.kakao.com/1678391738",
+          categoryGroupCode:"FD6",
+          x:"127.102736549521",
+          y:"37.5076451940343",
+          lat: 37.5665,
+          lng: 126.9784,
+        },
+        {
+          id:"1228208521",
+          placeName:"청와옥 석촌호수점",
+          addressName:"서울 송파구 석촌동 2",
+          roadAddressName:"서울 송파구 삼학사로 96",
+          roadAddressNameEN:"96 Samhaksa-ro, Songpa-gu, Seoul",
+          phone:"02-422-0550",
+          categoryName:"음식점 > 한식 > 순대",
+          categoryNameEN:"Restaurants > Korean > Sundae",
+          placeUrl:"http://place.map.kakao.com/1228208521",
+          categoryGroupCode:"FD6",
+          x:"127.097458989559",
+          y:"37.505703495912",
+          lat: 37.5667,
+          lng: 126.9786,
+        },
+      ],
+    },
   };
 
   const dispatch = useDispatch();
@@ -73,6 +108,18 @@ const MyPage = () => {
       setIsDeleting(false);
     }
   };
+
+  const handleCategoryClick = (category: string) => {
+    const categoryData = savedPlaces[category];
+    if (categoryData) {
+      dispatch(clearOriginPlace());
+      dispatch(clearDestinationPlace());
+      dispatch(clearRouteInfo());
+      dispatch(clearRouteErrorMessage())
+      navigate('/mypage/map', { state: { places: categoryData.places } });
+    }
+  };
+
   return (
     <div className="max-w-[1500px] mx-auto p-6 space-y-10 overflow-y-auto bg-white">
       <AnimatePresence>
@@ -98,13 +145,14 @@ const MyPage = () => {
         <CategorySectionPC
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
+          handleCategoryClick={handleCategoryClick}
           savedPlaces={savedPlaces}
         />
       </div>
 
       {/* ✅ 모바일 뷰 */}
       <div className="block md:hidden">
-        <CategorySelectionMobile savedPlaces={savedPlaces} />
+        <CategorySelectionMobile savedPlaces={savedPlaces} handleCategoryClick={handleCategoryClick}/>
       </div>
 
     </div>
