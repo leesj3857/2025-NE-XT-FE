@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import Icon from '@mdi/react';
+import PasswordRules from '../PasswordRules';
 
 interface Props {
+  email: string;
   password: string;
   confirmPassword: string;
   onChangePassword: (value: string) => void;
@@ -14,6 +16,7 @@ interface Props {
 }
 
 const ResetNewPasswordSection = ({
+                                   email,
                                    password,
                                    confirmPassword,
                                    onChangePassword,
@@ -39,14 +42,19 @@ const ResetNewPasswordSection = ({
       {/* 새 비밀번호 */}
       <div className="relative mb-2">
         <input
+          id="password"
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => onChangePassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === ' ') e.preventDefault(); // ← 스페이스바 무효화
+          }}
           placeholder=" "
           className="peer p-2 py-1 pr-10 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none text-sm md:text-base"
         />
         <label
-          className={`absolute left-2 transition-all bg-white px-1 ${
+          htmlFor="password"
+          className={`absolute left-2 transition-all bg-white px-1 pointer-events-none ${
             password ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
           } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-[#D2B48C]`}
         >
@@ -65,14 +73,19 @@ const ResetNewPasswordSection = ({
       {/* 비밀번호 확인 */}
       <div className="relative">
         <input
+          id="confirmPassword"
           type={showConfirmPassword ? 'text' : 'password'}
           value={confirmPassword}
           onChange={(e) => onChangeConfirm(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === ' ') e.preventDefault(); // ← 스페이스바 무효화
+          }}
           placeholder=" "
           className="peer p-2 py-1 pr-10 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none text-sm md:text-base"
         />
         <label
-          className={`absolute left-2 transition-all bg-white px-1 ${
+          htmlFor="confirmPassword"
+          className={`absolute left-2 transition-all bg-white px-1 pointer-events-none ${
             confirmPassword ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
           } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-[#D2B48C]`}
         >
@@ -87,7 +100,7 @@ const ResetNewPasswordSection = ({
           <Icon path={showConfirmPassword ? mdiEyeOff : mdiEye} size={1} />
         </button>
       </div>
-
+      <PasswordRules password={password} email={email} />
       <div className="text-red-500 text-sm min-h-[20px] mt-1">{error}</div>
 
       <button

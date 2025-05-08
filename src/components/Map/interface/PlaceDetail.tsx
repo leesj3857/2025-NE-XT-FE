@@ -6,7 +6,7 @@ import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
 import { getPlaceInfo } from '../utils/getPlaceInfoClient';
-
+import FetchingUI from './FetchingUI.tsx';
 const PlaceDetail = () => {
   const dispatch = useDispatch();
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
@@ -62,8 +62,14 @@ const PlaceDetail = () => {
       >
         상세 정보 보기
       </a>
-      {isLoading && <p className="text-sm text-gray-400 mt-4">🔄 Loading place details...</p>}
-      {isError && <p className="text-sm text-red-500 mt-4">❌ {error.message}</p>}
+      {isLoading && (
+        <div className="flex justify-center items-center mt-4">
+          <FetchingUI />
+        </div>
+      )}
+      {isError && (
+        <p className="text-sm text-red-500 mt-4">❌ {error.message}</p>
+      )}
 
       {detailedInfo && (
         <div className="mt-4 pt-4 text-sm space-y-5 border-t border-gray-200">

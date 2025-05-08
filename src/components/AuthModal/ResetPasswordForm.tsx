@@ -123,6 +123,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
 
       {step === 2 && (
         <ResetNewPasswordSection
+          email={email}
           password={password}
           confirmPassword={confirmPassword}
           onChangePassword={setPassword}

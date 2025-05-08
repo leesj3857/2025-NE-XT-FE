@@ -77,7 +77,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
               }}
               className="text-gray-500 hover:text-gray-800 cursor-pointer"
             >
-              <Icon path={mdiBookmarkOutline} size={0.8} />
+              <Icon path={mdiBookmarkOutline} size={1} />
             </button>
             <AnimatePresence>
               {copySuccess && (

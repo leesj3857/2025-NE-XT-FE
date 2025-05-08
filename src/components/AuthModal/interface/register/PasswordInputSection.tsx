@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import Icon from '@mdi/react';
+import PasswordRules from '../PasswordRules';
 
 interface Props {
+  email: string;
   name: string;
   password: string;
   confirmPassword: string;
@@ -16,6 +18,7 @@ interface Props {
 }
 
 const PasswordInputSection = ({
+                                email,
                                 name,
                                 password,
                                 confirmPassword,
@@ -39,7 +42,7 @@ const PasswordInputSection = ({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* 이름 */}
       <div className="relative">
         <input
@@ -61,14 +64,19 @@ const PasswordInputSection = ({
       {/* 비밀번호 */}
       <div className="relative">
         <input
+          id="password"
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => onChangePassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === ' ') e.preventDefault(); // ← 스페이스바 무효화
+          }}
           placeholder=" "
           className="peer p-3 py-1 pr-10 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none text-sm md:text-base"
         />
         <label
-          className={`absolute left-2 transition-all bg-white px-1 ${
+          htmlFor="password"
+          className={`absolute left-2 transition-all bg-white px-1 pointer-events-none ${
             password ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
           } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-[#D2B48C]`}
         >
@@ -87,13 +95,18 @@ const PasswordInputSection = ({
       {/* 비밀번호 확인 */}
       <div className="relative">
         <input
+          id="confirmPassword"
           type={showConfirmPassword ? 'text' : 'password'}
           value={confirmPassword}
           onChange={(e) => onChangeConfirm(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === ' ') e.preventDefault(); // ← 스페이스바 무효화
+          }}
           placeholder=" "
           className="peer p-3 py-1 pr-10 border rounded w-full h-12 focus:border-[#D2B48C] focus:outline-none text-sm md:text-base"
         />
         <label
+          htmlFor="confirmPassword"
           className={`absolute left-2 transition-all bg-white px-1 ${
             confirmPassword ? 'top-[-8px] text-xs' : 'top-3 text-sm text-gray-400'
           } peer-focus:top-[-8px] peer-focus:text-xs peer-focus:text-[#D2B48C]`}
@@ -109,8 +122,8 @@ const PasswordInputSection = ({
           <Icon path={showConfirmPassword ? mdiEyeOff : mdiEye} size={1} />
         </button>
       </div>
-
-      <div className="text-red-500 text-sm">{error}</div>
+      <PasswordRules password={password} email={email} />
+      <div className="text-red-500 text-sm mt-1">{error}</div>
 
       <button
         type="submit"

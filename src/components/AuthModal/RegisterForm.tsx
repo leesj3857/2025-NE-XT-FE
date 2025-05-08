@@ -127,6 +127,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
 
       {step === 2 && (
         <PasswordInputSection
+          email={email}
           name={name}
           password={password}
           confirmPassword={confirmPassword}

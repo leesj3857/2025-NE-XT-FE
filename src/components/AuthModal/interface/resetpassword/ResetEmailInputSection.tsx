@@ -35,7 +35,7 @@ const ResetEmailInputSection = ({ email, onChange, onSendCode, loading, error, m
       {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Send Verification Code'}
     </button>
 
-    <div className={`text-sm min-h-[20px] ${error ? 'text-red-500' : 'text-green-600'}`}>
+    <div className={`text-sm min-h-[20px] mb-2 ${error ? 'text-red-500' : 'text-green-600'}`}>
       {error || message}
     </div>
   </>
