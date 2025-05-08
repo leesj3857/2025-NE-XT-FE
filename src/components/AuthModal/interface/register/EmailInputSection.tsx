@@ -30,7 +30,7 @@ const EmailInputSection = ({ email, onChange, onSendCode, loading, error, messag
       </label>
     </div>
 
-    <button onClick={onSendCode} disabled={loading}
+    <button type="button" onClick={onSendCode} disabled={loading}
             className="bg-[#0096C7] hover:bg-[#1ABC9C] text-white py-2 rounded flex justify-center items-center text-sm md:text-base cursor-pointer transition-all">
       {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Send Verification Code'}
     </button>

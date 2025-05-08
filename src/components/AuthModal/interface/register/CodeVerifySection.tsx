@@ -29,7 +29,7 @@ const CodeVerifySection = ({ code, onChange, onVerify, loading, error, timer }: 
         Verification Code
       </label>
     </div>
-    <button onClick={onVerify} disabled={loading}
+    <button type="button" onClick={onVerify} disabled={loading}
             className="bg-[#555555] hover:bg-[#555544] text-white py-2 rounded flex justify-center items-center text-sm md:text-base cursor-pointer transition-all">
       {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin cursor-pointer" /> : 'Confirm'}
     </button>

@@ -7,8 +7,8 @@ import { setOriginPlace, setDestinationPlace, setSelectedDetailedPlace } from ".
 import { useEffect, useState } from "react";
 import { RootState } from "../../../store";
 import Icon from "@mdi/react";
-import { mdiContentCopy } from "@mdi/js";
-
+import { mdiContentCopy, mdiBookmarkOutline } from "@mdi/js";
+import SavePlaceModal from "./SavePlaceModal";
 type PlaceItemProps = PlaceItemType & { index: number };
 
 export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
@@ -30,6 +30,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
   const [showDetails, setShowDetails] = useState(false);
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -68,6 +69,15 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
             <h3 className="font-bold text-base">{placeName}</h3>
             <button onClick={handleCopy} className="text-gray-500 hover:text-gray-800 cursor-pointer">
               <Icon path={mdiContentCopy} size={0.8} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSaveModal(true);
+              }}
+              className="text-gray-500 hover:text-gray-800 cursor-pointer"
+            >
+              <Icon path={mdiBookmarkOutline} size={0.8} />
             </button>
             <AnimatePresence>
               {copySuccess && (
@@ -165,6 +175,12 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
             </div>
           </div>
         </motion.div>
+      )}
+      {showSaveModal && (
+        <SavePlaceModal
+          place={placeData}
+          onClose={() => setShowSaveModal(false)}
+        />
       )}
     </motion.li>
   );

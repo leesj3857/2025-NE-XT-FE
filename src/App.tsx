@@ -22,11 +22,11 @@ function App() {
 
       try {
         const parsed = JSON.parse(stored);
-        const { name, email, accessToken, refreshToken } = parsed;
+        const { name, email, accessToken } = parsed;
 
         const isValid = await verifyAccessToken(accessToken);
         if (isValid) {
-          dispatch(login({ name, email, accessToken, refreshToken }));
+          dispatch(login({ name, email, accessToken }));
         } else {
           throw new Error('Token invalid');
         }

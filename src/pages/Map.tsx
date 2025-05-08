@@ -9,6 +9,7 @@ import {
   setSearchParams,
   setSearchResults,
   setCurrentPage,
+  clearSelectedDetailedPlace,
 } from '../store/slices/searchSlice';
 
 import { useKakaoPlaces } from '../hooks/findPlacesWithKeyword';
@@ -47,6 +48,7 @@ const ResultPage = () => {
 
   // searchKey 갱신 (한 번만 실행 제어용)
   useEffect(() => {
+    dispatch(clearSelectedDetailedPlace());
     setSearchKey(location.search);
   }, [location.search]);
 
@@ -181,7 +183,7 @@ const ResultPage = () => {
       {/* 리스트 영역 (모바일 제외) */}
       <div className="hidden md:block w-full md:w-[360px] lg:w-[420px] bg-white p-4 overflow-auto shadow-lg relative">
         <InfoHeader />
-        <ul ref={listRef} className="space-y-4 overflow-auto h-[calc(100%-190px)] pr-3 py-4">
+        <ul ref={listRef} className="space-y-4 overflow-auto h-[calc(100%-140px)] pr-3 py-4">
           {isFetching ? (
             <div className="flex justify-center items-center h-full">
               <FetchingUI />

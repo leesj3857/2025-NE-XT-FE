@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login as loginAction } from '../../store/slices/userSlice';
-import { authClient } from './hooks/authClient';
+import { authClient } from './utils/authClient';
 import LoginSection from './interface/login/LoginSection';
 
 interface Props {
@@ -30,13 +30,11 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
         name: res.name,
         email,
         accessToken: res.access,
-        refreshToken: res.refresh,
       }));
       localStorage.setItem('user', JSON.stringify({
         name: res.name,
         email,
         accessToken: res.access,
-        refreshToken: res.refresh,
       }));
       onClose();
     } catch (err: any) {

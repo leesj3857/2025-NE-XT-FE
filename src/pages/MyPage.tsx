@@ -69,13 +69,13 @@ const MyPage = () => {
 
 
   const handleChangeName = async (newName: string) => {
-    if (!newName || !accessToken || !email || !refreshToken) return;
+    if (!newName || !accessToken || !email ) return;
 
     try {
       if (newName === name) return; // 동일한 이름이면 무시
 
-      const updatedName = await updateUserName(newName, accessToken, refreshToken);
-      dispatch(login({ name: updatedName, email, accessToken, refreshToken }));
+      const updatedName = await updateUserName(newName, accessToken);
+      dispatch(login({ name: updatedName, email, accessToken }));
       const userString = localStorage.getItem('user');
       if (userString) {
         const user = JSON.parse(userString);
@@ -95,13 +95,13 @@ const MyPage = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!accessToken || !refreshToken) return;
+    if (!accessToken) return;
     const confirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
     if (!confirmed) return;
 
     try {
       setIsDeleting(true);
-      await deleteAccount(accessToken, refreshToken);
+      await deleteAccount(accessToken);
       dispatch(logout());
       localStorage.removeItem('user');
       navigate('/');

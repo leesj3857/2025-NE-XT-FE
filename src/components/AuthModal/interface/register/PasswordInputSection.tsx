@@ -76,6 +76,7 @@ const PasswordInputSection = ({
         </label>
         <button
           type="button"
+          tabIndex={-1}
           onClick={() => setShowPassword((prev) => !prev)}
           className="absolute right-3 top-3 text-gray-500 focus:outline-none cursor-pointer"
         >
@@ -101,6 +102,7 @@ const PasswordInputSection = ({
         </label>
         <button
           type="button"
+          tabIndex={-1}
           onClick={() => setShowConfirmPassword((prev) => !prev)}
           className="absolute right-3 top-3 text-gray-500 focus:outline-none cursor-pointer"
         >

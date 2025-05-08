@@ -9,7 +9,7 @@ export async function translateCategoryToEnglish(koreanCategory: string): Promis
 
   const query = `
     mutation TranslateCategory($text: String!) {
-      translateCategoryToEnglish(text: $text) {
+      translateCategory(text: $text) {
         translatedText
       }
     }
@@ -17,7 +17,7 @@ export async function translateCategoryToEnglish(koreanCategory: string): Promis
 
   try {
     const response = await graphqlRequest(query, { text: koreanCategory });
-    const translated = response.translateCategoryToEnglish.translatedText;
+    const translated = response.translateCategory.translatedText;
     translationCache.set(koreanCategory, translated);
     return translated;
   } catch (e) {

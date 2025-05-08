@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { resetPasswordClient } from './hooks/resetPasswordClient';
+import { resetPasswordClient } from './utils/resetPasswordClient';
 import ResetEmailInputSection from './interface/resetpassword/ResetEmailInputSection';
 import ResetCodeVerifySection from './interface/resetpassword/ResetCodeVerifySection';
 import ResetNewPasswordSection from './interface/resetpassword/ResetNewPasswordSection';

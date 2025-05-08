@@ -67,6 +67,7 @@ const LoginSection = ({
         </label>
         <button
           type="button"
+          tabIndex={-1}
           className="absolute right-3 top-3 text-gray-500 focus:outline-none cursor-pointer"
           onClick={() => setShowPassword((prev) => !prev)}
           aria-label="Toggle password visibility"
