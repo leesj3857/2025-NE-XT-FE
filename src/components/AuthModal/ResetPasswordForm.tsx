@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useResetPassword } from './hooks/useResetPassword';
+import { resetPasswordClient } from './hooks/resetPasswordClient';
 import ResetEmailInputSection from './interface/resetpassword/ResetEmailInputSection';
 import ResetCodeVerifySection from './interface/resetpassword/ResetCodeVerifySection';
 import ResetNewPasswordSection from './interface/resetpassword/ResetNewPasswordSection';
@@ -9,7 +9,7 @@ interface ResetPasswordFormProps {
 }
 
 const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
-  const { sendResetCode, verifyResetCode, resetPassword } = useResetPassword();
+  const { sendResetCode, verifyResetCode, resetPassword } = resetPasswordClient;
 
   const [step, setStep] = useState(1);
   const [timer, setTimer] = useState(0);
@@ -46,7 +46,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       setEmailMessage(res.message || 'Verification code has been sent to your email.');
       setTimer(300);
     } catch (err: any) {
-      setEmailError(err.response?.data?.error || 'Failed to send email. Please try again.');
+      setEmailError(err.message || err.response?.data?.error || 'Failed to send email. Please try again.');
     } finally {
       setLoadingSend(false);
     }
@@ -60,7 +60,7 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
       setToken(res.token);
       setStep(2);
     } catch (err: any) {
-      setCodeError(err.response?.data?.error || 'Verification failed. Please double-check the code.');
+      setCodeError(err.message || err.response?.data?.error || 'Verification failed. Please double-check the code.');
     } finally {
       setLoadingVerify(false);
     }
@@ -74,10 +74,10 @@ const ResetPasswordForm = ({ onModeChange }: ResetPasswordFormProps) => {
     }
     setLoadingReset(true);
     try {
-      await resetPassword({ email, token, new_password: password });
+      await resetPassword({ email, token, newPassword: password });
       setResetSuccess(true);
     } catch (err: any) {
-      setResetError(err.response?.data?.message || 'Password reset failed. Please try again.');
+      setResetError(err.message || err.response?.data?.message || 'Password reset failed. Please try again.');
     } finally {
       setLoadingReset(false);
     }

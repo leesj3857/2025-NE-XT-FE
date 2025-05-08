@@ -22,5 +22,5 @@ export interface VerifyCodePayload {
 export interface ResetPasswordPayload {
   email: string;
   token: string;
-  new_password: string;
+  newPassword: string;
 }

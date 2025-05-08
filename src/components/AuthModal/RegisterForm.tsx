@@ -1,7 +1,7 @@
 // src/components/AuthModal/RegisterForm.tsx
 
 import { useState, useEffect } from 'react';
-import { useRegister } from './hooks/useRegister';
+import { registerClient } from './hooks/registerClient';
 import EmailInputSection from './interface/register/EmailInputSection';
 import CodeVerifySection from './interface/register/CodeVerifySection';
 import PasswordInputSection from './interface/register/PasswordInputSection';
@@ -11,7 +11,7 @@ interface RegisterFormProps {
 }
 
 const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
-  const { sendVerificationCode, verifyCode, register } = useRegister();
+  const { sendVerificationCode, verifyCode, register } = registerClient;
 
   const [step, setStep] = useState(1);
   const [timer, setTimer] = useState(0);
@@ -49,7 +49,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       setEmailMessage(res.message || 'Verification code has been sent to your email.');
       setTimer(300);
     } catch (err: any) {
-      setEmailError(err.response?.data?.error || 'Failed to send email. Please try again.');
+      setEmailError(err.message || err.response?.data?.error || 'Failed to send email. Please try again.');
     } finally {
       setLoadingSend(false);
     }
@@ -63,7 +63,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       setToken(res.token);
       setStep(2);
     } catch (err: any) {
-      setCodeError(err.response?.data?.error || 'Verification failed. Please double-check the code.');
+      setCodeError(err.message || err.response?.data?.error || 'Verification failed. Please double-check the code.');
     } finally {
       setLoadingVerify(false);
     }
@@ -80,7 +80,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       await register({ email, name, password, token });
       setRegisterSuccess(true);
     } catch (err: any) {
-      setRegisterError(err.response?.data?.message || 'Register failed. Please try again.');
+      setRegisterError(err.message || err.response?.data?.message || 'Register failed. Please try again.');
     } finally {
       setLoadingRegister(false);
     }

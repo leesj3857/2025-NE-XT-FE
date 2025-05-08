@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { graphqlRequest } from '../../api/graphqlClient';  
 const translationCache = new Map<string, string>();
 
 export async function translateCategoryToEnglish(koreanCategory: string): Promise<string> {
@@ -7,16 +7,21 @@ export async function translateCategoryToEnglish(koreanCategory: string): Promis
     return translationCache.get(koreanCategory)!;
   }
 
-  try {
-    const res = await axios.post('https://two025-ne-xt-be.onrender.com/api/translate/', {
-      text: koreanCategory,
-    });
+  const query = `
+    mutation TranslateCategory($text: String!) {
+      translateCategoryToEnglish(text: $text) {
+        translatedText
+      }
+    }
+  `;
 
-    const translated = res.data.translated_text;
+  try {
+    const response = await graphqlRequest(query, { text: koreanCategory });
+    const translated = response.translateCategoryToEnglish.translatedText;
     translationCache.set(koreanCategory, translated);
     return translated;
   } catch (e) {
-    console.error('Server translation API error:', e);
+    console.error('GraphQL Translation API error:', e);
     return koreanCategory; // 실패 시 원본 반환
   }
 }
