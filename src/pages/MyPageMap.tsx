@@ -12,6 +12,9 @@ import PlaceDetail from '../components/Map/interface/PlaceDetail.tsx';
 
 import { MarkerType } from '../types/map/type.ts';
 import { PlaceItemType } from '../types/place/type.ts';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { useNavigate } from 'react-router-dom';
 
 const MyMapPage = () => {
   const location = useLocation();
@@ -22,7 +25,13 @@ const MyMapPage = () => {
   // 페이징 상태: URL, Redux 없음
   const totalPageCount = Math.ceil(places.length / pageSize);
   const currentPage = 1; // 단순화 버전 (페이지 변경 없음)
-
+  const navigate = useNavigate();
+  const userName = useSelector((state: RootState) => state.user.name);
+  useEffect(() => {
+    if(!userName) {
+      navigate('/');
+    }
+  }, [userName]);
   // 리스트 페이징 결과
   const currentResults = useMemo(() => {
     return places.slice((currentPage - 1) * pageSize, currentPage * pageSize);

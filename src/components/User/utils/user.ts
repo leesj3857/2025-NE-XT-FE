@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { graphqlRequest } from '../../../api/graphqlClient';
-export const updateUserName = async (newName: string, accessToken: string): Promise<string> => {
+import { tokenVerify } from '../../../api/tokenVerify';
+export const updateUserName = async (newName: string, accessToken: string, refreshToken: string): Promise<string> => {
   const query = `
     mutation UpdateUsername($name: String!) {
       updateUsername(name: $name) {
@@ -19,7 +20,7 @@ export const updateUserName = async (newName: string, accessToken: string): Prom
   }
 };
 
-export const deleteAccount = async (accessToken: string): Promise<void> => {
+export const deleteAccount = async (accessToken: string, refreshToken: string): Promise<void> => {
   const query = `
     mutation {
       deleteAccount {

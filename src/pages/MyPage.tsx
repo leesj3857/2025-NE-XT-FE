@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@mdi/react';
 import { mdiFolderOutline } from '@mdi/js';
 import {PlaceItemType} from "../types/place/type.ts";
@@ -18,6 +18,15 @@ const MyPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userName = useSelector((state: RootState) => state.user.name);
+  useEffect(() => {
+    if(!userName) {
+      navigate('/');
+    }
+  }, [userName]);
+
   const savedPlaces: Record<string, { color: string; places: PlaceItemType[] }> = {
     Restaurant: {
       color: '#F59E0B',
@@ -58,15 +67,14 @@ const MyPage = () => {
     },
   };
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const handleChangeName = async (newName: string) => {
     if (!newName || !accessToken || !email || !refreshToken) return;
 
     try {
       if (newName === name) return; // 동일한 이름이면 무시
 
-      const updatedName = await updateUserName(newName, accessToken);
+      const updatedName = await updateUserName(newName, accessToken, refreshToken);
       dispatch(login({ name: updatedName, email, accessToken, refreshToken }));
       const userString = localStorage.getItem('user');
       if (userString) {
@@ -87,13 +95,13 @@ const MyPage = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!accessToken) return;
+    if (!accessToken || !refreshToken) return;
     const confirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
     if (!confirmed) return;
 
     try {
       setIsDeleting(true);
-      await deleteAccount(accessToken);
+      await deleteAccount(accessToken, refreshToken);
       dispatch(logout());
       localStorage.removeItem('user');
       navigate('/');
