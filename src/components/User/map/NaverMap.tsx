@@ -1,14 +1,12 @@
-// src/components/Map/NaverMap.tsx
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
-import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
-import { createMarkersOnMap } from './utils/markerCreator';
-import { NaverMapProps } from "../../types/map/type.ts";
-import ResearchButton from "./interface/ResearchButton.tsx";
-import MoveToMyLocationButton from "./interface/MoveToMyLocationButton.tsx";
-import { renderKakaoRouteOnNaverMap } from "./utils/renderKakaoRoute.ts";
-import {clearRouteErrorMessage, clearRouteInfo, setRouteInfo} from "../../store/slices/searchSlice.ts";
+import { RootState } from '../../../store';
+import { initializeMap, registerMapClickClose } from '../../Map/utils/mapInitializer';
+import { createMarkersOnMap } from '../../Map/utils/markerCreator';
+import { NaverMapProps } from "../../../types/map/type.ts";
+import MoveToMyLocationButton from "../../Map/interface/MoveToMyLocationButton.tsx";
+import { renderKakaoRouteOnNaverMap } from "../../Map/utils/renderKakaoRoute.ts";
+import {clearRouteErrorMessage, clearRouteInfo, setRouteInfo} from "../../../store/slices/searchSlice.ts";
 
 declare global {
   interface Window {
@@ -57,10 +55,22 @@ export default function NaverMap({ markers }: NaverMapProps) {
 
   // Initialize map once
   useEffect(() => {
-    if (window.naver && window.naver.maps) {
+    let isMapInitialized = false;
+
+    const initMapAndMarkers = () => {
       initializeMap(mapRef, mapInstanceRef);
+      registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+      isMapInitialized = true;
+
+      // 맵 초기화 후 마커 렌더링 트리거
+      if (markers.length > 0) {
+        renderMarkers();
+      }
+    };
+
+    if (window.naver && window.naver.maps) {
       setTimeout(() => {
-        registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+        initMapAndMarkers();
       }, 0);
     } else {
       const script = document.createElement('script');
@@ -68,9 +78,9 @@ export default function NaverMap({ markers }: NaverMapProps) {
       script.async = true;
       script.onload = () => {
         window.naver.maps.onJSContentLoaded = () => {
-          initializeMap(mapRef, mapInstanceRef);
           setTimeout(() => {
-            registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
+            console.log('naver 초기화 완료');
+            initMapAndMarkers();
           }, 0);
         };
       };
@@ -79,7 +89,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
   }, []);
 
   // Render markers when markers data changes
-  useEffect(() => {
+  const renderMarkers = () => {
     if (!mapInstanceRef.current || !window.naver) return;
     const prev = prevMarkersRef.current;
 
@@ -93,6 +103,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
           prevMarker.lng === next.lng
         );
       });
+
     // Clear old markers
     markerRefs.current.forEach((m) => m.setMap(null));
 
@@ -116,6 +127,12 @@ export default function NaverMap({ markers }: NaverMapProps) {
       mapInstanceRef.current.fitBounds(bounds);
     }
     prevMarkersRef.current = markers;
+  };
+
+  useEffect(() => {
+    if (mapInstanceRef.current && window.naver) {
+      renderMarkers();
+    }
   }, [markers, origin, destination]);
 
   useEffect(() => {
@@ -153,11 +170,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
   return <div className="relative w-full h-full">
     <div ref={mapRef} className="w-full h-full" />
 
-    {/* 하단 버튼 */}
-    <ResearchButton
-      mapInstance={mapInstanceRef.current}
-    />
-
-    <MoveToMyLocationButton mapInstance={mapInstanceRef.current} />
+    {/*<MoveToMyLocationButton mapInstance={mapInstanceRef.current} />*/}
   </div>
 }

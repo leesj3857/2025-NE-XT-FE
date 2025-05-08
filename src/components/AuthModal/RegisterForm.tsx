@@ -43,7 +43,14 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
   const handleSendCode = async () => {
     setEmailError('');
     setEmailMessage('');
+
+    if (!email) {
+      setEmailError('Please enter your email.');
+      return;
+    }
+
     setLoadingSend(true);
+
     try {
       const res = await sendVerificationCode(email);
       setEmailMessage(res.message || 'Verification code has been sent to your email.');
@@ -69,8 +76,15 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
     }
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setRegisterError('');
+
+    if (!name || !password || !confirmPassword) {
+      setRegisterError('Please enter your name and password.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setRegisterError('Passwords do not match.');
       return;
@@ -119,7 +133,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
           onChangeName={setName}
           onChangePassword={setPassword}
           onChangeConfirm={setConfirmPassword}
-          onSubmit={registerSuccess ? () => onModeChange('login') : handleRegister}
+          onSubmit={handleRegister}
           loading={loadingRegister}
           error={registerError}
           success={registerSuccess}
@@ -129,7 +143,7 @@ const RegisterForm = ({ onModeChange }: RegisterFormProps) => {
       <button
         type="button"
         onClick={() => onModeChange('login')}
-        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2 w-fit"
+        className="text-[#34495E] text-sm cursor-pointer hover:underline mt-2 w-fit mx-auto"
       >
         Back to Login
       </button>

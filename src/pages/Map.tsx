@@ -183,7 +183,9 @@ const ResultPage = () => {
         <InfoHeader />
         <ul ref={listRef} className="space-y-4 overflow-auto h-[calc(100%-190px)] pr-3 py-4">
           {isFetching ? (
-            Array.from({ length: 5 }).map((_, i) => <FetchingUI key={i} />)
+            <div className="flex justify-center items-center h-full">
+              <FetchingUI />
+            </div>
           ) : currentResults.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
               🔍 No results found.<br />
