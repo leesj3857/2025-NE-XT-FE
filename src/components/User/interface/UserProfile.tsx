@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Icon from '@mdi/react';
 import { mdiAccountCircle } from '@mdi/js';
 import { AnimatePresence, motion } from 'framer-motion';
+import DeleteModal from '../../../interface/DeleteModal';
 
 interface UserProfileProps {
   name: string | null;
@@ -43,47 +44,16 @@ const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccoun
 
   return (
     <div className="relative flex items-center border border-gray-300 gap-6 p-6 rounded-xl shadow-lg bg-gradient-to-r from-[#FAFAFA] to-white">
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            key="modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-              className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
-            >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Account</h3>
-              <p className="text-gray-600 mb-6">
-                Are you sure you want to delete your account? This action cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    handleDeleteAccount();
-                    setShowDeleteConfirm(false);
-                  }}
-                  className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-all"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DeleteModal
+        show={showDeleteConfirm}
+        title="Delete Account"
+        message="Are you sure you want to delete your account? This action cannot be undone."
+        onCancel={() => setShowDeleteConfirm(false)}
+        onConfirm={() => {
+          handleDeleteAccount();
+          setShowDeleteConfirm(false);
+        }}
+      />
       
       <Icon
         path={mdiAccountCircle}

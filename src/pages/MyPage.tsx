@@ -13,10 +13,12 @@ import {useNavigate} from "react-router-dom";
 import CategorySelectionMobile from "../components/User/interface/CategorySelectionMobile.tsx";
 import CategorySectionPC from "../components/User/interface/CategorySelectionPC.tsx";
 import {clearOriginPlace, clearDestinationPlace, clearRouteErrorMessage, clearRouteInfo} from "../store/slices/searchSlice.ts";
+import ToastMessage from "../interface/ToastMessage.tsx";
 const MyPage = () => {
   const { accessToken, name, email, refreshToken } = useSelector((state: RootState) => state.user);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -102,8 +104,11 @@ const MyPage = () => {
       await deleteAccount(accessToken);
       dispatch(logout());
       localStorage.removeItem('user');
-      navigate('/');
-      alert('Account deleted successfully.');
+      setShowDeleteToast(true);
+      setTimeout(() => {
+        setShowDeleteToast(false);
+        navigate('/');
+      }, 1200);
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message);
@@ -128,21 +133,9 @@ const MyPage = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto p-6 space-y-10 overflow-y-auto bg-white">
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-              bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 text-xs md:text-sm w-fit whitespace-nowrap"
-          >
-            Name updated successfully!
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      
+      <ToastMessage show={showSuccess} message="Name updated successfully!" />
+      <ToastMessage show={showDeleteToast} message="Account deleted successfully!" />
       {/* 프로필 */}
       <UserProfile name={name} email={email} onChangeName={handleChangeName} isDeleting={isDeleting} handleDeleteAccount={handleDeleteAccount} />
 
