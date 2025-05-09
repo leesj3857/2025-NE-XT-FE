@@ -96,8 +96,6 @@ const MyPage = () => {
 
   const handleDeleteAccount = async () => {
     if (!accessToken) return;
-    const confirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
-    if (!confirmed) return;
 
     try {
       setIsDeleting(true);

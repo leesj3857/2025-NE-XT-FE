@@ -13,7 +13,7 @@ export const graphqlRequest = async (
       { query, variables },
       {
         headers: token
-          ? { Authorization: `Bearer ${token}` }
+          ? { Authorization: `JWT ${token}` }
           : undefined
       }
     );
