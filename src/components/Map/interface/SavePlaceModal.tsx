@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { PlaceItemType } from '../../../types/place/type';
 import { motion } from 'framer-motion';
 import Icon from '@mdi/react';
-import { mdiFolder, mdiPlus } from '@mdi/js';
+import { mdiFolder, mdiPlus, mdiMinusCircleOutline, mdiMapMarker } from '@mdi/js';
+import DeleteModal from '../../../interface/DeleteModal';
 
 interface SavePlaceModalProps {
   place: PlaceItemType;
@@ -19,6 +20,22 @@ const initialCategories: Category[] = [
   { name: 'Want to Visit', color: '#10B981' },
   { name: 'Recommended', color: '#3B82F6' },
   { name: 'Hidden Gems', color: '#8B5CF6' },
+  { name: 'Favorites1', color: '#F59E0B' },
+  { name: 'Want to Visit1', color: '#10B981' },
+  { name: 'Recommended1', color: '#3B82F6' },
+  { name: 'Hidden Gems1', color: '#8B5CF6' },
+  { name: 'Favorites2', color: '#F59E0B' },
+  { name: 'Want to Visit2', color: '#10B981' },
+  { name: 'Recommended2', color: '#3B82F6' },
+  { name: 'Hidden Gems2', color: '#8B5CF6' },
+  { name: 'Favorites3', color: '#F59E0B' },
+  { name: 'Want to Visit3', color: '#10B981' },
+  { name: 'Recommended3', color: '#3B82F6' },
+  { name: 'Hidden Gems3', color: '#8B5CF6' },
+  { name: 'Favorites4', color: '#F59E0B' },
+  { name: 'Want to Visit4', color: '#10B981' },
+  { name: 'Recommended4', color: '#3B82F6' },
+  { name: 'Hidden Gems4', color: '#8B5CF6' },
 ];
 
 const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
@@ -28,10 +45,11 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState('#F87171'); // 기본색
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
   const handleSave = () => {
-    if (!selectedCategory) return;
-    console.log(`✅ "${place.placeName}" 저장됨 → 카테고리: ${selectedCategory}`);
     onClose();
   };
 
@@ -49,35 +67,75 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 cursor-default" style={{ zIndex: 101 }} onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30 cursor-default" 
+    style={{ zIndex: 101 }} onClick={(e) => e.stopPropagation()}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6"
+        className="bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6 max-h-[75%] flex flex-col"
       >
-        <h2 className="text-lg font-semibold mb-4">📌 Save Place</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Choose a category for <strong>{place.placeName}</strong>
-        </p>
-
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Icon path={mdiMapMarker} size={1} color="#EF4444" />
+            Save Place
+          </h2>
+          <button
+            onClick={() => setIsEditMode(!isEditMode)}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            {isEditMode ? 'Done Editing' : 'Edit'}
+          </button>
+        </div>
+        <div className="mb-4 space-y-1">
+          <p className="text-sm text-gray-600">
+            Choose a category for <strong>{place.placeName}</strong>
+          </p>
+          <p className="text-sm text-gray-500 flex items-center gap-1">
+            Current Saved Category :{' '}
+            <span className="font-medium text-gray-700 flex gap-0.5">
+              <Icon path={mdiFolder} size={0.8} color="#6B7280" />
+              {selectedCategory ?? ''}
+            </span>
+          </p>
+        </div>
         {/* 카테고리 목록 */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-2 gap-3 mb-4 overflow-y-auto pr-2">
           {categories.map(({ name, color }) => {
             const isSelected = selectedCategory === name;
             return (
               <div
                 key={name}
-                onClick={() => setSelectedCategory(name)}
+                onClick={() => {
+                  if (!isEditMode) {
+                    setSelectedCategory(selectedCategory === name ? null : name);
+                  }
+                }}
                 className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition border
-                  ${isSelected ? '' : 'border-gray-200 hover:border-gray-400'}`}
+                  ${isSelected && !isEditMode ? '' : 'border-gray-200 hover:border-gray-400'}`}
                 style={{
-                  borderColor: isSelected ? color : undefined,
-                  backgroundColor: isSelected ? `${color}15` : undefined,
+                  borderColor: isSelected && !isEditMode ? color : undefined,
+                  backgroundColor: isSelected && !isEditMode ? `${color}15` : undefined,
                 }}
               >
-                <Icon path={mdiFolder} size={1} color={color} />
-                <span className="text-sm font-medium flex-1 break-all">{name}</span>
+                {isEditMode ? (
+                  <button
+                    onClick={() => {
+                      setCategoryToDelete({ name, color });
+                      setShowDeleteModal(true);
+                    }}
+                  >
+                    <Icon
+                      path={mdiMinusCircleOutline}
+                      size={1}
+                      color="#EF4444"
+                      className="cursor-pointer"
+                    />
+                  </button>
+                ) : (
+                  <Icon path={mdiFolder} size={1} color={color} />
+                )}
+                <span className="text-sm max-md:text-xs font-medium flex-1 break-all">{name}</span>
               </div>
             );
           })}
@@ -152,7 +210,6 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
           </button>
           <button
             onClick={handleSave}
-            disabled={!selectedCategory}
             className={`px-4 py-2 text-sm rounded text-white transition-all
               ${selectedCategory ? 'bg-[#D2B48C] hover:bg-[#A67B5B]' : 'bg-gray-400 cursor-not-allowed'}`}
           >
@@ -160,6 +217,25 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
           </button>
         </div>
       </motion.div>
+      <DeleteModal
+        show={showDeleteModal}
+        title="Delete Category"
+        message={`Are you sure you want to delete "${categoryToDelete?.name}"?`}
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setCategoryToDelete(null);
+        }}
+        onConfirm={() => {
+          if (categoryToDelete) {
+            setCategories(prev => prev.filter(c => c.name !== categoryToDelete.name));
+            if (selectedCategory === categoryToDelete.name) {
+              setSelectedCategory(null);
+            }
+          }
+          setShowDeleteModal(false);
+          setCategoryToDelete(null);
+        }}
+      />
     </div>
   );
 };

@@ -44,25 +44,6 @@ export const getPlaceInfo = async (
 
   const raw = response.getPlaceInfo.place;
 
-  // 정제 처리
-  let menuOrTicketInfo: Array<{ name: string; price: string }> = [];
-  let translatedReviews: string[] = [];
-
-  try {
-    if (typeof raw.menuOrTicketInfo === 'string') {
-      menuOrTicketInfo = JSON.parse(raw.menuOrTicketInfo);
-    }
-  } catch (e) {
-    console.warn('menuOrTicketInfo 파싱 실패:', e);
-  }
-
-  try {
-    if (typeof raw.translatedReviews === 'string') {
-      translatedReviews = JSON.parse(raw.translatedReviews);
-    }
-  } catch (e) {
-    console.warn('translatedReviews 파싱 실패:', e);
-  }
 
   return {
     name: raw.name,
@@ -72,7 +53,7 @@ export const getPlaceInfo = async (
     category: raw.category,
     description: raw.description,
     price: raw.price,
-    menuOrTicketInfo,
-    translatedReviews,
+    menuOrTicketInfo: raw.menuOrTicketInfo,
+    translatedReviews: raw.translatedReviews,
   };
 };
