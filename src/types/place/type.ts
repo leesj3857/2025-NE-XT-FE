@@ -1,5 +1,6 @@
 export interface PlaceItemType {
   id: string;
+  dataId?: string;
   placeName: string;
   addressName?: string;
   roadAddressName?: string;

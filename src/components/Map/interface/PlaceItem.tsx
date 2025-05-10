@@ -31,7 +31,12 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-
+  const { categories } = useSelector((state: RootState) => state.user); // ⬅ 카테고리 접근
+  const currentCategory = categories.find(c =>
+    c.places.some(p => p.id === placeData.id)
+  );
+  const bookmarkColor = currentCategory?.color;
+  
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(placeName).then(() => {
@@ -52,7 +57,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
       setShowDetails(false);
     }
   }, [selectedPlaceId]);
-
+  console.log(placeData);
   return (
     <motion.li
       key={id}
@@ -77,7 +82,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
               }}
               className="text-gray-500 hover:text-gray-800 cursor-pointer"
             >
-              <Icon path={mdiBookmarkOutline} size={1} />
+              <Icon path={mdiBookmarkOutline} size={1} color={bookmarkColor} />
             </button>
             <AnimatePresence>
               {copySuccess && (
@@ -105,7 +110,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
               rel="noopener noreferrer"
               className="text-sm text-blue-600 underline"
             >
-              View on Kakao
+              View on Kakao (Korean)
             </a>
           )}
         </div>

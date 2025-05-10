@@ -4,6 +4,11 @@ import { motion } from 'framer-motion';
 import Icon from '@mdi/react';
 import { mdiFolder, mdiPlus, mdiMinusCircleOutline, mdiMapMarker } from '@mdi/js';
 import DeleteModal from '../../../interface/DeleteModal';
+import { RootState } from '../../../store'; 
+import { useSelector } from 'react-redux';
+import { createSavedPlace , moveSavedPlace , deleteSavedPlace, createUserCategory, deleteUserCategory } from '../../User/utils/API';
+import { useAppDispatch } from '../../../store/hooks';
+import { fetchAndStoreUserCategories } from '../../../store/thunks/fetchcategories';
 
 interface SavePlaceModalProps {
   place: PlaceItemType;
@@ -11,36 +16,20 @@ interface SavePlaceModalProps {
 }
 
 interface Category {
+  id: string;
   name: string;
   color: string;
+  places: PlaceItemType[];
 }
 
-const initialCategories: Category[] = [
-  { name: 'Favorites', color: '#F59E0B' },
-  { name: 'Want to Visit', color: '#10B981' },
-  { name: 'Recommended', color: '#3B82F6' },
-  { name: 'Hidden Gems', color: '#8B5CF6' },
-  { name: 'Favorites1', color: '#F59E0B' },
-  { name: 'Want to Visit1', color: '#10B981' },
-  { name: 'Recommended1', color: '#3B82F6' },
-  { name: 'Hidden Gems1', color: '#8B5CF6' },
-  { name: 'Favorites2', color: '#F59E0B' },
-  { name: 'Want to Visit2', color: '#10B981' },
-  { name: 'Recommended2', color: '#3B82F6' },
-  { name: 'Hidden Gems2', color: '#8B5CF6' },
-  { name: 'Favorites3', color: '#F59E0B' },
-  { name: 'Want to Visit3', color: '#10B981' },
-  { name: 'Recommended3', color: '#3B82F6' },
-  { name: 'Hidden Gems3', color: '#8B5CF6' },
-  { name: 'Favorites4', color: '#F59E0B' },
-  { name: 'Want to Visit4', color: '#10B981' },
-  { name: 'Recommended4', color: '#3B82F6' },
-  { name: 'Hidden Gems4', color: '#8B5CF6' },
-];
 
 const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const { categories } = useSelector((state: RootState) => state.user);
+  const currentCategoryId = categories.find(c =>
+    c.places.some(p => p.id === place.id)
+  )?.id;
+  
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(currentCategoryId ?? null);
   const [errorMessage, setErrorMessage] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
@@ -48,22 +37,76 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const dispatch = useAppDispatch();
+  const { accessToken } = useSelector((state: RootState) => state.user);
+  const currentCategory = categories.find(c =>
+    c.places.some(p => p.id === place.id)
+  );
+  const currentCategoryName = currentCategory?.name;
+  const currentCategoryColor = currentCategory?.color ?? '#6B7280';
 
-  const handleSave = () => {
-    onClose();
+  const handleSave = async () => {
+    if (!accessToken) return;
+  
+    
+    const currentCategoryId = currentCategory?.id;
+    const selectedId = selectedCategory;
+  
+    try {
+      if (!selectedId && currentCategoryId) {
+        // ❌ 삭제
+        const saved = currentCategory.places.find(p => p.id === place.id);
+        if (saved && saved.dataId) await deleteSavedPlace(saved.dataId, accessToken);
+      } else if (selectedId && currentCategoryId !== selectedId) {
+        if (currentCategoryId) {
+          // 🔄 이동
+          const saved = currentCategory.places.find(p => p.id === place.id);
+          if (saved && saved.dataId) await moveSavedPlace(saved.dataId, selectedId, accessToken);
+        } else {
+          const variables = {
+            categoryId: selectedId,        // 선택된 카테고리 ID
+            placeId: place.id,                  // ✅ placeId 대신 id 사용
+            placeName: place.placeName,
+            addressName: place.addressName,
+            roadAddressName: place.roadAddressName,
+            roadAddressNameEn: place.roadAddressNameEN,
+            phone: place.phone,
+            categoryName: place.categoryName,
+            categoryNameEn: place.categoryNameEN,
+            placeUrl: place.placeUrl,
+            categoryGroupCode: place.categoryGroupCode,
+            x: place.x,
+            y: place.y,
+            lat: String(place.lat),
+            lng: String(place.lng),
+          };
+  
+          await createSavedPlace(variables, accessToken);
+        }
+      }
+      dispatch(fetchAndStoreUserCategories()); // ✅ 항상 동기화
+      onClose();
+    } catch (err: any) {
+      console.error(err.message);
+    }
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (!newName.trim()) {
       setErrorMessage('Please enter a category name.');
       return;
     }
+    if (!accessToken) return;
   
-    setCategories([...categories, { name: newName.trim(), color: newColor }]);
-    setNewName('');
-    setNewColor('#F87171');
-    setShowAddForm(false);
-    setErrorMessage('');
+    try {
+      await createUserCategory(newName.trim(), newColor, accessToken);
+      setNewName('');
+      setNewColor('#F87171');
+      setShowAddForm(false);
+      dispatch(fetchAndStoreUserCategories());
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to create category');
+    }
   };
 
   return (
@@ -94,21 +137,21 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
           <p className="text-sm text-gray-500 flex items-center gap-1">
             Current Saved Category :{' '}
             <span className="font-medium text-gray-700 flex gap-0.5">
-              <Icon path={mdiFolder} size={0.8} color="#6B7280" />
-              {selectedCategory ?? ''}
+              <Icon path={mdiFolder} size={0.8} color={currentCategoryColor} />
+              {currentCategoryName ?? ''}
             </span>
           </p>
         </div>
         {/* 카테고리 목록 */}
         <div className="grid grid-cols-2 gap-3 mb-4 overflow-y-auto pr-2">
-          {categories.map(({ name, color }) => {
-            const isSelected = selectedCategory === name;
+          {categories.map(({ id : id, name, color }) => {
+            const isSelected = selectedCategory === id;
             return (
               <div
                 key={name}
                 onClick={() => {
                   if (!isEditMode) {
-                    setSelectedCategory(selectedCategory === name ? null : name);
+                    setSelectedCategory(selectedCategory === id ? null : id); // ✅ id 기준 토글
                   }
                 }}
                 className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition border
@@ -121,7 +164,7 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
                 {isEditMode ? (
                   <button
                     onClick={() => {
-                      setCategoryToDelete({ name, color });
+                      setCategoryToDelete({ id, name, color, places: [] })
                       setShowDeleteModal(true);
                     }}
                   >
@@ -210,8 +253,7 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
           </button>
           <button
             onClick={handleSave}
-            className={`px-4 py-2 text-sm rounded text-white transition-all
-              ${selectedCategory ? 'bg-[#D2B48C] hover:bg-[#A67B5B]' : 'bg-gray-400 cursor-not-allowed'}`}
+            className={`px-4 py-2 text-sm rounded text-white transition-all bg-[#D2B48C] hover:bg-[#A67B5B]`}
           >
             Save
           </button>
@@ -225,15 +267,19 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
           setShowDeleteModal(false);
           setCategoryToDelete(null);
         }}
-        onConfirm={() => {
-          if (categoryToDelete) {
-            setCategories(prev => prev.filter(c => c.name !== categoryToDelete.name));
-            if (selectedCategory === categoryToDelete.name) {
-              setSelectedCategory(null);
-            }
+        onConfirm={async () => {
+          if (!accessToken || !categoryToDelete?.id) return;
+        
+          try {
+            await deleteUserCategory(categoryToDelete.id, accessToken);
+            dispatch(fetchAndStoreUserCategories()); // 전역 상태 동기화
+          } catch (err: any) {
+            console.error('Failed to delete category:', err.message);
+          } finally {
+            setShowDeleteModal(false);
+            setCategoryToDelete(null);
+            setSelectedCategory(null);
           }
-          setShowDeleteModal(false);
-          setCategoryToDelete(null);
         }}
       />
     </div>

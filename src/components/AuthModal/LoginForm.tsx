@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../store/hooks';
 import { login as loginAction } from '../../store/slices/userSlice';
 import { authClient } from './utils/authClient';
 import LoginSection from './interface/login/LoginSection';
+import { fetchAndStoreUserCategories } from '../../store/thunks/fetchcategories';
 
 interface Props {
   onModeChange: (mode: 'login' | 'register' | 'reset') => void;
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const LoginForm = ({ onModeChange, onClose }: Props) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +37,7 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
         email,
         accessToken: res.access,
       }));
+      dispatch(fetchAndStoreUserCategories());
       onClose();
     } catch (err: any) {
       setError(err.message || err.response?.data?.error || 'Login failed. Please try again.');

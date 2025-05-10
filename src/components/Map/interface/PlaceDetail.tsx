@@ -63,7 +63,7 @@ const PlaceDetail = () => {
           className="text-[#0096C7] hover:text-[#007BA3] underline text-sm mt-4 inline-flex items-center gap-1 transition-all"
         >
           <Icon path={mdiMapMarker} size={0.9} />
-          View on Kakao Map
+          View on Kakao (Korean)
         </a>
         {isLoading && (
           <div className="flex justify-center items-center mt-4">

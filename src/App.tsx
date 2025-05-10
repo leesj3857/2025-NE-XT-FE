@@ -7,12 +7,12 @@ import Map from "./pages/Map.tsx";
 import MyPage from "./pages/MyPage.tsx";
 import MyPageMap from "./pages/MyPageMap.tsx";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "./store/hooks.ts";
 import { login, logout } from "./store/slices/userSlice.ts";
 import { verifyAccessToken } from "./components/User/utils/verifyToken.ts";
-
+import { fetchAndStoreUserCategories } from "./store/thunks/fetchcategories.ts";
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
 
   useEffect(() => {
@@ -27,6 +27,7 @@ function App() {
         const isValid = await verifyAccessToken(accessToken);
         if (isValid) {
           dispatch(login({ name, email, accessToken }));
+          dispatch(fetchAndStoreUserCategories());
         } else {
           throw new Error('Token invalid');
         }

@@ -17,30 +17,37 @@ const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccoun
   const [editMode, setEditMode] = useState(false);
   const [newName, setNewName] = useState(name || '');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleSubmit = async () => {
-    if (!newName) return; // 빈 문자열은 막음
+    const trimmedName = newName.trim();
+    if (!trimmedName) {
+      setErrorMessage('이름은 공백만으로 구성될 수 없습니다.');
+      return;
+    }
 
-    // 이전과 동일하면 API 호출 없이 종료
-    if (newName === name) {
+    if (trimmedName === name) {
       setEditMode(false);
       return;
     }
 
     try {
       setLoading(true);
-      await onChangeName(newName); // 공백 포함 그대로 전달
-      setLoading(false);
+      await onChangeName(trimmedName);
       setEditMode(false);
+      setErrorMessage('');
     } catch (err: unknown) {
       if (err instanceof Error) {
         alert(err.message);
       } else {
         alert('An unknown error occurred');
       }
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <div className="relative flex items-center border border-gray-300 gap-6 p-6 rounded-xl shadow-lg bg-gradient-to-r from-[#FAFAFA] to-white">
@@ -80,18 +87,23 @@ const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccoun
             {loading ? (
               <div className="w-5 h-5 border-2 border-[#0096C7] border-t-transparent rounded-full animate-spin" />
             ) : (
-              <div className="flex max-md:flex-col gap-2 items-end w-full">
-                <input
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 max-md:w-full"
-                />
-                <button
-                  onClick={handleSubmit}
-                  className="px-3 py-1 bg-[#0096C7] text-white text-sm rounded hover:bg-[#1ABC9C] transition cursor-pointer w-fit"
-                >
-                  Confirm
-                </button>
+              <div className="flex flex-col w-full">
+                <div className="flex gap-2 items-end max-md:flex-col">
+                  <input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 max-md:w-full"
+                  />
+                  <button
+                    onClick={handleSubmit}
+                    className="px-3 py-1 bg-[#0096C7] text-white text-sm rounded hover:bg-[#1ABC9C] transition cursor-pointer w-fit"
+                  >
+                    Confirm
+                  </button>
+                </div>
+                {errorMessage && (
+                  <p className="text-xs text-red-600 mt-2">{errorMessage}</p>
+                )}
               </div>
             )}
           </div>

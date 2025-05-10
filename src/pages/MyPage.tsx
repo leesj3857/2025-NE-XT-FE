@@ -29,45 +29,7 @@ const MyPage = () => {
     }
   }, [userName]);
 
-  const savedPlaces: Record<string, { color: string; places: PlaceItemType[] }> = {
-    Restaurant: {
-      color: '#F59E0B',
-      places: [
-        {
-          id:"1678391738",
-          placeName:"수작나베 석촌호수직영점",
-          addressName:"서울 송파구 석촌동 158-7",
-          roadAddressName:"서울 송파구 석촌호수로 234",
-          roadAddressNameEN:"234 Seokchonhosu-ro, Songpa-gu, Seoul",
-          phone:"02-423-3767",
-          categoryName:"음식점 > 퓨전요리 > 퓨전일식",
-          categoryNameEN:"Restaurants > Fusion > Fusion Japanese",
-          placeUrl:"http://place.map.kakao.com/1678391738",
-          categoryGroupCode:"FD6",
-          x:"127.102736549521",
-          y:"37.5076451940343",
-          lat: 37.5665,
-          lng: 126.9784,
-        },
-        {
-          id:"1228208521",
-          placeName:"청와옥 석촌호수점",
-          addressName:"서울 송파구 석촌동 2",
-          roadAddressName:"서울 송파구 삼학사로 96",
-          roadAddressNameEN:"96 Samhaksa-ro, Songpa-gu, Seoul",
-          phone:"02-422-0550",
-          categoryName:"음식점 > 한식 > 순대",
-          categoryNameEN:"Restaurants > Korean > Sundae",
-          placeUrl:"http://place.map.kakao.com/1228208521",
-          categoryGroupCode:"FD6",
-          x:"127.097458989559",
-          y:"37.505703495912",
-          lat: 37.5667,
-          lng: 126.9786,
-        },
-      ],
-    },
-  };
+  const categories = useSelector((state: RootState) => state.user.categories);
 
 
   const handleChangeName = async (newName: string) => {
@@ -120,14 +82,14 @@ const MyPage = () => {
     }
   };
 
-  const handleCategoryClick = (category: string) => {
-    const categoryData = savedPlaces[category];
-    if (categoryData) {
+  const handleCategoryClick = (categoryId: string) => {
+    const category = categories.find((c) => c.id === categoryId);
+    if (category) {
       dispatch(clearOriginPlace());
       dispatch(clearDestinationPlace());
       dispatch(clearRouteInfo());
-      dispatch(clearRouteErrorMessage())
-      navigate('/mypage/map', { state: { places: categoryData.places } });
+      dispatch(clearRouteErrorMessage());
+      navigate('/mypage/map', { state: { places: category.places } });
     }
   };
 
@@ -140,18 +102,17 @@ const MyPage = () => {
       <UserProfile name={name} email={email} onChangeName={handleChangeName} isDeleting={isDeleting} handleDeleteAccount={handleDeleteAccount} />
 
       {/* ✅ PC 뷰 */}
-      <div className="hidden md:block">
+      <div className="hidden sm:block">
         <CategorySectionPC
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
           handleCategoryClick={handleCategoryClick}
-          savedPlaces={savedPlaces}
         />
       </div>
 
       {/* ✅ 모바일 뷰 */}
-      <div className="block md:hidden">
-        <CategorySelectionMobile savedPlaces={savedPlaces} handleCategoryClick={handleCategoryClick}/>
+      <div className="block sm:hidden">
+        <CategorySelectionMobile handleCategoryClick={handleCategoryClick}/>
       </div>
 
     </div>

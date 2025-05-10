@@ -1,4 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PlaceItemType } from '../../types/place/type';
+
+export interface UserCategoryWithPlaces {
+  id: string;
+  name: string;
+  color: string;
+  places: PlaceItemType[];
+}
 
 interface UserState {
   name: string | null;
@@ -6,6 +14,7 @@ interface UserState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  categories: UserCategoryWithPlaces[];
 }
 
 const initialState: UserState = {
@@ -14,6 +23,7 @@ const initialState: UserState = {
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
+  categories: [],
 };
 
 const userSlice = createSlice({
@@ -33,8 +43,12 @@ const userSlice = createSlice({
       state.refreshToken = null;
       state.isAuthenticated = false;
     },
+    setCategories(state, action: PayloadAction<UserCategoryWithPlaces[]>) {
+      console.log(action.payload);
+      state.categories = action.payload;
+    },
   },
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, setCategories } = userSlice.actions;
 export default userSlice.reducer;

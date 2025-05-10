@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-
+import { useDispatch } from 'react-redux';
 import NaverMap from '../components/User/map/NaverMap.tsx';
 import BottomSheet from '../components/Map/BottomSheet.tsx';
 import Pagination from '../components/Map/Pagination.tsx';
@@ -15,12 +15,15 @@ import { PlaceItemType } from '../types/place/type.ts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate } from 'react-router-dom';
+import { clearSelectedDetailedPlace } from '../store/slices/searchSlice.ts';
 
 const MyMapPage = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const listRef = useRef<HTMLUListElement>(null);
   const pageSize = 10;
-
+  const selectedDetailedPlace = useSelector((state: RootState) => state.search.selectedDetailedPlace);
+  
   const { places }: { places: PlaceItemType[] } = location.state || { places: [] };
   // 페이징 상태: URL, Redux 없음
   const totalPageCount = Math.ceil(places.length / pageSize);
@@ -40,8 +43,8 @@ const MyMapPage = () => {
   // 마커 데이터 변환
   const markers: MarkerType[] = places.map((place) => ({
     id: place.id,
-    lat: parseFloat(place.y ?? '0'),
-    lng: parseFloat(place.x ?? '0'),
+    lat: parseFloat(String(place.y || place.lat || '0')),
+    lng: parseFloat(String(place.x || place.lng || '0')),
     title: place.placeName,
     address: place.addressName,
     roadAddress: place.roadAddressName,
@@ -52,10 +55,11 @@ const MyMapPage = () => {
     categoryGroupCode: place.categoryGroupCode,
     placeUrl: place.placeUrl,
   }));
-
+  console.log(places);
   // 리스트 스크롤 초기화
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = 0;
+    dispatch(clearSelectedDetailedPlace());
   }, []);
 
   return (
@@ -83,8 +87,8 @@ const MyMapPage = () => {
                 categoryNameEN={place.categoryNameEN}
                 placeUrl={place.placeUrl}
                 categoryGroupCode={place.categoryGroupCode}
-                lat={place.y}
-                lng={place.x}
+                lat={place.y || place.lat}
+                lng={place.x || place.lng}
                 index={index}
               />
             ))
@@ -104,8 +108,7 @@ const MyMapPage = () => {
       <div className="flex-1 relative">
         <NaverMap markers={markers} />
         <AnimatePresence>
-          {/* 선택 상세 정보 UI는 상태 연동 생략 */}
-          <PlaceDetail key="place-detail" />
+          {selectedDetailedPlace && <PlaceDetail key="place-detail" />}
         </AnimatePresence>
       </div>
 
