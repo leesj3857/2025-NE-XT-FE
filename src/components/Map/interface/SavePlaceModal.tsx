@@ -205,13 +205,7 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
               }}
               className="w-full border px-3 py-2 rounded text-sm focus:outline-none transition-all"
               style={{
-                borderColor: '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = newColor;
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#D1D5DB';
+                borderColor: newColor || '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
               }}
             />
             <div className="flex items-center gap-2">

@@ -177,7 +177,10 @@ const CategorySectionPC = ({
                     if (errorMessage) setErrorMessage('');
                   }}
                   placeholder="Category name"
-                  className="text-sm border p-1 rounded"
+                  className="text-sm border p-1 rounded focus:outline-none transition-all"
+                  style={{
+                    borderColor: newColor || '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
+                  }}
                 />
                 <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} />
               </div>

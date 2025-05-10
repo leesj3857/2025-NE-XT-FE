@@ -180,7 +180,7 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
 
       {/* 카테고리 추가 폼 */}
       {newCategoryForm ? (
-        <div className="mt-4 border p-3 rounded-xl space-y-2">
+        <div className="mt-4 p-3 rounded-xl space-y-2">
           <input
             value={newName}
             onChange={(e) => {
@@ -188,7 +188,10 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
               if (errorMessage) setErrorMessage('');
             }}
             placeholder="Category name"
-            className="text-sm border p-1 rounded w-full"
+            className="text-sm border p-1 rounded w-full focus:outline-none transition-all"
+            style={{
+              borderColor: newColor || '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
+            }}
           />
           <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} />
           {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
