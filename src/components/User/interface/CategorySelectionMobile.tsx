@@ -35,8 +35,8 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState('#F59E0B');
   const [errorMessage, setErrorMessage] = useState('');
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
-  const [placeToDelete, setPlaceToDelete] = useState<{ categoryId: string, placeId: string } | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [placeToDelete, setPlaceToDelete] = useState<{ categoryId: string, placeId: string, placeName: string } | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleAddCategory = async () => {
@@ -69,13 +69,18 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
       setEditingCategoryId(null);
     }
   };
-
+  const handleRequestDeletePlace = (categoryId: string, placeId: string | undefined, placeName: string) => {
+    if(placeId) {
+      setPlaceToDelete({ categoryId, placeId, placeName: placeName });
+      setShowDeleteModal(true);
+    }
+  };
   const handleDeleteConfirm = async () => {
     try {
       if (placeToDelete && accessToken) {
         await deleteSavedPlace(placeToDelete.placeId, accessToken);
       } else if (categoryToDelete && accessToken) {
-        await deleteUserCategory(categoryToDelete, accessToken);
+        await deleteUserCategory(categoryToDelete.id, accessToken);
       }
       dispatch(fetchAndStoreUserCategories());
     } catch (err: any) {
@@ -94,7 +99,7 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
       <DeleteModal
         show={showDeleteModal}
         title="Delete Confirmation"
-        message={placeToDelete ? `Are you sure you want to delete this place?` : `Are you sure you want to delete this category?`}
+        message={placeToDelete ? `Are you sure you want to delete ${placeToDelete.placeName}?` : `Are you sure you want to delete ${categoryToDelete?.name}?`}
         onCancel={() => {
           setShowDeleteModal(false);
           setPlaceToDelete(null);
@@ -124,7 +129,7 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
                       <button onClick={(e) => { e.stopPropagation(); setEditingCategoryId(id); setEditedName(name); }}>
                         <Icon path={mdiPencilOutline} size={0.9} className="text-gray-500 hover:text-gray-800" />
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); setCategoryToDelete(id); setShowDeleteModal(true); }}>
+                      <button onClick={(e) => { e.stopPropagation(); setCategoryToDelete({ id, name }); setShowDeleteModal(true); }}>
                         <Icon path={mdiDeleteOutline} size={0.9} className="text-red-500 hover:text-red-700" />
                       </button>
                     </div>
@@ -143,7 +148,7 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
                   </div>
                 );
               })}
-            {categories.length === 0 && <p className="text-sm text-gray-500 col-span-2">저장된 카테고리가 없습니다.</p>}
+            {categories.length === 0 && <p className="text-sm text-gray-500 col-span-2">There are no saved categories.</p>}
           </motion.div>
         ) : (
           <motion.div
@@ -163,12 +168,12 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
               </button>
             </div>
             {selectedCategory?.places.length === 0 ? (
-              <p className="text-sm text-gray-500">저장된 장소가 없습니다.</p>
+              <p className="text-sm text-gray-500">There are no saved places.</p>
             ) : (
               selectedCategory?.places.map((place) => (
                 <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
                   <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
-                  <button onClick={() => setPlaceToDelete({ categoryId: selectedCategory.id, placeId: place.dataId! })}>
+                  <button onClick={() => handleRequestDeletePlace(selectedCategory.id, place.dataId, place.placeName)}>
                     <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
                   </button>
                 </div>

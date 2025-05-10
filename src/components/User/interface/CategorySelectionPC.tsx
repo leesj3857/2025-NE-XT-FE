@@ -42,8 +42,8 @@ const CategorySectionPC = ({
   const [newColor, setNewColor] = useState('#F59E0B');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
-  const [placeToDelete, setPlaceToDelete] = useState<{ categoryId: string, placeId: string } | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [placeToDelete, setPlaceToDelete] = useState<{ categoryId: string, placeId: string, placeName: string } | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const selectedPlaces = categories.find(cat => cat.id === selectedCategory)?.places || [];
 
@@ -52,14 +52,14 @@ const CategorySectionPC = ({
     setEditedName(currentName);
   };
 
-  const handleRequestDeleteCategory = (categoryId: string) => {
-    setCategoryToDelete(categoryId);
+  const handleRequestDeleteCategory = (categoryId: string, categoryName: string) => {
+    setCategoryToDelete({ id: categoryId, name: categoryName });
     setShowDeleteModal(true);
   };
 
-  const handleRequestDeletePlace = (categoryId: string, placeId: string | undefined) => {
+  const handleRequestDeletePlace = (categoryId: string, placeId: string | undefined, placeName: string) => {
     if(placeId) {
-      setPlaceToDelete({ categoryId, placeId });
+      setPlaceToDelete({ categoryId, placeId, placeName: placeName });
       setShowDeleteModal(true);
     }
   };
@@ -107,7 +107,7 @@ const CategorySectionPC = ({
       if (placeToDelete && accessToken) {
         await deleteSavedPlace(placeToDelete.placeId, accessToken);
       } else if (categoryToDelete && accessToken) {
-        await deleteUserCategory(categoryToDelete, accessToken);
+        await deleteUserCategory(categoryToDelete.id, accessToken);
       }
       dispatch(fetchAndStoreUserCategories());
     } catch (err: any) {
@@ -136,13 +136,13 @@ const CategorySectionPC = ({
                 className={`group relative flex flex-col items-center justify-center rounded-lg cursor-pointer border border-transparent transition duration-200 w-[120px] aspect-square p-4 ${
                   isSelected ? 'bg-opacity-20' : 'hover:bg-gray-100'
                 }`}
-                style={{ backgroundColor: isSelected ? `${color}20` : undefined }}
+                style={{ backgroundColor: isSelected ? `${color}15` : undefined }}
               >
                 <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={(e) => { e.stopPropagation(); handleStartEditCategory(id, name); }} title="Rename">
                     <Icon path={mdiPencilOutline} size={0.9} className="text-gray-600 hover:text-gray-800 transition-all" />
                   </button>
-                  <button onClick={(e) => { e.stopPropagation(); handleRequestDeleteCategory(id); }} title="Delete">
+                  <button onClick={(e) => { e.stopPropagation(); handleRequestDeleteCategory(id, name); }} title="Delete">
                     <Icon path={mdiDeleteOutline} size={0.9} className="text-red-500 hover:text-red-700 transition-all" />
                   </button>
                 </div>
@@ -163,7 +163,7 @@ const CategorySectionPC = ({
           })}
         </div>
         {categories.length === 0 && (
-          <p className="text-sm text-gray-500 margin-0">저장된 카테고리가 없습니다.</p>
+          <p className="text-base text-gray-500 margin-0">There are no saved categories.</p>
         )}
         {/* 카테고리 추가 폼 */}
         <div className="mt-6">
@@ -209,13 +209,13 @@ const CategorySectionPC = ({
         {selectedCategory && (
            <>
               {selectedPlaces.length === 0 ? (
-                <p className="text-sm text-gray-500">저장된 장소가 없습니다.</p>
+                <p className="text-base text-gray-500">There are no saved places.</p>
               ) : (
                 <div className="flex flex-col gap-4">
                   {selectedPlaces.map((place: PlaceItemType) => (
                     <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
                       <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
-                      <button onClick={() => handleRequestDeletePlace(selectedCategory, place.dataId)}>
+                      <button onClick={() => handleRequestDeletePlace(selectedCategory, place.dataId, place.placeName)}>
                         <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
                       </button>
                     </div>
@@ -231,8 +231,8 @@ const CategorySectionPC = ({
         title="Delete Confirmation"
         message={
           placeToDelete
-            ? `Are you sure you want to delete this place?`
-            : `Are you sure you want to delete this category?`
+            ? `Are you sure you want to delete ${placeToDelete.placeName}?`
+            : `Are you sure you want to delete ${categoryToDelete?.name}?`
         }
         onCancel={() => {
           setShowDeleteModal(false);
