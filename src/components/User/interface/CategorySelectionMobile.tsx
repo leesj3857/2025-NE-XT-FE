@@ -122,18 +122,33 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
                 return (
                   <div
                     key={id}
-                    onClick={() => !isEditing && setSelectedCategoryId(id)}
                     className="relative flex flex-col items-center justify-center rounded-xl cursor-pointer bg-white shadow-md hover:shadow-lg transition border border-gray-200 w-full aspect-square p-4 space-y-2"
                   >
                     <div className="absolute top-2 w-5/6 flex gap-1 justify-between">
-                      <button onClick={(e) => { e.stopPropagation(); setEditingCategoryId(id); setEditedName(name); }}>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingCategoryId(id);
+                          setEditedName(name);
+                        }}
+                        className="p-1 rounded hover:bg-gray-100"
+                      >
                         <Icon path={mdiPencilOutline} size={0.9} className="text-gray-500 hover:text-gray-800" />
-                      </button>
-                      <button onClick={(e) => { e.stopPropagation(); setCategoryToDelete({ id, name }); setShowDeleteModal(true); }}>
+                      </div>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCategoryToDelete({ id, name });
+                          setShowDeleteModal(true);
+                        }}
+                        className="p-1 rounded hover:bg-gray-100"
+                      >
                         <Icon path={mdiDeleteOutline} size={0.9} className="text-red-500 hover:text-red-700" />
-                      </button>
+                      </div>
                     </div>
-                    <Icon path={mdiFolderOutline} size={2.5} style={{ color }} />
+                    <button onClick={() => !isEditing && setSelectedCategoryId(id)}>
+                      <Icon path={mdiFolderOutline} size={2.5} style={{ color }} />
+                    </button>
                     {isEditing ? (
                       <input
                         value={editedName}
