@@ -85,7 +85,7 @@ export default function Homepage() {
         <Services />
         <InfoSection />
         <StartButton onClick={handleStart} />
-        CICD테스트
+        CICD테스트22
       </div>
     </>
   );
