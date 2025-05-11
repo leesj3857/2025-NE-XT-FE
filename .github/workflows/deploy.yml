@@ -28,7 +28,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          source: "dist/*"
+          source: "dist/"
           target: "/var/www/frontend"
 
       - name: Reload Nginx
