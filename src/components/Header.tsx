@@ -24,6 +24,7 @@ const Header = () => {
           <UserMenu />
         ) : (
           <button
+            id="login-button"
             onClick={() => setIsAuthModalOpen(true)}
             className="text-sm bg-white border rounded-full border-gray-400 px-4 py-1 md:px-5 md:py-2 hover:bg-gray-200 cursor-pointer"
           >

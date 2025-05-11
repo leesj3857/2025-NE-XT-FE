@@ -31,7 +31,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
   const selectedPlaceId = useSelector((state: RootState) => state.search.selectedPlaceId);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const { categories } = useSelector((state: RootState) => state.user); // ⬅ 카테고리 접근
+  const { categories, email } = useSelector((state: RootState) => state.user); // ⬅ 카테고리 접근
   const currentCategory = categories.find(c =>
     c.places.some(p => p.id === placeData.id)
   );
@@ -78,7 +78,12 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setShowSaveModal(true);
+                if (!email) {
+                  document.getElementById('login-button')?.click();
+                  return;
+                } else {
+                  setShowSaveModal(true);
+                }
               }}
               className="text-gray-500 hover:text-gray-800 cursor-pointer"
             >
