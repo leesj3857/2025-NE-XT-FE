@@ -2,14 +2,14 @@ import Select, { components } from 'react-select';
 import { useState } from 'react';
 
 const languageOptions = [
-  { value: 'English', label: 'EN', flag: 'us' },
-  { value: '한국어', label: 'KR', flag: 'kr' },
-  { value: '日本語', label: 'JP', flag: 'jp' },
-  { value: '中文（简体）', label: 'ZH-CN', flag: 'cn' },
-  { value: '中文（繁體）', label: 'ZH-TW', flag: 'tw' },
-  { value: 'Español', label: 'ES', flag: 'es' },
-  { value: 'Français', label: 'FR', flag: 'fr' },
-  { value: 'Deutsch', label: 'DE', flag: 'de' },
+  { value: 'English', label: 'EN', flag: 'us', language: '영어' },
+  { value: '한국어', label: 'KR', flag: 'kr', language: '한국어' },
+  { value: '日本語', label: 'JP', flag: 'jp', language: '일본어' },
+  { value: '中文（简体）', label: 'ZH-CN', flag: 'cn', language: '중국어(간체)' },
+  { value: '中文（繁體）', label: 'ZH-TW', flag: 'tw', language: '중국어(번체)' },
+  { value: 'Español', label: 'ES', flag: 'es', language: '스페인어' },
+  { value: 'Français', label: 'FR', flag: 'fr', language: '프랑스어' },
+  { value: 'Deutsch', label: 'DE', flag: 'de', language: '독일어' },
 ];
 
 // 커스텀 Option 렌더링
@@ -18,7 +18,7 @@ const CustomOption = (props: any) => {
   return (
     <div ref={innerRef} {...innerProps} className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100">
       <span className={`flag-icon flag-icon-${data.flag}`} />
-      <span>{data.label}</span>
+      <span className='text-sm max-md:text-xs'>{data.value}</span>
     </div>
   );
 };
@@ -30,7 +30,7 @@ const CustomSingleValue = (props: any) => {
     <components.SingleValue {...props}>
       <div className="flex items-center gap-2">
         <span className={`flag-icon flag-icon-${data.flag}`} />
-        <span>{data.label}</span>
+        <span>{data.value}</span>
       </div>
     </components.SingleValue>
   );
@@ -47,8 +47,8 @@ const LanguageSelector = ({
     <div className="absolute top-4 left-4 z-50 w-[130px]">
       <Select
         options={languageOptions}
-        value={languageOptions.find((opt) => opt.value === selectedLanguage)}
-        onChange={(selected) => setSelectedLanguage(selected?.value || '')}
+        value={languageOptions.find((opt) => opt.language === selectedLanguage)}
+        onChange={(selected) => setSelectedLanguage(selected?.language || '')}
         components={{ Option: CustomOption, SingleValue: CustomSingleValue }}
         styles={{
             control: (base, state) => ({
@@ -83,8 +83,8 @@ const LanguageSelector = ({
             }),
             option: (base) => ({
               ...base,
-              fontSize: '0.75rem',
-              padding: '4px 8px',
+              fontSize: '0.675rem',
+              padding: '2px 6px',
             }),
             singleValue: (base) => ({
               ...base,

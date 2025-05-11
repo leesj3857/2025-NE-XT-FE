@@ -33,7 +33,7 @@ const PlaceDetail = () => {
   });
   
   useEffect(() => {
-    setSelectedLanguage("English");
+    setSelectedLanguage("영어");
   }, [place]);
 
   return (
