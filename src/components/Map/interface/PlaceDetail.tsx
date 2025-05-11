@@ -9,10 +9,13 @@ import { mdiClose, mdiClipboardTextOutline,
 import { useQuery } from '@tanstack/react-query';
 import { getPlaceInfo } from '../utils/getPlaceInfoClient';
 import FetchingUI from './FetchingUI.tsx';
+import { useState, useEffect } from 'react';
+import LanguageSelector from './LanguageSelector.tsx';
 const PlaceDetail = () => {
   const dispatch = useDispatch();
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
   const isMobile = window.innerWidth < 768;
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
 
   const {
     data: detailedInfo,
@@ -20,15 +23,18 @@ const PlaceDetail = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ['placeInfo', place?.placeName, place?.roadAddressName],
+    queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage],
     queryFn: () => {
       if (!place) throw new Error('No place selected');
-      return getPlaceInfo(place.placeName!, place.roadAddressName!, 'EN');
+      return getPlaceInfo(place.placeName!, place.roadAddressName!, selectedLanguage);
     },
     enabled: !!place, // place가 존재할 때만 요청 실행
     retry: false,
   });
-  console.log(detailedInfo);
+  
+  useEffect(() => {
+    setSelectedLanguage("English");
+  }, [place]);
 
   return (
     <motion.div
@@ -39,9 +45,14 @@ const PlaceDetail = () => {
       style={{ zIndex: 100 }}
       className="p-4 rounded-xl shadow-xl bg-[#FAFAFA]
                 max-md:fixed max-md:top-1/2 max-md:w-5/6 max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2 
-                pt-12 max-md:h-[70%] md:absolute md:top-1/2 md:-translate-y-1/2 md:left-2 md:w-[400px] md:h-[90%]  "
+                pt-14 max-md:h-[70%] md:absolute md:top-1/2 md:-translate-y-1/2 md:left-2 md:w-[400px] md:h-[90%]  "
     >
       {/* X 버튼 (mdi) */}
+      <LanguageSelector
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
+      />
+
       <button
         onClick={() => dispatch(clearSelectedDetailedPlace())}
         className="absolute top-4 right-4 text-gray-400 hover:text-black"

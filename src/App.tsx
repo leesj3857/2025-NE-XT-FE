@@ -11,6 +11,8 @@ import { useAppDispatch } from "./store/hooks.ts";
 import { login, logout } from "./store/slices/userSlice.ts";
 import { verifyAccessToken } from "./components/User/utils/verifyToken.ts";
 import { fetchAndStoreUserCategories } from "./store/thunks/fetchcategories.ts";
+import 'flag-icon-css/css/flag-icons.min.css';
+
 function App() {
   const dispatch = useAppDispatch();
   const location = useLocation();
