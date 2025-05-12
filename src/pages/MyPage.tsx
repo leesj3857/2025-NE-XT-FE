@@ -14,6 +14,8 @@ import CategorySelectionMobile from "../components/User/interface/CategorySelect
 import CategorySectionPC from "../components/User/interface/CategorySelectionPC.tsx";
 import {clearOriginPlace, clearDestinationPlace, clearRouteErrorMessage, clearRouteInfo} from "../store/slices/searchSlice.ts";
 import ToastMessage from "../interface/ToastMessage.tsx";
+import PlaceChangeRequestList from "../components/User/interface/PlaceChangeRequestList.tsx";
+
 const MyPage = () => {
   const { accessToken, name, email, refreshToken } = useSelector((state: RootState) => state.user);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -101,6 +103,7 @@ const MyPage = () => {
       {/* 프로필 */}
       <UserProfile name={name} email={email} onChangeName={handleChangeName} isDeleting={isDeleting} handleDeleteAccount={handleDeleteAccount} />
 
+      {/* 수정 요청 목록 */}
       {/* ✅ PC 뷰 */}
       <div className="hidden sm:block">
         <CategorySectionPC
@@ -114,6 +117,7 @@ const MyPage = () => {
       <div className="block sm:hidden">
         <CategorySelectionMobile handleCategoryClick={handleCategoryClick}/>
       </div>
+      <PlaceChangeRequestList />
 
     </div>
   );
