@@ -17,7 +17,14 @@ const FetchingUI = () => {
     return () => animation.destroy();
   }, []);
 
-  return <canvas ref={containerRef} style={{ width: 180, height: 180 }} />;
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <canvas ref={containerRef} style={{ width: 180, height: 180 }} />
+      <p className="mt-2 text-sm md:text-base text-gray-500">
+        This process may take a few seconds.
+      </p>
+    </div>
+  );
 };
 
-export default FetchingUI;
+export default FetchingUI;  

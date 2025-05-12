@@ -21,7 +21,7 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
     };
   }, []);
   return (
-    <div className="fixed inset-0 bg-[#00000078] bg-opacity-30 flex items-center justify-center" style={{zIndex: 100}}>
+    <div className="fixed inset-0 bg-[#00000078] bg-opacity-30 flex items-center justify-center" style={{zIndex: 200}}>
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

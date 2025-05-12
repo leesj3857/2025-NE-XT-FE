@@ -5,30 +5,20 @@ const GET_PLACE_INFO_MUTATION = `
   mutation GetPlaceInfo($name: String!, $address: String!, $language: String!) {
     getPlaceInfo(name: $name, address: $address, language: $language) {
       place {
-        name
-        address
-        language
-        title
-        category
-        description
-        price
+        id
         menuOrTicketInfo
         translatedReviews
       }
+      referenceUrls
     }
   }
 `;
 
 interface PlaceInfo {
-  name: string;
-  address: string;
-  language: string;
-  title?: string;
-  category?: string;
-  description?: string;
-  price?: string;
+  id: string;
   menuOrTicketInfo?: Array<{ name: string; price: string }>;
   translatedReviews?: string[];
+  referenceUrls?: string[];
 }
 
 export const getPlaceInfo = async (
@@ -42,18 +32,34 @@ export const getPlaceInfo = async (
     language,
   });
 
-  const raw = response.getPlaceInfo.place;
-
+  const raw = response.getPlaceInfo;
 
   return {
-    name: raw.name,
-    address: raw.address,
-    language: raw.language,
-    title: raw.title,
-    category: raw.category,
-    description: raw.description,
-    price: raw.price,
-    menuOrTicketInfo: raw.menuOrTicketInfo,
-    translatedReviews: raw.translatedReviews,
+    id: raw.place.id,
+    menuOrTicketInfo: raw.place.menuOrTicketInfo,
+    translatedReviews: raw.place.translatedReviews,
+    referenceUrls: raw.referenceUrls,
   };
+};
+
+const CREATE_CHANGE_REQUEST_MUTATION = `
+  mutation CreatePlaceInfoChangeRequest($placeInfoId: Int!, $newValue: JSONString!) {
+    createPlaceInfoChangeRequest(placeInfoId: $placeInfoId, newValue: $newValue) {
+      placeInfoChangeRequest {
+        id
+        placeInfo { id }
+        newValue
+        isApproved
+      }
+      message
+    }
+  }
+`;
+
+export const submitChangeRequest = async (placeInfoId: string, newValue: any, accessToken: string) => {
+  const res = await graphqlRequest(CREATE_CHANGE_REQUEST_MUTATION, {
+    placeInfoId: parseInt(placeInfoId, 10),
+    newValue: JSON.stringify({ menuOrTicketInfo: newValue }),
+  }, accessToken);
+  return res.createPlaceInfoChangeRequest;
 };
