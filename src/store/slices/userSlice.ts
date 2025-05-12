@@ -13,7 +13,7 @@ interface UserState {
   email: string | null;
   accessToken: string | null;
   refreshToken: string | null;
-  isAuthenticated: boolean;
+  isStaff: boolean;
   categories: UserCategoryWithPlaces[];
 }
 
@@ -22,7 +22,7 @@ const initialState: UserState = {
   email: null,
   accessToken: null,
   refreshToken: null,
-  isAuthenticated: false,
+  isStaff: false,
   categories: [],
 };
 
@@ -30,18 +30,18 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    login(state, action: PayloadAction<{ name: string; email: string; accessToken: string; }>) {
+    login(state, action: PayloadAction<{ name: string; email: string; accessToken: string; isStaff: boolean }>) {
       state.name = action.payload.name;
       state.email = action.payload.email;
       state.accessToken = action.payload.accessToken;
-      state.isAuthenticated = true;
+      state.isStaff = action.payload.isStaff;
     },
     logout(state) {
       state.name = null;
       state.email = null;
       state.accessToken = null;
       state.refreshToken = null;
-      state.isAuthenticated = false;
+      state.isStaff = false;
     },
     setCategories(state, action: PayloadAction<UserCategoryWithPlaces[]>) {
       console.log(action.payload);

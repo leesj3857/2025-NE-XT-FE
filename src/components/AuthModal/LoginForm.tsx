@@ -31,11 +31,13 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
         name: res.name,
         email,
         accessToken: res.access,
+        isStaff: res.isStaff,
       }));
       localStorage.setItem('user', JSON.stringify({
         name: res.name,
         email,
         accessToken: res.access,
+        isStaff: res.isStaff,
       }));
       dispatch(fetchAndStoreUserCategories());
       onClose();

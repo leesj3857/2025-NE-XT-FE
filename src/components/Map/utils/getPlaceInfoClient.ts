@@ -8,8 +8,8 @@ const GET_PLACE_INFO_MUTATION = `
         id
         menuOrTicketInfo
         translatedReviews
+        referenceUrls
       }
-      referenceUrls
     }
   }
 `;
@@ -32,12 +32,12 @@ export const getPlaceInfo = async (
     language,
   });
 
-  const raw = response.getPlaceInfo;
+  const raw = response.getPlaceInfo.place;
 
   return {
-    id: raw.place.id,
-    menuOrTicketInfo: raw.place.menuOrTicketInfo,
-    translatedReviews: raw.place.translatedReviews,
+    id: raw.id,
+    menuOrTicketInfo: raw.menuOrTicketInfo,
+    translatedReviews: raw.translatedReviews,
     referenceUrls: raw.referenceUrls,
   };
 };

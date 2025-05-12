@@ -12,6 +12,7 @@ export const authClient = {
           refresh
           email
           name
+          isStaff
         }
       }
     `;

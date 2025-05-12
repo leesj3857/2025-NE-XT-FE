@@ -17,7 +17,7 @@ import ToastMessage from "../interface/ToastMessage.tsx";
 import PlaceChangeRequestList from "../components/User/interface/PlaceChangeRequestList.tsx";
 
 const MyPage = () => {
-  const { accessToken, name, email, refreshToken } = useSelector((state: RootState) => state.user);
+  const { accessToken, name, email, refreshToken, isStaff } = useSelector((state: RootState) => state.user);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
@@ -41,7 +41,7 @@ const MyPage = () => {
       if (newName === name) return; // 동일한 이름이면 무시
 
       const updatedName = await updateUserName(newName, accessToken);
-      dispatch(login({ name: updatedName, email, accessToken }));
+      dispatch(login({ name: updatedName, email, accessToken, isStaff }));
       const userString = localStorage.getItem('user');
       if (userString) {
         const user = JSON.parse(userString);
@@ -117,7 +117,9 @@ const MyPage = () => {
       <div className="block sm:hidden">
         <CategorySelectionMobile handleCategoryClick={handleCategoryClick}/>
       </div>
-      <PlaceChangeRequestList />
+      {isStaff && (
+        <PlaceChangeRequestList />
+      )}
 
     </div>
   );
