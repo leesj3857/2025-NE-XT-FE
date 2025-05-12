@@ -58,7 +58,7 @@ const CREATE_CHANGE_REQUEST_MUTATION = `
 export const submitChangeRequest = async (placeInfoId: string, newValue: any, accessToken: string) => {
   const res = await graphqlRequest(CREATE_CHANGE_REQUEST_MUTATION, {
     placeInfoId: parseInt(placeInfoId, 10),
-    newValue: JSON.stringify({ menuOrTicketInfo: newValue }),
+    newValue: JSON.stringify(newValue),
   }, accessToken);
   return res.createPlaceInfoChangeRequest;
 };

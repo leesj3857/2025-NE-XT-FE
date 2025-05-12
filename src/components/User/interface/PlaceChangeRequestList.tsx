@@ -125,7 +125,7 @@ const PlaceChangeRequestList = () => {
                       <div>
                         <h5 className="text-sm font-medium text-gray-600 mb-1">Requested Changes:</h5>
                         <ul className="text-sm space-y-1">
-                          {newValue.menuOrTicketInfo?.map((item: { name: string; price: string }, idx: number) => (
+                          {newValue?.map((item: { name: string; price: string }, idx: number) => (
                             <li key={idx} className="text-gray-600">
                               {item.name} — {item.price}
                             </li>

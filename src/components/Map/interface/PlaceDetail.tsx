@@ -36,8 +36,9 @@ const PlaceDetail = () => {
       if (!place) throw new Error('No place selected');
       return getPlaceInfo(place.placeName!, place.roadAddressName!, selectedLanguage);
     },
-    enabled: !!place, // place가 존재할 때만 요청 실행
-    retry: false,
+    enabled: !!place,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * (attemptIndex + 1), 3000),
   });
   useEffect(() => {
     setSelectedLanguage("영어");

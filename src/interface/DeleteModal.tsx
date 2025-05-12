@@ -1,5 +1,6 @@
 // src/components/common/ConfirmModal.tsx
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 interface DeleteModalProps {
   show: boolean;
@@ -20,6 +21,22 @@ const DeleteModal = ({
   cancelText = 'Cancel',
   confirmText = 'Delete',
 }: DeleteModalProps) => {
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (show && event.key === 'Enter') {
+        onConfirm();
+      }
+    };
+
+    if (show) {
+      document.addEventListener('keydown', handleKeyPress);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [show, onConfirm]);
+
   return (
     <AnimatePresence>
       {show && (
@@ -28,7 +45,8 @@ const DeleteModal = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center"
+          style={{ zIndex: 1000 }}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
