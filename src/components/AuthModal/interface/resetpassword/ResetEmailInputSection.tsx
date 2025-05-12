@@ -36,7 +36,13 @@ const ResetEmailInputSection = ({ email, onChange, onSendCode, loading, error, m
     </button>
 
     <div className={`text-sm min-h-[20px] mb-2 ${error ? 'text-red-500' : 'text-green-600'}`}>
-      {error || message}
+      {error || (message && (
+        <>
+          {message}
+          <br />
+          <span className="text-xs md:text-sm">If you haven't received the email, please check your spam folder.</span>
+        </>
+      ))}
     </div>
   </>
 );
