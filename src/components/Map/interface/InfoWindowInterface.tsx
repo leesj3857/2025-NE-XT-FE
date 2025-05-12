@@ -29,7 +29,7 @@ export const InfoWindowInterface = ({
         placeUrl
           ? `<a href="${placeUrl}" target="_blank" rel="noopener noreferrer"
                   class="text-sm text-blue-600 underline inline-block mt-1">
-                  View on Kakao (Korean)
+                  For more information (Korean)
                 </a>`
           : ""
       }

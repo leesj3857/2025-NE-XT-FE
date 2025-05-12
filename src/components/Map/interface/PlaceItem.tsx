@@ -115,7 +115,7 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
               rel="noopener noreferrer"
               className="text-sm text-blue-600 underline"
             >
-              View on Kakao (Korean)
+              For more information (Korean)
             </a>
           )}
         </div>
