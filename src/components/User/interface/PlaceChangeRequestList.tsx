@@ -23,6 +23,7 @@ const PlaceChangeRequestList = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const queryClient = useQueryClient();
+  const [openId, setOpenId] = useState<number | null>(null);
 
   const { data: requests, isLoading, error } = useQuery({
     queryKey: ['placeChangeRequests'],
@@ -61,11 +62,14 @@ const PlaceChangeRequestList = () => {
       <div className="space-y-4">
         {requests.map((request: PlaceInfoChangeRequest) => {
           const newValue = JSON.parse(request.newValue);
-          const status = request.isApproved === null ? 'pending' : request.isApproved ? 'approved' : 'rejected';
+          const status = request.isApproved === true ? 'approved' : 'pending';
           
           return (
             <div key={request.id} className="border rounded-lg p-4 bg-white shadow-sm">
-              <div className="flex justify-between items-start mb-2">
+              <div
+                className="flex justify-between items-start mb-2 cursor-pointer"
+                onClick={() => setOpenId(openId === request.id ? null : request.id)}
+              >
                 <div>
                   <h3 className="font-semibold text-lg">{request.placeInfo.name}</h3>
                   <p className="text-sm text-gray-600">{request.placeInfo.address}</p>
@@ -80,14 +84,14 @@ const PlaceChangeRequestList = () => {
                   {status === 'pending' ? (
                     <>
                       <button
-                        onClick={() => approveMutation.mutate(request.id)}
+                        onClick={e => { e.stopPropagation(); approveMutation.mutate(Number(request.id)); }}
                         disabled={approveMutation.isPending}
                         className="px-3 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200 transition inline-flex items-center gap-1"
                       >
                         <Icon path={mdiCheck} size={0.8} /> Approve
                       </button>
                       <button
-                        onClick={() => rejectMutation.mutate(request.id)}
+                        onClick={e => { e.stopPropagation(); rejectMutation.mutate(Number(request.id)); }}
                         disabled={rejectMutation.isPending}
                         className="px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 transition inline-flex items-center gap-1"
                       >
@@ -95,48 +99,43 @@ const PlaceChangeRequestList = () => {
                       </button>
                     </>
                   ) : (
-                    <span className={`px-3 py-1 rounded inline-flex items-center gap-1 ${
-                      status === 'approved' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      <Icon 
-                        path={status === 'approved' ? mdiCheck : mdiClose} 
-                        size={0.8} 
-                      />
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    <span className="px-3 py-1 rounded inline-flex items-center gap-1 bg-green-100 text-green-800">
+                      <Icon path={mdiCheck} size={0.8} />
+                      Approved
                     </span>
                   )}
                 </div>
               </div>
               
-              <div className="mt-4 space-y-2">
-                <div className="border-t pt-2">
-                  <h4 className="font-medium text-gray-700 mb-2">Menu Changes:</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h5 className="text-sm font-medium text-gray-600 mb-1">Current Menu:</h5>
-                      <ul className="text-sm space-y-1">
-                        {request.placeInfo.menuOrTicketInfo?.map((item, idx) => (
-                          <li key={idx} className="text-gray-600">
-                            {item.name} — {item.price}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h5 className="text-sm font-medium text-gray-600 mb-1">Requested Changes:</h5>
-                      <ul className="text-sm space-y-1">
-                        {newValue.menuOrTicketInfo?.map((item: { name: string; price: string }, idx: number) => (
-                          <li key={idx} className="text-gray-600">
-                            {item.name} — {item.price}
-                          </li>
-                        ))}
-                      </ul>
+              {openId === request.id && (
+                <div className="mt-4 space-y-2">
+                  <div className="border-t pt-2">
+                    <h4 className="font-medium text-gray-700 mb-2">Menu Changes:</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-600 mb-1">Current Menu:</h5>
+                        <ul className="text-sm space-y-1">
+                          {request.placeInfo.menuOrTicketInfo?.map((item, idx) => (
+                            <li key={idx} className="text-gray-600">
+                              {item.name} — {item.price}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-600 mb-1">Requested Changes:</h5>
+                        <ul className="text-sm space-y-1">
+                          {newValue.menuOrTicketInfo?.map((item: { name: string; price: string }, idx: number) => (
+                            <li key={idx} className="text-gray-600">
+                              {item.name} — {item.price}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}

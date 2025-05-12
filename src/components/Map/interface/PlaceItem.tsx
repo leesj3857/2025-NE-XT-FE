@@ -57,7 +57,6 @@ export default function PlaceItem({ index, ...placeData }: PlaceItemProps) {
       setShowDetails(false);
     }
   }, [selectedPlaceId]);
-  console.log(placeData);
   return (
     <motion.li
       key={id}

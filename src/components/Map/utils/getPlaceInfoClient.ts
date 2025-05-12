@@ -20,7 +20,6 @@ interface PlaceInfo {
   translatedReviews?: string[];
   referenceUrls?: string[];
 }
-
 export const getPlaceInfo = async (
   name: string,
   address: string,
@@ -38,7 +37,7 @@ export const getPlaceInfo = async (
     id: raw.id,
     menuOrTicketInfo: raw.menuOrTicketInfo,
     translatedReviews: raw.translatedReviews,
-    referenceUrls: raw.referenceUrls,
+    referenceUrls: typeof raw.referenceUrls === 'string' ? JSON.parse(raw.referenceUrls) : raw.referenceUrls,
   };
 };
 

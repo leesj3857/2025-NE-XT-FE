@@ -8,6 +8,7 @@ interface DeleteModalProps {
   onCancel: () => void;
   onConfirm: () => void;
   cancelText?: string;
+  confirmText?: string;
 }
 
 const DeleteModal = ({
@@ -17,6 +18,7 @@ const DeleteModal = ({
   onCancel,
   onConfirm,
   cancelText = 'Cancel',
+  confirmText = 'Delete',
 }: DeleteModalProps) => {
   return (
     <AnimatePresence>
@@ -36,7 +38,7 @@ const DeleteModal = ({
             className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-            <p className="text-gray-600 mb-6">{message}</p>
+            <p className="text-gray-600 mb-6 text-sm md:text-base">{message}</p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={onCancel}
@@ -48,7 +50,7 @@ const DeleteModal = ({
                 onClick={onConfirm}
                 className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-all"
               >
-                Delete
+                {confirmText}
               </button>
             </div>
           </motion.div>

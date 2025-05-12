@@ -6,25 +6,24 @@ import { RootState } from '../../../store';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '@mdi/react';
 import { mdiLogout, mdiAccountCircle, mdiAccountDetails } from '@mdi/js';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import DeleteModal from '../../../interface/DeleteModal';
 
 const UserMenu = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userName = useSelector((state: RootState) => state.user.name);
   const [open, setOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => setOpen((prev) => !prev);
 
   const handleLogout = () => {
-    const confirmed = window.confirm('Are you sure you want to log out?\nYou will be redirected to the home page if you confirm.');
-    if (confirmed) {
-      dispatch(logout());
-      localStorage.removeItem('user');
-      navigate('/');
-      setOpen(false);
-    }
+    dispatch(logout());
+    localStorage.removeItem('user');
+    navigate('/');
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -68,7 +67,7 @@ const UserMenu = () => {
             </button>
             <button
               className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center text-red-500 cursor-pointer rounded-b-md"
-              onClick={handleLogout}
+              onClick={() => setShowLogoutModal(true)}
             >
               <Icon path={mdiLogout} size={0.85} className="mr-2" />
               Logout
@@ -76,6 +75,19 @@ const UserMenu = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <DeleteModal
+        show={showLogoutModal}
+        title="Logout Confirmation"
+        message="Are you sure you want to log out? You will be redirected to the home page if you confirm."
+        onCancel={() => setShowLogoutModal(false)}
+        onConfirm={() => {
+          setShowLogoutModal(false);
+          handleLogout();
+        }}
+        cancelText="Cancel"
+        confirmText="Logout"
+      />
     </div>
   );
 };

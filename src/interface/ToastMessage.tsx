@@ -17,6 +17,7 @@ const ToastMessage = ({ show, message }: ToastMessageProps) => {
           transition={{ duration: 0.3 }}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
             bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 text-xs md:text-sm w-fit whitespace-nowrap"
+          style={{ zIndex: 1000 }}
         >
           {message}
         </motion.div>

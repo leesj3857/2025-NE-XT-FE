@@ -239,7 +239,7 @@ const PlaceDetail = () => {
 
               {/* 리뷰 */}
               {Array.isArray(detailedInfo.translatedReviews) && detailedInfo.translatedReviews.length > 0 && (
-                <div className="rounded-md">
+                <div className="rounded-md mb-5">
                   <h3 className="font-bold text-[#34495E] text-base border-b border-[#D2B48C] pb-1 mb-2 flex items-center gap-2">
                     <Icon path={mdiCommentTextMultipleOutline} size={0.9} color="#34495E" />
                     Reviews
