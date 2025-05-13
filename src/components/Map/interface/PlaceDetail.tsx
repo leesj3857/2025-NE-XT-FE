@@ -14,7 +14,11 @@ import { mdiClose, mdiClipboardTextOutline,
   mdiDelete,
   mdiSend,
   mdiCancel,
-  mdiMinusCircle
+  mdiMinusCircle,
+  mdiStar,
+  mdiStarOutline,
+  mdiAccountCircle,
+  mdiClockOutline
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
 import { getPlaceInfo, submitChangeRequest } from '../utils/getPlaceInfoClient';
@@ -28,6 +32,22 @@ import ImagePopup from './ImagePopup';
 interface MenuItem {
   name: string;
   price: string;
+}
+
+interface ReviewFormData {
+  text: string;
+  images: File[];
+  rating: number;
+}
+
+interface UserReview {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  text: string;
+  images: string[];
+  createdAt: string;
 }
 
 interface PlaceDetailProps {
@@ -48,10 +68,16 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const [editedMenu, setEditedMenu] = useState<MenuItem[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviewText, setReviewText] = useState('');
-  const [reviewImages, setReviewImages] = useState<File[]>([]);
+  const [reviewData, setReviewData] = useState<ReviewFormData>({
+    text: '',
+    images: [],
+    rating: 0
+  });
+  const [hoveredRating, setHoveredRating] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isImageEditMode, setIsImageEditMode] = useState(false);
+  const hasFocusedRef = useRef(false);
+  const MAX_REVIEW_LENGTH = 150;
 
   // ===== Queries =====
   const {
@@ -77,6 +103,16 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   }, [place]);
 
   useEffect(() => {
+    if (detailedInfo) {
+      const container = document.querySelector('#place-detail-container');
+      if (container) {
+        setShowReviewForm(false);
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [detailedInfo]);
+
+  useEffect(() => {
     if (detailedInfo?.menuOrTicketInfo) {
       const deepCopied = detailedInfo.menuOrTicketInfo.map((item) => ({
         name: item.name,
@@ -87,7 +123,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   }, [detailedInfo, editMode]);
 
   useEffect(() => {
-    if (focusReviewForm) {
+    if (focusReviewForm && !hasFocusedRef.current) {
       setShowReviewForm(true);
       // 리뷰 폼이 렌더링된 후 textarea에 포커스
       setTimeout(() => {
@@ -96,6 +132,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
           textarea.focus();
           // 스크롤도 리뷰 폼 위치로 이동
           textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          hasFocusedRef.current = true;
         }
       }, 100);
     }
@@ -148,6 +185,89 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     fileInputRef.current?.click();
   };
 
+  const StarRating = ({ rating, onRatingChange, hoveredRating, onHoverChange }: {
+    rating: number;
+    onRatingChange: (rating: number) => void;
+    hoveredRating: number;
+    onHoverChange: (rating: number) => void;
+  }) => {
+    return (
+      <div 
+        className="flex items-center gap-0.5 relative"
+        onMouseLeave={() => onHoverChange(0)}
+      >
+        {[1, 2, 3, 4, 5].map((star) => (
+          <div
+            key={star}
+            className="relative w-6 h-6 flex items-center justify-center"
+            onMouseEnter={() => onHoverChange(star)}
+          >
+            <button
+              type="button"
+              onClick={() => onRatingChange(star)}
+              className="absolute inset-0 focus:outline-none"
+              aria-label={`Rate ${star} out of 5`}
+            />
+            <Icon
+              path={star <= (hoveredRating || rating) ? mdiStar : mdiStarOutline}
+              size={1.2}
+              className={`transition-colors duration-150 ${
+                star <= (hoveredRating || rating) ? "text-yellow-400" : "text-gray-300"
+              }`}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // 더미 리뷰 데이터
+  const dummyReviews: UserReview[] = [
+    {
+      id: '1',
+      userId: 'user1',
+      userName: '김여행',
+      rating: 5,
+      text: '정말 맛있는 음식과 좋은 분위기였습니다. 특히 해외에서 오랜만에 한국 음식을 먹어서 더욱 좋았어요. 직원분들도 친절하셨고, 가격도 합리적이었습니다.',
+      images: ['https://picsum.photos/200/200?random=1'],
+      createdAt: '2024-03-15T10:30:00Z'
+    },
+    {
+      id: '2',
+      userId: 'user2',
+      userName: 'Traveler123',
+      rating: 4,
+      text: '분위기가 좋고 음식도 맛있었어요. 다만 주말에는 사람이 많아서 조금 시끄러울 수 있어요. 평일 방문을 추천드립니다.',
+      images: [
+        'https://picsum.photos/200/200?random=2',
+        'https://picsum.photos/200/200?random=3'
+      ],
+      createdAt: '2024-03-14T15:45:00Z'
+    },
+    {
+      id: '3',
+      userId: 'user3',
+      userName: '여행의달인',
+      rating: 5,
+      text: '해외 여행 중 우연히 발견한 곳인데, 정말 좋았습니다. 현지인들도 많이 찾는 곳이라 더욱 신뢰할 수 있었어요.',
+      images: [],
+      createdAt: '2024-03-13T09:15:00Z'
+    }
+  ];
+
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+  };
+
+  // 리뷰 폼을 닫을 때 hasFocusedRef 초기화
+  const handleCloseReviewForm = () => {
+    setShowReviewForm(false);
+    setReviewData({ text: '', images: [], rating: 0 });
+    hasFocusedRef.current = false;
+  };
+
   // ===== Render =====
   return (
     <>
@@ -177,7 +297,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         </button>
 
         {/* ===== Content ===== */}
-        <div className="flex flex-col overflow-auto h-full pr-2">
+        <div className="flex flex-col overflow-auto h-full pr-2" id="place-detail-container">
           {/* Basic Info */}
           <h2 className="text-xl font-bold text-[#34495E]">{place?.placeName}</h2>
           <p className="text-sm text-[#555555]">{place?.roadAddressNameEN}</p>
@@ -296,7 +416,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                 </div>
               )}
 
-              {/* Reviews Section */}
+              {/* Local Reviews Section */}
               {Array.isArray(detailedInfo.translatedReviews) && detailedInfo.translatedReviews.length > 0 && (
                 <div className="rounded-md mb-5">
                   <h3 className="font-bold text-[#34495E] text-base border-b border-[#D2B48C] pb-1 mb-2 flex items-center gap-2">
@@ -315,6 +435,55 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                   </ul>
                 </div>
               )}
+
+              {/* User Reviews Section */}
+              <div className="rounded-md mb-5">
+                <h3 className="font-bold text-[#E67E22] text-base border-b border-[#F5B041] pb-1 mb-2 flex items-center gap-2">
+                  <Icon path={mdiAccountCircle} size={0.9} color="#E67E22" />
+                  User Reviews
+                </h3>
+                <div className="space-y-4">
+                  {dummyReviews.map((review) => (
+                    <div key={review.id} className="border border-[#F5B041] p-3 rounded-md bg-white">
+                      <div className="flex flex-col gap-1 mb-3">
+                        <span className="font-medium text-[#E67E22]">{review.userName}</span>
+                        <div className="flex gap-0.5">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Icon
+                              key={star}
+                              path={star <= review.rating ? mdiStar : mdiStarOutline}
+                              size={0.8}
+                              className={star <= review.rating ? "text-yellow-400" : "text-gray-300"}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-500 text-xs">
+                          <Icon path={mdiClockOutline} size={0.7} />
+                          <span>{formatDate(review.createdAt)}</span>
+                        </div>
+                      </div>
+                      <p className="text-[#555555] mb-3">{review.text}</p>
+                      {review.images.length > 0 && (
+                        <div className="grid grid-cols-4 gap-2">
+                          {review.images.map((image, idx) => (
+                            <div
+                              key={idx}
+                              className="aspect-square rounded overflow-hidden cursor-pointer"
+                              onClick={() => setSelectedImage(image)}
+                            >
+                              <img
+                                src={image}
+                                alt={`Review image ${idx + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* Reference Links Section */}
               {Array.isArray(detailedInfo.referenceUrls) && detailedInfo.referenceUrls.length > 0 && (
@@ -360,13 +529,33 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                   </button>
                 ) : (
                   <div className="mt-4 border border-gray-300 p-4 rounded-md bg-white">
-                    <textarea
-                      value={reviewText}
-                      onChange={(e) => setReviewText(e.target.value)}
-                      placeholder="Enter your review"
-                      className="w-full border px-2 py-1 rounded mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      rows={3}
-                    />
+                    {/* 별점 컴포넌트 추가 */}
+                    <div className="mb-4">
+                      <StarRating
+                        rating={reviewData.rating}
+                        onRatingChange={(rating) => setReviewData(prev => ({ ...prev, rating }))}
+                        hoveredRating={hoveredRating}
+                        onHoverChange={setHoveredRating}
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <textarea
+                        value={reviewData.text}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          if (text.length <= MAX_REVIEW_LENGTH) {
+                            setReviewData(prev => ({ ...prev, text }));
+                          }
+                        }}
+                        placeholder="Enter your review"
+                        className="w-full border px-2 py-1 rounded mb-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        rows={3}
+                      />
+                      <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                        {reviewData.text.length}/{MAX_REVIEW_LENGTH}
+                      </div>
+                    </div>
                     
                     {/* 이미지 업로드 영역 */}
                     <div className="mb-4">
@@ -374,10 +563,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                         <button
                           onClick={handleImageClick}
                           className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition inline-flex items-center gap-1"
-                          disabled={reviewImages.length >= 5}
+                          disabled={reviewData.images.length >= 5}
                         >
                           <Icon path={mdiImagePlus} size={0.8} />
-                          Add a photo ({reviewImages.length}/5)
+                          Add a photo ({reviewData.images.length}/5)
                         </button>
                         <input
                           ref={fileInputRef}
@@ -386,11 +575,11 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           accept="image/*"
                           onChange={(e) => {
                             const files = Array.from(e.target.files || []);
-                            if (files.length + reviewImages.length > 5) {
+                            if (files.length + reviewData.images.length > 5) {
                               alert("최대 5장의 이미지만 업로드할 수 있습니다.");
                               return;
                             }
-                            setReviewImages((prev) => [...prev, ...files]);
+                            setReviewData(prev => ({ ...prev, images: [...prev.images, ...files] }));
                             setIsImageEditMode(false);
                           }}
                           className="hidden"
@@ -398,7 +587,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                       </div>
 
                       {/* 이미지 미리보기 */}
-                      {reviewImages.length > 0 && (
+                      {reviewData.images.length > 0 && (
                         <div className="relative">
                           <div className="flex justify-end mb-2">
                             <button
@@ -413,7 +602,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                             </button>
                           </div>
                           <div className="grid grid-cols-5 gap-2 mt-2">
-                            {reviewImages.map((img, idx) => (
+                            {reviewData.images.map((img, idx) => (
                               <div 
                                 key={idx} 
                                 className="relative aspect-square border rounded overflow-hidden group cursor-pointer"
@@ -429,7 +618,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                                     className="absolute inset-0 flex items-center justify-center bg-transparent bg-opacity-10 cursor-pointer"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setReviewImages((prev) => prev.filter((_, i) => i !== idx));
+                                      setReviewData(prev => ({
+                                        ...prev,
+                                        images: prev.images.filter((_, i) => i !== idx)
+                                      }));
                                     }}
                                   >
                                     <Icon path={mdiMinusCircle} size={1} className="text-red-500 drop-shadow-lg" />
@@ -446,14 +638,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
-                          console.log("📝 작성한 리뷰", {
-                            text: reviewText,
-                            images: reviewImages,
-                          });
+                          console.log("📝 작성한 리뷰", reviewData);
                           alert("콘솔에 리뷰 정보가 출력되었습니다!");
                           setShowReviewForm(false);
-                          setReviewText('');
-                          setReviewImages([]);
+                          setReviewData({ text: '', images: [], rating: 0 });
                         }}
                         className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded hover:bg-green-200 transition inline-flex items-center gap-1"
                       >
@@ -461,11 +649,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                         Submit
                       </button>
                       <button
-                        onClick={() => {
-                          setShowReviewForm(false);
-                          setReviewText('');
-                          setReviewImages([]);
-                        }}
+                        onClick={handleCloseReviewForm}
                         className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition inline-flex items-center gap-1"
                       >
                         <Icon path={mdiCancel} size={0.8} />
@@ -487,9 +671,12 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         onClose={() => setSelectedImage(null)}
         imageUrl={selectedImage || ''}
         onDelete={selectedImage ? () => {
-          const index = reviewImages.findIndex(img => URL.createObjectURL(img) === selectedImage);
+          const index = reviewData.images.findIndex(img => URL.createObjectURL(img) === selectedImage);
           if (index !== -1) {
-            setReviewImages(prev => prev.filter((_, i) => i !== index));
+            setReviewData(prev => ({
+              ...prev,
+              images: prev.images.filter((_, i) => i !== index)
+            }));
           }
         } : undefined}
         isEditMode={isImageEditMode}
