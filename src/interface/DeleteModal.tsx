@@ -1,15 +1,17 @@
 // src/components/common/ConfirmModal.tsx
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface DeleteModalProps {
   show: boolean;
   title: string;
   message: string;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (reason?: string) => void;
   cancelText?: string;
   confirmText?: string;
+  showReasonInput?: boolean;
+  reasonPlaceholder?: string;
 }
 
 const DeleteModal = ({
@@ -20,11 +22,15 @@ const DeleteModal = ({
   onConfirm,
   cancelText = 'Cancel',
   confirmText = 'Delete',
+  showReasonInput = false,
+  reasonPlaceholder = '신고 사유를 입력해주세요',
 }: DeleteModalProps) => {
+  const [reason, setReason] = useState('');
+
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (show && event.key === 'Enter') {
-        onConfirm();
+        onConfirm(reason);
       }
     };
 
@@ -35,7 +41,12 @@ const DeleteModal = ({
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [show, onConfirm]);
+  }, [show, onConfirm, reason]);
+
+  const handleConfirm = () => {
+    onConfirm(reason);
+    setReason('');
+  };
 
   return (
     <AnimatePresence>
@@ -56,7 +67,20 @@ const DeleteModal = ({
             className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-            <p className="text-gray-600 mb-6 text-sm md:text-base">{message}</p>
+            <p className="text-gray-600 mb-4 text-sm md:text-base">{message}</p>
+            
+            {showReasonInput && (
+              <div className="mb-4">
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder={reasonPlaceholder}
+                  className="w-full border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                  rows={3}
+                />
+              </div>
+            )}
+
             <div className="flex justify-end gap-3">
               <button
                 onClick={onCancel}
@@ -65,7 +89,7 @@ const DeleteModal = ({
                 {cancelText}
               </button>
               <button
-                onClick={onConfirm}
+                onClick={handleConfirm}
                 className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-all"
               >
                 {confirmText}

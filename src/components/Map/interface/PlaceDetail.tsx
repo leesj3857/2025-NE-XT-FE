@@ -18,7 +18,9 @@ import { mdiClose, mdiClipboardTextOutline,
   mdiStar,
   mdiStarOutline,
   mdiAccountCircle,
-  mdiClockOutline
+  mdiClockOutline,
+  mdiFlagOutline,
+  mdiAlarmLight
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
 import { getPlaceInfo, submitChangeRequest } from '../utils/getPlaceInfoClient';
@@ -27,6 +29,7 @@ import { useState, useEffect, useRef } from 'react';
 import LanguageSelector from './LanguageSelector.tsx';
 import ToastMessage from '../../../interface/ToastMessage';
 import ImagePopup from './ImagePopup';
+import DeleteModal from '../../../interface/DeleteModal';
 
 // ===== Types =====
 interface MenuItem {
@@ -38,6 +41,11 @@ interface ReviewFormData {
   text: string;
   images: File[];
   rating: number;
+}
+
+interface ReportData {
+  reviewId: string;
+  reason: string;
 }
 
 interface UserReview {
@@ -78,6 +86,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const [isImageEditMode, setIsImageEditMode] = useState(false);
   const hasFocusedRef = useRef(false);
   const MAX_REVIEW_LENGTH = 150;
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
 
   // ===== Queries =====
   const {
@@ -240,7 +250,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       text: '분위기가 좋고 음식도 맛있었어요. 다만 주말에는 사람이 많아서 조금 시끄러울 수 있어요. 평일 방문을 추천드립니다.',
       images: [
         'https://picsum.photos/200/200?random=2',
-        'https://picsum.photos/200/200?random=3'
+        'https://picsum.photos/200/200?random=3',
+         'https://picsum.photos/200/200?random=4',
+         'https://picsum.photos/200/200?random=5',
+         'https://picsum.photos/200/200?random=6',
       ],
       createdAt: '2024-03-14T15:45:00Z'
     },
@@ -266,6 +279,23 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     setShowReviewForm(false);
     setReviewData({ text: '', images: [], rating: 0 });
     hasFocusedRef.current = false;
+  };
+
+  const handleReportClick = (reviewId: string) => {
+    setReportData({ reviewId, reason: '' });
+    setShowReportModal(true);
+  };
+
+  const handleReportConfirm = (reason?: string) => {
+    if (reportData) {
+      // TODO: 실제 신고 API 연동
+      console.log('Report data:', {
+        ...reportData,
+        reason: reason || 'No reason provided'
+      });
+      setShowReportModal(false);
+      setReportData(null);
+    }
   };
 
   // ===== Render =====
@@ -446,7 +476,16 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                   {dummyReviews.map((review) => (
                     <div key={review.id} className="border border-[#F5B041] p-3 rounded-md bg-white">
                       <div className="flex flex-col gap-1 mb-3">
-                        <span className="font-medium text-[#E67E22]">{review.userName}</span>
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-[#E67E22]">{review.userName}</span>
+                          <button
+                            onClick={() => handleReportClick(review.id)}
+                            className="text-red-500 hover:text-red-600 transition-colors p-1"
+                            title="Report inappropriate content"
+                          >
+                            <Icon path={mdiAlarmLight} size={0.8} color="red" />
+                          </button>
+                        </div>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Icon
@@ -680,6 +719,26 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
           }
         } : undefined}
         isEditMode={isImageEditMode}
+      />
+
+      {/* Report Modal */}
+      <DeleteModal
+        show={showReportModal}
+        title="Report Review"
+        message={
+          reportData && dummyReviews.find(r => r.id === reportData.reviewId)
+            ? `Reporting review by ${dummyReviews.find(r => r.id === reportData.reviewId)?.userName}. Please report any inappropriate content. We will review and take appropriate action.`
+            : 'Please report any inappropriate content. We will review and take appropriate action.'
+        }
+        onCancel={() => {
+          setShowReportModal(false);
+          setReportData(null);
+        }}
+        onConfirm={handleReportConfirm}
+        cancelText="Cancel"
+        confirmText="Report"
+        showReasonInput={true}
+        reasonPlaceholder="Please provide details about why you are reporting this review (optional)"
       />
     </>
   );
