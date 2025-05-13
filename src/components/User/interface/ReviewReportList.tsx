@@ -43,7 +43,7 @@ const ReviewReportList = () => {
       });
       setSuccessMessage('리뷰 신고가 승인되었습니다.');
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => setShowSuccess(false), 1000);
       setOpenId(null);
     },
   });
@@ -57,7 +57,7 @@ const ReviewReportList = () => {
       });
       setSuccessMessage('리뷰 신고가 거절되었습니다.');
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => setShowSuccess(false), 1000);
       setOpenId(null);
     },
   });

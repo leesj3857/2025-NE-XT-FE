@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Icon from '@mdi/react';
 import {
   mdiFolderOutline,
-  mdiMap,
+  mdiMapLegend,
   mdiDeleteOutline,
   mdiPencilOutline,
   mdiCloseCircle,
@@ -225,7 +225,7 @@ const CategorySectionPC = ({
               className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
               title="View on Map"
             >
-              <Icon path={mdiMap} size={1.5} className="text-[#2E7D32]" />
+              <Icon path={mdiMapLegend} size={1.5} className="text-[#2E7D32]" />
             </button>
           )}
         </h3>

@@ -39,7 +39,7 @@ const PlaceChangeRequestList = () => {
       queryClient.invalidateQueries({ queryKey: ['placeChangeRequests'] });
       setSuccessMessage('Request approved successfully!');
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => setShowSuccess(false), 1000);
     },
   });
 
@@ -49,7 +49,7 @@ const PlaceChangeRequestList = () => {
       queryClient.invalidateQueries({ queryKey: ['placeChangeRequests'] });
       setSuccessMessage('Request rejected successfully!');
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setTimeout(() => setShowSuccess(false), 1000);
     },
   });
 

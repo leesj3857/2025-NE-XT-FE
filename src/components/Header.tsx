@@ -14,7 +14,7 @@ const Header = () => {
   const goHomePage = () => navigate('/');
 
   return (
-    <header className="bg-[#DCE7EB] text-xl px-6 py-4 flex items-center justify-between relative max-md:h-12 h-16">
+    <header className="bg-[#DCE7EB] text-xl px-6 pr-2 py-4 flex items-center justify-between relative max-md:h-12 h-16">
       <h1 className="md:text-3xl cursor-pointer" onClick={goHomePage}>
         KOREAT
       </h1>

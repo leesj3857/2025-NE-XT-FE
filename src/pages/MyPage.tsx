@@ -15,6 +15,7 @@ import CategorySectionPC from "../components/User/interface/CategorySelectionPC.
 import {clearOriginPlace, clearDestinationPlace, clearRouteErrorMessage, clearRouteInfo, clearSelectedDetailedPlace, setSelectedDetailedPlace} from "../store/slices/searchSlice.ts";
 import ToastMessage from "../interface/ToastMessage.tsx";
 import PlaceChangeRequestList from "../components/User/interface/PlaceChangeRequestList.tsx";
+import UserReviewList from "../components/User/interface/UserReviewList.tsx";
 
 const MyPage = () => {
   const { accessToken, name, email, refreshToken, isStaff } = useSelector((state: RootState) => state.user);
@@ -48,7 +49,6 @@ const MyPage = () => {
         user.name = updatedName;
         localStorage.setItem('user', JSON.stringify(user));
       }
-      // ✅ 성공 메시지 토스트 표시
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
     } catch (err: unknown) {
@@ -72,7 +72,7 @@ const MyPage = () => {
       setTimeout(() => {
         setShowDeleteToast(false);
         navigate('/');
-      }, 1200);
+      }, 1000);
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message);
@@ -136,8 +136,16 @@ const MyPage = () => {
           handleReviewClick={handleReviewClick}
         />
       </div>
+
+      {/* 내가 작성한 리뷰 목록 */}
+      <div className="border-t pt-8">
+        <UserReviewList />
+      </div>
+
       {isStaff && (
-        <PlaceChangeRequestList />
+        <div className="border-t pt-8">
+          <PlaceChangeRequestList />
+        </div>
       )}
 
     </div>

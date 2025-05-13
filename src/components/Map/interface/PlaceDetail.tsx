@@ -20,7 +20,8 @@ import { mdiClose, mdiClipboardTextOutline,
   mdiAccountCircle,
   mdiClockOutline,
   mdiFlagOutline,
-  mdiAlarmLight
+  mdiAlarmLight,
+  mdiBookmarkOutline
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
 import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview } from '../utils/getPlaceInfoClient';
@@ -31,6 +32,8 @@ import ToastMessage from '../../../interface/ToastMessage';
 import ImagePopup from '../../../interface/ImagePopup';
 import DeleteModal from '../../../interface/DeleteModal';
 import { useQueryClient } from '@tanstack/react-query';
+import { optimizeImage, validateImageSize, getFileSizeInMB } from '../utils/imageOptimizer';
+import SavePlaceModal from './SavePlaceModal';
 
 // ===== Types =====
 interface MenuItem {
@@ -70,6 +73,11 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const isMobile = window.innerWidth < 768;
+  const { categories, email } = useSelector((state: RootState) => state.user);
+  const currentCategory = categories.find(c =>
+    c.places.some(p => p.id === place?.id)
+  );
+  const bookmarkColor = currentCategory?.color;
   // ===== State =====
   const [selectedLanguage, setSelectedLanguage] = useState("영어");
   const [editMode, setEditMode] = useState(false);
@@ -89,6 +97,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [toastMessage, setToastMessage] = useState('');
   const queryClient = useQueryClient();
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   // ===== Queries =====
   const {
@@ -204,7 +213,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     try {
       await submitChangeRequest(detailedInfo.id, filteredMenu, accessToken!);
       setToastMessage('Change request submitted successfully!');
-      setTimeout(() => setToastMessage(''), 2000);
+      setTimeout(() => setToastMessage(''), 1000);
       resetEditMode();
     } catch (err) {
       console.error(err);
@@ -216,6 +225,33 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const processImageFiles = async (files: File[]): Promise<File[]> => {
+    const processedFiles: File[] = [];
+    const errors: string[] = [];
+
+    for (const file of files) {
+      try {
+        if (!validateImageSize(file)) {
+          errors.push(`${file.name} (${getFileSizeInMB(file.size)}MB)는 5MB 이하여야 합니다.`);
+          continue;
+        }
+
+        const optimizedFile = await optimizeImage(file);
+        processedFiles.push(optimizedFile);
+      } catch (error) {
+        console.error('이미지 처리 중 오류:', error);
+        errors.push(`${file.name} 처리 중 오류가 발생했습니다.`);
+      }
+    }
+
+    if (errors.length > 0) {
+      setToastMessage(errors.join('\n'));
+      setTimeout(() => setToastMessage(''), 1000);
+    }
+
+    return processedFiles;
   };
 
   const StarRating = ({ rating, onRatingChange, hoveredRating, onHoverChange }: {
@@ -279,7 +315,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const handleReportConfirm = async (reason?: string) => {
     if (!reportData || !accessToken) {
       setToastMessage('Need to login');
-      setTimeout(() => setToastMessage(''), 2000);
+      setTimeout(() => setToastMessage(''), 1000);
       return;
     }
 
@@ -287,21 +323,21 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       const result = await reportReview(reportData.reviewId, reason, accessToken);
       if (result.message) {
         setToastMessage(result.message);
-        setTimeout(() => setToastMessage(''), 2000);
+        setTimeout(() => setToastMessage(''), 1000);
         setShowReportModal(false);
         setReportData(null);
       }
     } catch (error) {
       console.error('리뷰 신고 중 오류 발생:', error);
       setToastMessage('리뷰 신고 중 오류가 발생했습니다.');
-      setTimeout(() => setToastMessage(''), 2000);
+      setTimeout(() => setToastMessage(''), 1000);
     }
   };
 
   const handleSubmitReview = async () => {
     if (!accessToken || !detailedInfo?.id) {
       setToastMessage('Need to login');
-      setTimeout(() => setToastMessage(''), 2000);
+      setTimeout(() => setToastMessage(''), 1000);
       return;
     }
 
@@ -316,7 +352,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
 
       if (result.message) {
         setToastMessage(result.message);
-        setTimeout(() => setToastMessage(''), 2000);
+        setTimeout(() => setToastMessage(''), 1000);
         setShowReviewForm(false);
         setReviewData({ text: '', images: [], rating: 0 });
         // 리뷰 목록 새로고침을 위해 쿼리 무효화
@@ -324,7 +360,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       }
     } catch (error) {
       setToastMessage('Failed to write review');
-      setTimeout(() => setToastMessage(''), 2000);
+      setTimeout(() => setToastMessage(''), 1000);
     }
   };
 
@@ -340,24 +376,41 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         style={{ zIndex: 100 }}
         className="p-4 rounded-xl shadow-xl bg-[#FAFAFA]
                   max-md:fixed max-md:top-1/2 max-md:w-5/6 max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2 
-                  pt-14 max-md:h-[80%] md:absolute md:top-1/2 md:-translate-y-1/2 md:left-2 md:w-[400px] md:h-[95%]"
+                  pt-4 max-md:h-[80%] md:absolute md:top-1/2 md:-translate-y-1/2 md:left-2 md:w-[400px] md:h-[95%] flex flex-col"
       >
         {/* ===== Header ===== */}
-        <LanguageSelector
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={setSelectedLanguage}
-        />
-
-        <button
-          onClick={() => dispatch(clearSelectedDetailedPlace())}
-          className="absolute top-4 right-4 text-gray-400 hover:text-black"
-          aria-label="Close detail"
-        >
-          <Icon path={mdiClose} size={1} />
-        </button>
+        <div className="flex justify-between items-center mb-4">
+          <LanguageSelector
+            selectedLanguage={selectedLanguage}
+            setSelectedLanguage={setSelectedLanguage}
+          />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!email) {
+                  document.getElementById('login-button')?.click();
+                  return;
+                } else {
+                  setShowSaveModal(true);
+                }
+              }}
+              className="text-gray-500 hover:text-gray-800 cursor-pointer"
+            >
+              <Icon path={mdiBookmarkOutline} size={1.2} color={bookmarkColor} />
+            </button>
+            <button
+              onClick={() => dispatch(clearSelectedDetailedPlace())}
+              className="text-gray-400 hover:text-black"
+              aria-label="Close detail"
+            >
+              <Icon path={mdiClose} size={1} />
+            </button>
+          </div>
+        </div>
 
         {/* ===== Content ===== */}
-        <div className="flex flex-col overflow-auto h-full pr-2" id="place-detail-container">
+        <div className="flex flex-col overflow-auto  pr-2" id="place-detail-container flex-1">
           {/* Basic Info */}
           <h2 className="text-xl font-bold text-[#34495E]">{place?.placeName}</h2>
           <p className="text-sm text-[#555555]">{place?.roadAddressNameEN}</p>
@@ -650,15 +703,20 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           type="file"
                           multiple
                           accept="image/*"
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const files = Array.from(e.target.files || []);
                             if (files.length + reviewData.images.length > 4) {
-                              setToastMessage("최대 4장의 이미지만 업로드할 수 있습 니다.");
-                              setTimeout(() => setToastMessage(''), 2000);
+                              setToastMessage("최대 4장의 이미지만 업로드할 수 있습니다.");
+                              setTimeout(() => setToastMessage(''), 1000);
                               return;
                             }
-                            setReviewData(prev => ({ ...prev, images: [...prev.images, ...files] }));
-                            setIsImageEditMode(false);
+
+                            // 이미지 최적화 처리
+                            const processedFiles = await processImageFiles(files);
+                            if (processedFiles.length > 0) {
+                              setReviewData(prev => ({ ...prev, images: [...prev.images, ...processedFiles] }));
+                              setIsImageEditMode(false);
+                            }
                           }}
                           className="hidden"
                         />
@@ -774,6 +832,13 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         showReasonInput={true}
         reasonPlaceholder="Please provide details about why you are reporting this review (optional)"
       />
+
+      {showSaveModal && place && (
+        <SavePlaceModal
+          place={place}
+          onClose={() => setShowSaveModal(false)}
+        />
+      )}
     </>
   );
 };

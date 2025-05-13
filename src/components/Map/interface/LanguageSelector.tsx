@@ -44,7 +44,7 @@ const LanguageSelector = ({
   setSelectedLanguage: (language: string) => void;
 }) => {
   return (
-    <div className="absolute top-4 left-4 z-50 w-[130px]">
+    <div className="w-[130px]">
       <Select
         options={languageOptions}
         value={languageOptions.find((opt) => opt.language === selectedLanguage)}

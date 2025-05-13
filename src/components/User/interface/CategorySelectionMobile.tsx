@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import {
   mdiChevronLeft,
   mdiFolderOutline,
-  mdiMap,
+  mdiMapLegend,
   mdiDeleteOutline,
   mdiPencilOutline,
   mdiPlus,
@@ -213,7 +213,7 @@ const CategorySectionMobile = ({
                 className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                 title="View on Map"
               >
-                <Icon path={mdiMap} size={1.3} className="text-[#2E7D32]" />
+                <Icon path={mdiMapLegend} size={1.3} className="text-[#2E7D32]" />
               </button>
             </div>
             <div className="places-container flex flex-col gap-4">

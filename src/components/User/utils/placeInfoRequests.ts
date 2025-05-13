@@ -159,4 +159,41 @@ export const approveReviewReport = async (reportId: number, accessToken: string)
 export const rejectReviewReport = async (reportId: number, accessToken: string): Promise<void> => {
   const response = await graphqlRequest(REJECT_REVIEW_REPORT_MUTATION, { id: Number(reportId) }, accessToken);
   return response.rejectPlaceInfoReviewByUserReport;
+};
+
+const GET_USER_REVIEWS_QUERY = `
+  query GetPlaceReviewsByUser {
+    placeReviewsByUser {
+      id
+      text
+      rating
+      images
+      createdAt
+      placeInfo {
+        id
+        name
+        title
+        address
+      }
+    }
+  }
+`;
+
+export interface UserReview {
+  id: number;
+  text: string;
+  rating: number;
+  images: string[];
+  createdAt: string;
+  placeInfo: {
+    id: number;
+    name: string;
+    title: string;
+    address: string;
+  };
+}
+
+export const getUserReviews = async (accessToken: string): Promise<UserReview[]> => {
+  const response = await graphqlRequest(GET_USER_REVIEWS_QUERY, {}, accessToken);
+  return response.placeReviewsByUser;
 }; 

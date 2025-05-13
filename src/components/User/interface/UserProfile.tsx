@@ -92,6 +92,12 @@ const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccoun
                   <input
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSubmit();
+                      }
+                    }}
                     className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 max-md:w-full"
                   />
                   <button
