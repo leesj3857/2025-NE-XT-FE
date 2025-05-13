@@ -663,7 +663,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           className="hidden"
                         />
                       </div>
-
+                      <p className="text-xs md:text-sm text-gray-500">Large image files cannot be uploaded.</p>
                       {/* 이미지 미리보기 */}
                       {reviewData.images.length > 0 && (
                         <div className="relative">
