@@ -9,6 +9,7 @@ import {
   mdiPencilOutline,
   mdiPlus,
   mdiCloseCircle,
+  mdiCommentTextMultipleOutline,
 } from '@mdi/js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlaceItemType } from "../../../types/place/type.ts";
@@ -24,7 +25,13 @@ import {
 } from '../utils/API.ts';
 import { fetchAndStoreUserCategories } from '../../../store/thunks/fetchcategories';
 
-const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (categoryId: string) => void }) => {
+const CategorySectionMobile = ({ 
+  handleCategoryClick,
+  handleReviewClick 
+}: { 
+  handleCategoryClick: (categoryId: string) => void;
+  handleReviewClick: (place: PlaceItemType) => void;
+}) => {
   const { categories, accessToken } = useSelector((state: RootState) => state.user);
   const dispatch = useAppDispatch();
 
@@ -178,8 +185,12 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
             </button>
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-lg font-semibold">{selectedCategory?.name}</h3>
-              <button onClick={() => selectedCategory && handleCategoryClick(selectedCategory.id)}>
-                <Icon path={mdiMap} size={1.3} className="hover:text-blue-600" />
+              <button 
+                onClick={() => selectedCategory && handleCategoryClick(selectedCategory.id)}
+                className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                title="View on Map"
+              >
+                <Icon path={mdiMap} size={1.3} className="text-[#2E7D32]" />
               </button>
             </div>
             {selectedCategory?.places.length === 0 ? (
@@ -188,9 +199,22 @@ const CategorySectionMobile = ({ handleCategoryClick }: { handleCategoryClick: (
               selectedCategory?.places.map((place) => (
                 <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
                   <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
-                  <button onClick={() => handleRequestDeletePlace(selectedCategory.id, place.dataId, place.placeName)}>
-                    <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
-                  </button>
+                  <div className="flex gap-2 items-center">
+                    <button 
+                      onClick={() => handleReviewClick(place)}
+                      className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                      title="Write Review"
+                    >
+                      <Icon path={mdiCommentTextMultipleOutline} size={0.8} className="text-blue-600" />
+                    </button>
+                    <button 
+                      onClick={() => handleRequestDeletePlace(selectedCategory.id, place.dataId, place.placeName)}
+                      className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                      title="Delete Place"
+                    >
+                      <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
+                    </button>
+                  </div>
                 </div>
               ))
             )}

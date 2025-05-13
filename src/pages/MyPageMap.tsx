@@ -24,7 +24,7 @@ const MyMapPage = () => {
   const pageSize = 10;
   const selectedDetailedPlace = useSelector((state: RootState) => state.search.selectedDetailedPlace);
   
-  const { places }: { places: PlaceItemType[] } = location.state || { places: [] };
+  const { places, focusReview }: { places: PlaceItemType[], focusReview?: boolean } = location.state || { places: [] };
   // 페이징 상태: URL, Redux 없음
   const totalPageCount = Math.ceil(places.length / pageSize);
   const currentPage = 1; // 단순화 버전 (페이지 변경 없음)
@@ -55,11 +55,13 @@ const MyMapPage = () => {
     categoryGroupCode: place.categoryGroupCode,
     placeUrl: place.placeUrl,
   }));
-  console.log(places);
   // 리스트 스크롤 초기화
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = 0;
-    dispatch(clearSelectedDetailedPlace());
+    // 리뷰 작성 목적이 아닐 때만 상세정보 초기화
+    if (!focusReview) {
+      dispatch(clearSelectedDetailedPlace());
+    }
   }, []);
 
   return (
@@ -108,7 +110,12 @@ const MyMapPage = () => {
       <div className="flex-1 relative">
         <NaverMap markers={markers} />
         <AnimatePresence>
-          {selectedDetailedPlace && <PlaceDetail key="place-detail" />}
+          {selectedDetailedPlace && (
+            <PlaceDetail 
+              key="place-detail" 
+              focusReviewForm={focusReview}
+            />
+          )}
         </AnimatePresence>
       </div>
 

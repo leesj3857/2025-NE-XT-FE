@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {useNavigate} from "react-router-dom";
 import CategorySelectionMobile from "../components/User/interface/CategorySelectionMobile.tsx";
 import CategorySectionPC from "../components/User/interface/CategorySelectionPC.tsx";
-import {clearOriginPlace, clearDestinationPlace, clearRouteErrorMessage, clearRouteInfo} from "../store/slices/searchSlice.ts";
+import {clearOriginPlace, clearDestinationPlace, clearRouteErrorMessage, clearRouteInfo, clearSelectedDetailedPlace, setSelectedDetailedPlace} from "../store/slices/searchSlice.ts";
 import ToastMessage from "../interface/ToastMessage.tsx";
 import PlaceChangeRequestList from "../components/User/interface/PlaceChangeRequestList.tsx";
 
@@ -95,6 +95,21 @@ const MyPage = () => {
     }
   };
 
+  const handleReviewClick = (place: PlaceItemType) => {
+    // 선택된 장소로 PlaceDetail 열기
+    dispatch(setSelectedDetailedPlace({
+      ...place,
+      focusReviewForm: true
+    }));
+    // 지도 페이지로 이동
+    navigate('/mypage/map', { 
+      state: { 
+        places: categories.find(c => c.places.some(p => p.id === place.id))?.places || [],
+        focusReview: true
+      } 
+    });
+  };
+
   return (
     <div className="max-w-[1500px] mx-auto p-6 space-y-10 overflow-y-auto bg-white">
       
@@ -110,12 +125,16 @@ const MyPage = () => {
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
           handleCategoryClick={handleCategoryClick}
+          handleReviewClick={handleReviewClick}
         />
       </div>
 
       {/* ✅ 모바일 뷰 */}
       <div className="block sm:hidden">
-        <CategorySelectionMobile handleCategoryClick={handleCategoryClick}/>
+        <CategorySelectionMobile 
+          handleCategoryClick={handleCategoryClick}
+          handleReviewClick={handleReviewClick}
+        />
       </div>
       {isStaff && (
         <PlaceChangeRequestList />

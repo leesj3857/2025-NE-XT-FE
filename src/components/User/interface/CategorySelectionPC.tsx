@@ -7,6 +7,7 @@ import {
   mdiPencilOutline,
   mdiCloseCircle,
   mdiPlus,
+  mdiCommentTextMultipleOutline,
 } from '@mdi/js';
 import DeleteModal from '../../../interface/DeleteModal.tsx';
 import { PlaceItemType } from "../../../types/place/type.ts";
@@ -25,12 +26,14 @@ interface CategorySectionPCProps {
   selectedCategory: string | null;
   onSelectCategory: (categoryId: string) => void;
   handleCategoryClick: (categoryId: string) => void;
+  handleReviewClick: (place: PlaceItemType) => void;
 }
 
 const CategorySectionPC = ({
   selectedCategory,
   onSelectCategory,
   handleCategoryClick,
+  handleReviewClick,
 }: CategorySectionPCProps) => {
   const dispatch = useAppDispatch();
   const { accessToken, categories } = useSelector((state: RootState) => state.user);
@@ -202,27 +205,46 @@ const CategorySectionPC = ({
       <div>
         <h3 className="text-lg font-semibold text-[#1A1E1D] mb-5 flex justify-between items-center h-10">
           {selectedCategory ? 'Saved Places' : 'Select a category'}
-          <span onClick={() => selectedCategory && handleCategoryClick(selectedCategory)} className="cursor-pointer hover:text-[#D2B48C] transition" title="View on Map">
-            <Icon path={mdiMap} size={1.5} className="transition" />
-          </span>
+          {selectedCategory && (
+            <button 
+              onClick={() => handleCategoryClick(selectedCategory)}
+              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+              title="View on Map"
+            >
+              <Icon path={mdiMap} size={1.5} className="text-[#2E7D32]" />
+            </button>
+          )}
         </h3>
         {selectedCategory && (
-           <>
-              {selectedPlaces.length === 0 ? (
-                <p className="text-base text-gray-500">There are no saved places.</p>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {selectedPlaces.map((place: PlaceItemType) => (
-                    <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
-                      <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
-                      <button onClick={() => handleRequestDeletePlace(selectedCategory, place.dataId, place.placeName)}>
+          <>
+            {selectedPlaces.length === 0 ? (
+              <p className="text-base text-gray-500">There are no saved places.</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {selectedPlaces.map((place: PlaceItemType) => (
+                  <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
+                    <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
+                    <div className="flex gap-2 items-center">
+                      <button 
+                        onClick={() => handleReviewClick(place)}
+                        className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                        title="Write Review"
+                      >
+                        <Icon path={mdiCommentTextMultipleOutline} size={1} className="text-blue-600" />
+                      </button>
+                      <button 
+                        onClick={() => handleRequestDeletePlace(selectedCategory, place.dataId, place.placeName)}
+                        className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                        title="Delete Place"
+                      >
                         <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
                       </button>
                     </div>
-                  ))}
-                </div>
-              )}
-            </>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
