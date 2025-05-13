@@ -23,7 +23,7 @@ const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccoun
   const handleSubmit = async () => {
     const trimmedName = newName.trim();
     if (!trimmedName) {
-      setErrorMessage('이름은 공백만으로 구성될 수 없습니다.');
+      setErrorMessage('Name cannot be empty');
       return;
     }
 

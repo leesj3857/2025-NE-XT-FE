@@ -2,8 +2,8 @@
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
-import { initializeMap, registerMapClickClose } from './utils/mapInitializer';
-import { createMarkersOnMap } from './utils/markerCreator';
+import { initializeMap, registerMapClickClose } from './utils/mapInitializer.ts';
+import { createMarkersOnMap } from './utils/markerCreator.ts';
 import { NaverMapProps } from "../../types/map/type.ts";
 import ResearchButton from "./interface/ResearchButton.tsx";
 import MoveToMyLocationButton from "./interface/MoveToMyLocationButton.tsx";

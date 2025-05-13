@@ -26,7 +26,9 @@ const DeleteModal = ({
   reasonPlaceholder = '신고 사유를 입력해주세요',
 }: DeleteModalProps) => {
   const [reason, setReason] = useState('');
-
+  useEffect(()=>{
+    setReason('');
+  },[show])
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (show && event.key === 'Enter') {

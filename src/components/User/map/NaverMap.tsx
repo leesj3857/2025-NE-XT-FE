@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../store';
-import { initializeMap, registerMapClickClose } from '../../Map/utils/mapInitializer';
-import { createMarkersOnMap } from '../../Map/utils/markerCreator';
+import { initializeMap, registerMapClickClose } from '../../Map/utils/mapInitializer.ts';
+import { createMarkersOnMap } from '../../Map/utils/markerCreator.ts';
 import { NaverMapProps } from "../../../types/map/type.ts";
 import MoveToMyLocationButton from "../../Map/interface/MoveToMyLocationButton.tsx";
 import { renderKakaoRouteOnNaverMap } from "../../Map/utils/renderKakaoRoute.ts";

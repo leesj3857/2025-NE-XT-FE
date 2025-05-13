@@ -23,13 +23,14 @@ import { mdiClose, mdiClipboardTextOutline,
   mdiAlarmLight
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
-import { getPlaceInfo, submitChangeRequest } from '../utils/getPlaceInfoClient';
+import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview } from '../utils/getPlaceInfoClient';
 import FetchingUI from './FetchingUI.tsx';
 import { useState, useEffect, useRef } from 'react';
 import LanguageSelector from './LanguageSelector.tsx';
 import ToastMessage from '../../../interface/ToastMessage';
-import ImagePopup from './ImagePopup';
+import ImagePopup from '../../../interface/ImagePopup';
 import DeleteModal from '../../../interface/DeleteModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 // ===== Types =====
 interface MenuItem {
@@ -87,6 +88,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [toastMessage, setToastMessage] = useState('');
+  const queryClient = useQueryClient();
 
   // ===== Queries =====
   const {
@@ -252,43 +254,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     );
   };
 
-  // 더미 리뷰 데이터
-  const dummyReviews: UserReview[] = [
-    {
-      id: '1',
-      userId: 'user1',
-      userName: '김여행',
-      rating: 5,
-      text: '정말 맛있는 음식과 좋은 분위기였습니다. 특히 해외에서 오랜만에 한국 음식을 먹어서 더욱 좋았어요. 직원분들도 친절하셨고, 가격도 합리적이었습니다.',
-      images: ['https://picsum.photos/200/200?random=1'],
-      createdAt: '2024-03-15T10:30:00Z'
-    },
-    {
-      id: '2',
-      userId: 'user2',
-      userName: 'Traveler123',
-      rating: 4,
-      text: '분위기가 좋고 음식도 맛있었어요. 다만 주말에는 사람이 많아서 조금 시끄러울 수 있어요. 평일 방문을 추천드립니다.',
-      images: [
-        'https://picsum.photos/200/200?random=2',
-        'https://picsum.photos/200/200?random=3',
-         'https://picsum.photos/200/200?random=4',
-         'https://picsum.photos/200/200?random=5',
-         'https://picsum.photos/200/200?random=6',
-      ],
-      createdAt: '2024-03-14T15:45:00Z'
-    },
-    {
-      id: '3',
-      userId: 'user3',
-      userName: '여행의달인',
-      rating: 5,
-      text: '해외 여행 중 우연히 발견한 곳인데, 정말 좋았습니다. 현지인들도 많이 찾는 곳이라 더욱 신뢰할 수 있었어요.',
-      images: [],
-      createdAt: '2024-03-13T09:15:00Z'
-    }
-  ];
-
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -303,20 +268,62 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   };
 
   const handleReportClick = (reviewId: string) => {
+    if (!accessToken) {
+      document.getElementById('login-button')?.click();
+      return;
+    }
     setReportData({ reviewId, reason: '' });
     setShowReportModal(true);
   };
 
-  const handleReportConfirm = (reason?: string) => {
-    if (reportData) {
-      // TODO: 실제 신고 API 연동
-      console.log('Report data:', {
-        ...reportData,
-        reason: reason || 'No reason provided'
-      });
-      setShowReportModal(false);
-      setReportData(null);
-      setToastMessage('Report submitted successfully.');
+  const handleReportConfirm = async (reason?: string) => {
+    if (!reportData || !accessToken) {
+      setToastMessage('Need to login');
+      setTimeout(() => setToastMessage(''), 2000);
+      return;
+    }
+
+    try {
+      const result = await reportReview(reportData.reviewId, reason, accessToken);
+      if (result.message) {
+        setToastMessage(result.message);
+        setTimeout(() => setToastMessage(''), 2000);
+        setShowReportModal(false);
+        setReportData(null);
+      }
+    } catch (error) {
+      console.error('리뷰 신고 중 오류 발생:', error);
+      setToastMessage('리뷰 신고 중 오류가 발생했습니다.');
+      setTimeout(() => setToastMessage(''), 2000);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!accessToken || !detailedInfo?.id) {
+      setToastMessage('Need to login');
+      setTimeout(() => setToastMessage(''), 2000);
+      return;
+    }
+
+    try {
+      const result = await createPlaceReview(
+        detailedInfo.id,
+        reviewData.text,
+        reviewData.rating,
+        reviewData.images,
+        accessToken
+      );
+
+      if (result.message) {
+        setToastMessage(result.message);
+        setTimeout(() => setToastMessage(''), 2000);
+        setShowReviewForm(false);
+        setReviewData({ text: '', images: [], rating: 0 });
+        // 리뷰 목록 새로고침을 위해 쿼리 무효화
+        queryClient.invalidateQueries({ queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage] });
+      }
+    } catch (error) {
+      setToastMessage('Failed to write review');
       setTimeout(() => setToastMessage(''), 2000);
     }
   };
@@ -496,12 +503,12 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                   User Reviews
                 </h3>
                 <div className="space-y-4">
-                  {dummyReviews.length > 0 ? (
-                    dummyReviews.map((review) => (
+                  {detailedInfo?.reviews && detailedInfo.reviews.length > 0 ? (
+                    detailedInfo.reviews.map((review) => (
                       <div key={review.id} className="border border-[#F5B041] p-3 rounded-md bg-white">
                         <div className="flex flex-col gap-1 mb-3">
                           <div className="flex justify-between items-center">
-                            <span className="font-medium text-[#E67E22]">{review.userName}</span>
+                            <span className="font-medium text-[#E67E22]">{review.user.name}</span>
                             <button
                               onClick={() => handleReportClick(review.id)}
                               className="text-red-500 hover:text-red-600 transition-colors p-1"
@@ -526,7 +533,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           </div>
                         </div>
                         <p className="text-[#555555] mb-3">{review.text}</p>
-                        {review.images.length > 0 && (
+                        {review.images && review.images.length > 0 && (
                           <div className="grid grid-cols-4 gap-2">
                             {review.images.map((image, idx) => (
                               <div
@@ -633,10 +640,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                         <button
                           onClick={handleImageClick}
                           className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition inline-flex items-center gap-1"
-                          disabled={reviewData.images.length >= 5}
+                          disabled={reviewData.images.length >= 4}
                         >
                           <Icon path={mdiImagePlus} size={0.8} />
-                          Add a photo ({reviewData.images.length}/5)
+                          Add a photo ({reviewData.images.length}/4)
                         </button>
                         <input
                           ref={fileInputRef}
@@ -645,8 +652,9 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           accept="image/*"
                           onChange={(e) => {
                             const files = Array.from(e.target.files || []);
-                            if (files.length + reviewData.images.length > 5) {
-                              alert("최대 5장의 이미지만 업로드할 수 있습니다.");
+                            if (files.length + reviewData.images.length > 4) {
+                              setToastMessage("최대 4장의 이미지만 업로드할 수 있습 니다.");
+                              setTimeout(() => setToastMessage(''), 2000);
                               return;
                             }
                             setReviewData(prev => ({ ...prev, images: [...prev.images, ...files] }));
@@ -707,12 +715,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                     {/* 버튼 영역 */}
                     <div className="flex gap-2">
                       <button
-                        onClick={() => {
-                          console.log("📝 작성한 리뷰", reviewData);
-                          alert("콘솔에 리뷰 정보가 출력되었습니다!");
-                          setShowReviewForm(false);
-                          setReviewData({ text: '', images: [], rating: 0 });
-                        }}
+                        onClick={handleSubmitReview}
                         className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded hover:bg-green-200 transition inline-flex items-center gap-1"
                       >
                         <Icon path={mdiSend} size={0.8} />
@@ -757,8 +760,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         show={showReportModal}
         title="Report Review"
         message={
-          reportData && dummyReviews.find(r => r.id === reportData.reviewId)
-            ? `Reporting review by ${dummyReviews.find(r => r.id === reportData.reviewId)?.userName}. Please report any inappropriate content. We will review and take appropriate action.`
+          reportData && detailedInfo?.reviews?.find(r => r.id === reportData.reviewId)
+            ? `Reporting review by ${detailedInfo?.reviews?.find(r => r.id === reportData.reviewId)?.user.name}. Please report any inappropriate content. We will review and take appropriate action.`
             : 'Please report any inappropriate content. We will review and take appropriate action.'
         }
         onCancel={() => {
