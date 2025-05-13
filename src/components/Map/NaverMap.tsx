@@ -31,7 +31,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
   // Close InfoWindow when page changes
   useEffect(() => {
     if (infoWindowRef.current) {
-      console.log('닫힘')
       infoWindowRef.current.close();
       infoWindowRef.current = null;
     }

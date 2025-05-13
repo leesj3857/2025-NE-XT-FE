@@ -13,7 +13,6 @@ export const fetchAndStoreUserCategories = () =>
 
     try {
       const data = await fetchUserCategoriesWithPlaces(token);
-      console.log(data);
       dispatch(setCategories(data));
     } catch (err: any) {
       console.error('Failed to fetch categories:', err.message);

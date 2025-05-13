@@ -1,5 +1,5 @@
 // src/components/User/interface/CategorySectionMobile.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@mdi/react';
 import {
   mdiChevronLeft,
@@ -24,6 +24,7 @@ import {
   updateUserCategory,
 } from '../utils/API.ts';
 import { fetchAndStoreUserCategories } from '../../../store/thunks/fetchcategories';
+import PaginationInterface from './PaginationInterface.tsx';
 
 const CategorySectionMobile = ({ 
   handleCategoryClick,
@@ -45,6 +46,8 @@ const CategorySectionMobile = ({
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
   const [placeToDelete, setPlaceToDelete] = useState<{ categoryId: string, placeId: string, placeName: string } | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const handleAddCategory = async () => {
     if (!accessToken || !newName.trim()) return;
@@ -100,6 +103,23 @@ const CategorySectionMobile = ({
   };
 
   const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+  const selectedPlaces = selectedCategory?.places || [];
+  const currentPlaces = selectedPlaces.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // 페이지 변경 시 스크롤 초기화
+  useEffect(() => {
+    if (selectedCategoryId) {
+      const container = document.querySelector('.places-container');
+      if (container) {
+        container.scrollTop = 0;
+      }
+    }
+  }, [currentPage, selectedCategoryId]);
+
+  const handleReviewClickWrapper = (place: PlaceItemType) => {
+    setSelectedCategoryId(null); // 리뷰쓰기 클릭 시 카테고리 선택 상태 초기화
+    handleReviewClick(place);
+  };
 
   return (
     <div className="relative w-full overflow-hidden p-2">
@@ -180,7 +200,10 @@ const CategorySectionMobile = ({
             exit={{ x: '110%', opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="flex flex-col gap-4">
-            <button onClick={() => setSelectedCategoryId(null)} className="flex items-center text-base text-[#0096C7] w-fit">
+            <button onClick={() => {
+              setSelectedCategoryId(null);
+              setCurrentPage(1);
+            }} className="flex items-center text-base text-[#0096C7] w-fit">
               <Icon path={mdiChevronLeft} size={1} /> Back
             </button>
             <div className="flex justify-between items-center mb-1">
@@ -193,30 +216,42 @@ const CategorySectionMobile = ({
                 <Icon path={mdiMap} size={1.3} className="text-[#2E7D32]" />
               </button>
             </div>
-            {selectedCategory?.places.length === 0 ? (
-              <p className="text-sm text-gray-500">There are no saved places.</p>
-            ) : (
-              selectedCategory?.places.map((place) => (
-                <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
-                  <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
-                  <div className="flex gap-2 items-center">
-                    <button 
-                      onClick={() => handleReviewClick(place)}
-                      className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                      title="Write Review"
-                    >
-                      <Icon path={mdiCommentTextMultipleOutline} size={0.8} className="text-blue-600" />
-                    </button>
-                    <button 
-                      onClick={() => handleRequestDeletePlace(selectedCategory.id, place.dataId, place.placeName)}
-                      className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                      title="Delete Place"
-                    >
-                      <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
-                    </button>
+            <div className="places-container flex flex-col gap-4">
+              {selectedPlaces.length === 0 ? (
+                <p className="text-sm text-gray-500">There are no saved places.</p>
+              ) : (
+                currentPlaces.map((place) => (
+                  <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
+                    <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
+                    <div className="ml-2 flex gap-2 items-center">
+                      <button 
+                        onClick={() => handleReviewClickWrapper(place)}
+                        className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                        title="Write Review"
+                      >
+                        <Icon path={mdiCommentTextMultipleOutline} size={0.8} className="text-blue-600" />
+                      </button>
+                      <button 
+                        onClick={() => handleRequestDeletePlace(selectedCategory!.id, place.dataId, place.placeName)}
+                        className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                        title="Delete Place"
+                      >
+                        <Icon path={mdiCloseCircle} size={1} className="text-red-500 hover:text-red-700" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
+              )}
+            </div>
+            {selectedPlaces.length > 0 && (
+              <div className="mt-0">
+                <PaginationInterface
+                  currentPage={currentPage}
+                  totalCount={selectedPlaces.length}
+                  itemsPerPage={pageSize}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             )}
           </motion.div>
         )}

@@ -33,7 +33,6 @@ export const resetPasswordClient = {
   },
 
   resetPassword: async (payload: ResetPasswordPayload) => {
-    console.log(payload);
     const query = `
       mutation ResetPassword($email: String!, $token: String!, $newPassword: String!) {
         resetPassword(email: $email, token: $token, newPassword: $newPassword) {

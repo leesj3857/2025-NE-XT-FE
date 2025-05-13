@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@mdi/react';
 import {
   mdiFolderOutline,
@@ -21,6 +21,7 @@ import {
   deleteSavedPlace,
   updateUserCategory,
 } from '../utils/API';
+import PaginationInterface from './PaginationInterface.tsx';
 
 interface CategorySectionPCProps {
   selectedCategory: string | null;
@@ -48,9 +49,22 @@ const CategorySectionPC = ({
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
   const [placeToDelete, setPlaceToDelete] = useState<{ categoryId: string, placeId: string, placeName: string } | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const selectedPlaces = categories.find(cat => cat.id === selectedCategory)?.places || [];
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
- const handleStartEditCategory = (categoryId: string, currentName: string) => {
+  const selectedPlaces = categories.find(cat => cat.id === selectedCategory)?.places || [];
+  const currentPlaces = selectedPlaces.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const container = document.querySelector('.places-container');
+      if (container) {
+        container.scrollTop = 0;
+      }
+    }
+  }, [currentPage, selectedCategory]);
+
+  const handleStartEditCategory = (categoryId: string, currentName: string) => {
     setEditingCategoryId(categoryId);
     setEditedName(currentName);
   };
@@ -123,7 +137,7 @@ const CategorySectionPC = ({
   };
 
   return (
-   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-2">
       {/* Categories */}
       <div>
         <h3 className="text-lg font-semibold text-[#1A1E1D] mb-5 h-10 flex items-center">Categories</h3>
@@ -202,7 +216,7 @@ const CategorySectionPC = ({
       </div>
 
       {/* Places */}
-      <div>
+      <div className="relative">
         <h3 className="text-lg font-semibold text-[#1A1E1D] mb-5 flex justify-between items-center h-10">
           {selectedCategory ? 'Saved Places' : 'Select a category'}
           {selectedCategory && (
@@ -217,11 +231,11 @@ const CategorySectionPC = ({
         </h3>
         {selectedCategory && (
           <>
-            {selectedPlaces.length === 0 ? (
-              <p className="text-base text-gray-500">There are no saved places.</p>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {selectedPlaces.map((place: PlaceItemType) => (
+            <div className="places-container flex flex-col gap-4 overflow-y-auto pb-20">
+              {selectedPlaces.length === 0 ? (
+                <p className="text-base text-gray-500">There are no saved places.</p>
+              ) : (
+                currentPlaces.map((place) => (
                   <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
                     <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
                     <div className="flex gap-2 items-center">
@@ -241,7 +255,17 @@ const CategorySectionPC = ({
                       </button>
                     </div>
                   </div>
-                ))}
+                ))
+              )}
+            </div>
+            {selectedPlaces.length > 0 && (
+              <div className="absolute bottom-4 left-0 right-0 bg-white p-4 ">
+                <PaginationInterface
+                  currentPage={currentPage}
+                  totalCount={selectedPlaces.length}
+                  itemsPerPage={pageSize}
+                  onPageChange={setCurrentPage}
+                />
               </div>
             )}
           </>

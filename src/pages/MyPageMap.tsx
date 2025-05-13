@@ -1,5 +1,5 @@
 // src/pages/MyMap.tsx
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
@@ -15,7 +15,7 @@ import { PlaceItemType } from '../types/place/type.ts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useNavigate } from 'react-router-dom';
-import { clearSelectedDetailedPlace } from '../store/slices/searchSlice.ts';
+import { clearSelectedDetailedPlace, setSelectedPlaceId } from '../store/slices/searchSlice.ts';
 
 const MyMapPage = () => {
   const dispatch = useDispatch();
@@ -24,10 +24,14 @@ const MyMapPage = () => {
   const pageSize = 10;
   const selectedDetailedPlace = useSelector((state: RootState) => state.search.selectedDetailedPlace);
   
-  const { places, focusReview }: { places: PlaceItemType[], focusReview?: boolean } = location.state || { places: [] };
+  const { places, focusReview: initialFocusReview }: { places: PlaceItemType[], focusReview?: boolean } = location.state || { places: [] };
+  const [focusReview, setFocusReview] = useState(initialFocusReview);
+  const prevPlaceRef = useRef(selectedDetailedPlace);
+  const [currentPage, setCurrentPage] = useState(1);
+  const isFirstRender = useRef(true);
+
   // 페이징 상태: URL, Redux 없음
   const totalPageCount = Math.ceil(places.length / pageSize);
-  const currentPage = 1; // 단순화 버전 (페이지 변경 없음)
   const navigate = useNavigate();
   const userName = useSelector((state: RootState) => state.user.name);
   useEffect(() => {
@@ -35,10 +39,56 @@ const MyMapPage = () => {
       navigate('/');
     }
   }, [userName]);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    dispatch(clearSelectedDetailedPlace()); // 페이지 변경 시 상세보기 초기화
+  };
+
+  // 컴포넌트 마운트 시 selectedPlaceId 초기화
+  useEffect(() => {
+    dispatch(setSelectedPlaceId(null));
+  }, []);
+
+  // 장소가 선택되었을 때 해당 장소가 있는 페이지로 이동하고 focusReview 상태 관리
+  useEffect(() => {
+    if (selectedDetailedPlace) {
+      // 페이지 이동 로직
+      const placeIndex = places.findIndex(place => 
+        place.placeName === selectedDetailedPlace.placeName && 
+        place.roadAddressName === selectedDetailedPlace.roadAddressName
+      );
+      if (placeIndex !== -1) {
+        const targetPage = Math.floor(placeIndex / pageSize) + 1;
+        if (targetPage !== currentPage) {
+          setCurrentPage(targetPage);
+        }
+      }
+
+      // focusReview 상태 관리
+      if (isFirstRender.current && initialFocusReview) {
+        isFirstRender.current = false;
+      } else if (prevPlaceRef.current && 
+        (prevPlaceRef.current.placeName !== selectedDetailedPlace.placeName || 
+         prevPlaceRef.current.roadAddressName !== selectedDetailedPlace.roadAddressName)) {
+        setFocusReview(false);
+      }
+      prevPlaceRef.current = selectedDetailedPlace;
+    }
+  }, [selectedDetailedPlace, places, currentPage, initialFocusReview]);
+
   // 리스트 페이징 결과
   const currentResults = useMemo(() => {
     return places.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   }, [places, currentPage]);
+
+  // 페이지 변경 시 스크롤 초기화
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
 
   // 마커 데이터 변환
   const markers: MarkerType[] = places.map((place) => ({
@@ -97,12 +147,12 @@ const MyMapPage = () => {
           )}
         </ul>
 
-        {/* 페이징은 표시만, 현재 페이지 고정 */}
+        {/* 페이징 컴포넌트 수정 */}
         <Pagination
-          currentPage={1}
+          currentPage={currentPage}
           totalCount={places.length}
           itemsPerPage={pageSize}
-          onPageChange={() => {}}
+          onPageChange={handlePageChange}
         />
       </div>
 
@@ -119,12 +169,12 @@ const MyMapPage = () => {
         </AnimatePresence>
       </div>
 
-      {/* 모바일 바텀시트 */}
+      {/* 모바일 바텀시트 수정 */}
       <BottomSheet
         results={currentResults}
-        currentPage={1}
+        currentPage={currentPage}
         totalCount={places.length}
-        onPageChange={() => {}}
+        onPageChange={handlePageChange}
         isFetching={false}
       />
     </div>

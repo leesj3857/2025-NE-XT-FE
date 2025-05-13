@@ -29,7 +29,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
   // Close InfoWindow when page changes
   useEffect(() => {
     if (infoWindowRef.current) {
-      console.log('닫힘')
       infoWindowRef.current.close();
       infoWindowRef.current = null;
     }
@@ -79,7 +78,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
       script.onload = () => {
         window.naver.maps.onJSContentLoaded = () => {
           setTimeout(() => {
-            console.log('naver 초기화 완료');
             initMapAndMarkers();
           }, 0);
         };

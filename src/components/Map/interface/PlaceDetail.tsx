@@ -69,7 +69,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const isMobile = window.innerWidth < 768;
-
   // ===== State =====
   const [selectedLanguage, setSelectedLanguage] = useState("영어");
   const [editMode, setEditMode] = useState(false);
@@ -102,7 +101,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       return getPlaceInfo(place.placeName!, place.roadAddressName!, selectedLanguage);
     },
     enabled: !!place,
-    retry: (failureCount) => failureCount < 3,
+    retry: (failureCount) => failureCount < 5,
     retryDelay: (attemptIndex) => Math.min(1000 * (attemptIndex + 1), 3000),
   });
 
@@ -110,6 +109,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   useEffect(() => {
     setSelectedLanguage("영어");
     setEditMode(false);
+    // place가 변경될 때만 hasFocusedRef 초기화
+    if (place) {
+      hasFocusedRef.current = false;
+    }
   }, [place]);
 
   useEffect(() => {
@@ -135,16 +138,34 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   useEffect(() => {
     if (focusReviewForm && !hasFocusedRef.current) {
       setShowReviewForm(true);
-      // 리뷰 폼이 렌더링된 후 textarea에 포커스
-      setTimeout(() => {
-        const textarea = document.querySelector('textarea');
-        if (textarea) {
-          textarea.focus();
-          // 스크롤도 리뷰 폼 위치로 이동
-          textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          hasFocusedRef.current = true;
-        }
-      }, 100);
+      
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.addedNodes.length > 0) {
+            const textarea = document.querySelector('textarea');
+            if (textarea) {
+              textarea.focus();
+              textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              hasFocusedRef.current = true;
+              observer.disconnect();
+            }
+          }
+        });
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      return () => observer.disconnect();
+    }
+    else {
+      setShowReviewForm(false);
+      const container = document.querySelector('#place-detail-container');
+      if (container) {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   }, [focusReviewForm]);
 
@@ -475,54 +496,62 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                   User Reviews
                 </h3>
                 <div className="space-y-4">
-                  {dummyReviews.map((review) => (
-                    <div key={review.id} className="border border-[#F5B041] p-3 rounded-md bg-white">
-                      <div className="flex flex-col gap-1 mb-3">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium text-[#E67E22]">{review.userName}</span>
-                          <button
-                            onClick={() => handleReportClick(review.id)}
-                            className="text-red-500 hover:text-red-600 transition-colors p-1"
-                            title="Report inappropriate content"
-                          >
-                            <Icon path={mdiAlarmLight} size={0.8} color="red" />
-                          </button>
-                        </div>
-                        <div className="flex gap-0.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Icon
-                              key={star}
-                              path={star <= review.rating ? mdiStar : mdiStarOutline}
-                              size={0.8}
-                              className={star <= review.rating ? "text-yellow-400" : "text-gray-300"}
-                            />
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-1 text-gray-500 text-xs">
-                          <Icon path={mdiClockOutline} size={0.7} />
-                          <span>{formatDate(review.createdAt)}</span>
-                        </div>
-                      </div>
-                      <p className="text-[#555555] mb-3">{review.text}</p>
-                      {review.images.length > 0 && (
-                        <div className="grid grid-cols-4 gap-2">
-                          {review.images.map((image, idx) => (
-                            <div
-                              key={idx}
-                              className="aspect-square rounded overflow-hidden cursor-pointer"
-                              onClick={() => setSelectedImage(image)}
+                  {dummyReviews.length > 0 ? (
+                    dummyReviews.map((review) => (
+                      <div key={review.id} className="border border-[#F5B041] p-3 rounded-md bg-white">
+                        <div className="flex flex-col gap-1 mb-3">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium text-[#E67E22]">{review.userName}</span>
+                            <button
+                              onClick={() => handleReportClick(review.id)}
+                              className="text-red-500 hover:text-red-600 transition-colors p-1"
+                              title="Report inappropriate content"
                             >
-                              <img
-                                src={image}
-                                alt={`Review image ${idx + 1}`}
-                                className="w-full h-full object-cover"
+                              <Icon path={mdiAlarmLight} size={0.8} color="red" />
+                            </button>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Icon
+                                key={star}
+                                path={star <= review.rating ? mdiStar : mdiStarOutline}
+                                size={0.8}
+                                className={star <= review.rating ? "text-yellow-400" : "text-gray-300"}
                               />
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-1 text-gray-500 text-xs">
+                            <Icon path={mdiClockOutline} size={0.7} />
+                            <span>{formatDate(review.createdAt)}</span>
+                          </div>
                         </div>
-                      )}
+                        <p className="text-[#555555] mb-3">{review.text}</p>
+                        {review.images.length > 0 && (
+                          <div className="grid grid-cols-4 gap-2">
+                            {review.images.map((image, idx) => (
+                              <div
+                                key={idx}
+                                className="aspect-square rounded overflow-hidden cursor-pointer"
+                                onClick={() => setSelectedImage(image)}
+                              >
+                                <img
+                                  src={image}
+                                  alt={`Review image ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="border border-[#F5B041] p-6 rounded-md bg-white text-center">
+                      <Icon path={mdiCommentTextMultipleOutline} size={2} className="text-[#F5B041] mx-auto mb-3" />
+                      <p className="text-[#555555] mb-2">No reviews have been written yet.</p>
+                      <p className="text-sm text-[#888888]">Write the first review to help other visitors!</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 

@@ -44,7 +44,6 @@ const userSlice = createSlice({
       state.isStaff = false;
     },
     setCategories(state, action: PayloadAction<UserCategoryWithPlaces[]>) {
-      console.log(action.payload);
       state.categories = action.payload;
     },
   },
