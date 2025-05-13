@@ -35,13 +35,13 @@ const UserReviewList = () => {
   if (error) return <div className="text-center py-4 text-red-500">Error loading reviews</div>;
   if (!reviews?.length) return (
     <div className="text-center py-8 border rounded-lg bg-gray-50">
-      <p className="text-gray-500">아직 작성한 리뷰가 없습니다.</p>
+      <p className="text-gray-500">No reviews written yet.</p>
     </div>
   );
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">내가 작성한 리뷰</h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-4">My Reviews</h2>
       <div className="space-y-4">
         {reviews.map((review: UserReview) => (
           <motion.div
