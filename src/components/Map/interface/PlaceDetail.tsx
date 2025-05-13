@@ -74,7 +74,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const [selectedLanguage, setSelectedLanguage] = useState("영어");
   const [editMode, setEditMode] = useState(false);
   const [editedMenu, setEditedMenu] = useState<MenuItem[]>([]);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewData, setReviewData] = useState<ReviewFormData>({
     text: '',
@@ -88,6 +87,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const MAX_REVIEW_LENGTH = 150;
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [toastMessage, setToastMessage] = useState('');
 
   // ===== Queries =====
   const {
@@ -180,8 +180,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   
     try {
       await submitChangeRequest(detailedInfo.id, filteredMenu, accessToken!);
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setToastMessage('Change request submitted successfully!');
+      setTimeout(() => setToastMessage(''), 2000);
       resetEditMode();
     } catch (err) {
       console.error(err);
@@ -295,13 +295,15 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       });
       setShowReportModal(false);
       setReportData(null);
+      setToastMessage('Report submitted successfully.');
+      setTimeout(() => setToastMessage(''), 2000);
     }
   };
 
   // ===== Render =====
   return (
     <>
-      <ToastMessage show={showSuccess} message="Change request submitted successfully!" />
+      <ToastMessage show={!!toastMessage} message={toastMessage} />
       <motion.div
         initial={isMobile ? { y: '-20px', opacity: 0 } : { x: '-20px', opacity: 0 }}
         animate={isMobile ? { y: 0, opacity: 1 } : { x: 0, opacity: 1 }}
