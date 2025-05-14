@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import cityLabelMap from "./static/cityLabelMap.ts";
+import CustomDropdown from './CustomDropdown';
 
 const StepOne = ({
-                   city,
-                   setCity,
-                   onNext,
-                 }: {
+  city,
+  setCity,
+  onNext,
+}: {
   city: string;
   setCity: (val: string) => void;
   onNext: () => void;
@@ -24,19 +25,12 @@ const StepOne = ({
   return (
     <div className="flex flex-col relative h-full">
       <h2 className="text-xl md:text-2xl font-bold mb-10">Where would you like to travel in Korea?</h2>
-      <select
-        className="w-full p-3 border border-[#CBCCCC] rounded mb-10 outline-none focus:border-[#2D3433] transition-all"
-        value={city || ''}
-        onChange={(e) => {
-          setCity(e.target.value);
-        }}
-      >
-        {cityOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <CustomDropdown
+        options={cityOptions}
+        value={city}
+        onChange={setCity}
+        className="mb-10"
+      />
 
       {showButton && (
         <div className="flex justify-end max-md:absolute max-md:bottom-0 max-md:right-0">
