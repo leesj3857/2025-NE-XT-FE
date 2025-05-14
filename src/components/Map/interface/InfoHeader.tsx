@@ -1,6 +1,5 @@
-// src/components/Map/interface/InfoHeader.tsx
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useRef, useEffect} from "react";
+import { useState, useRef, useEffect } from "react";
 import { RootState } from "../../../store";
 import {
   clearOriginPlace,
@@ -12,7 +11,7 @@ import {
 import { mdiClose, mdiCar, mdiClockOutline, mdiMapMarkerDistance, mdiWalk, mdiHelpCircleOutline } from "@mdi/js";
 import Icon from '@mdi/react';
 import { motion, AnimatePresence } from "framer-motion";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function InfoHeader() {
   const navigate = useNavigate()
@@ -23,12 +22,12 @@ export default function InfoHeader() {
     (state: RootState) => state.search.selectedPlacePair
   );
 
-  const handleClickPlace = (id:string | undefined) =>{
-    if(id){
+  const handleClickPlace = (id: string | undefined) => {
+    if (id) {
       dispatch(setSelectedPlaceId(id));
     }
   }
-  
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
@@ -47,7 +46,7 @@ export default function InfoHeader() {
     };
   }, [showTooltip]);
 
-  
+
   return (
     <motion.div
       layout
@@ -56,7 +55,7 @@ export default function InfoHeader() {
       <div className="flex items-start justify-between w-full">
         <div className="flex flex-col pr-4">
           <h2 className="text-lg md:text-2xl font-bold ">Top Picks</h2>
-          <span className="text-xs md:text-sm text-gray-600 cursor-pointer mt-1" onClick={()=>{navigate('/step')}}>
+          <span className="text-xs md:text-sm text-gray-600 cursor-pointer mt-1" onClick={() => { navigate('/step') }}>
             Search Again by Keyword
           </span>
         </div>
@@ -70,8 +69,8 @@ export default function InfoHeader() {
                 <div className="flex items-center gap-3" onClick={() => handleClickPlace(origin?.id)}>
                   <div className="w-3 h-3 rounded-full border-2 border-green-600 bg-white shadow-[0_0px_8px_2px_rgba(34,197,94,0.5)]" />
                   <span className={`text-sm md:text-base truncate whitespace-nowrap overflow-hidden max-w-40 ${origin?.placeName ? 'text-[#1A1E1D]' : 'text-gray-400'}`}>
-                  {origin?.placeName || "Origin"}
-                </span>
+                    {origin?.placeName || "Origin"}
+                  </span>
                 </div>
                 {origin && (
                   <button
@@ -95,8 +94,8 @@ export default function InfoHeader() {
                   <div className="w-3 h-3 rounded-full border-2 border-red-500 bg-white shadow-[0_0px_8px_2px_rgba(239,68,68,0.5)]" />
 
                   <span className={`text-sm md:text-base truncate whitespace-nowrap overflow-hidden max-w-40 ${destination?.placeName ? 'text-[#1A1E1D]' : 'text-gray-400'}`}>
-                  {destination?.placeName || "Destination"}
-                </span>
+                    {destination?.placeName || "Destination"}
+                  </span>
                 </div>
                 {destination && (
                   <button

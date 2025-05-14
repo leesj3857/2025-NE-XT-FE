@@ -1,4 +1,3 @@
-// src/components/User/interface/CategorySectionMobile.tsx
 import { useState, useEffect } from 'react';
 import Icon from '@mdi/react';
 import {
@@ -26,10 +25,10 @@ import {
 import { fetchAndStoreUserCategories } from '../../../store/thunks/fetchcategories';
 import PaginationInterface from './PaginationInterface.tsx';
 
-const CategorySectionMobile = ({ 
+const CategorySectionMobile = ({
   handleCategoryClick,
-  handleReviewClick 
-}: { 
+  handleReviewClick
+}: {
   handleCategoryClick: (categoryId: string) => void;
   handleReviewClick: (place: PlaceItemType) => void;
 }) => {
@@ -63,14 +62,14 @@ const CategorySectionMobile = ({
   };
 
   const handleCategoryRename = async (categoryId: string, oldName: string, newName: string) => {
-      if (!accessToken) return;
-      if (newName === oldName) {
-        setEditingCategoryId(null);
-        return;
-      }
-      const original = categories.find(cat => cat.id === categoryId);
-      if (!original) return;
-      try {
+    if (!accessToken) return;
+    if (newName === oldName) {
+      setEditingCategoryId(null);
+      return;
+    }
+    const original = categories.find(cat => cat.id === categoryId);
+    if (!original) return;
+    try {
       await updateUserCategory(categoryId, newName, original.color, accessToken);
       dispatch(fetchAndStoreUserCategories());
     } catch (err: any) {
@@ -80,7 +79,7 @@ const CategorySectionMobile = ({
     }
   };
   const handleRequestDeletePlace = (categoryId: string, placeId: string | undefined, placeName: string) => {
-    if(placeId) {
+    if (placeId) {
       setPlaceToDelete({ categoryId, placeId, placeName: placeName });
       setShowDeleteModal(true);
     }
@@ -106,7 +105,6 @@ const CategorySectionMobile = ({
   const selectedPlaces = selectedCategory?.places || [];
   const currentPlaces = selectedPlaces.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  // 페이지 변경 시 스크롤 초기화
   useEffect(() => {
     if (selectedCategoryId) {
       const container = document.querySelector('.places-container');
@@ -117,7 +115,7 @@ const CategorySectionMobile = ({
   }, [currentPage, selectedCategoryId]);
 
   const handleReviewClickWrapper = (place: PlaceItemType) => {
-    setSelectedCategoryId(null); // 리뷰쓰기 클릭 시 카테고리 선택 상태 초기화
+    setSelectedCategoryId(null);
     handleReviewClick(place);
   };
 
@@ -138,63 +136,63 @@ const CategorySectionMobile = ({
       <AnimatePresence mode="wait">
         {!selectedCategoryId ? (
           <motion.div
-            key="categories" 
+            key="categories"
             initial={{ x: '-110%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '-110%', opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="grid grid-cols-2 gap-4 px-1">
-              {categories.map(({ id, name, color }) => {
-                const isEditing = editingCategoryId === id;
-                return (
-                  <div
-                    key={id}
-                    className="relative flex flex-col items-center justify-center rounded-xl cursor-pointer bg-white shadow-md hover:shadow-lg transition border border-gray-200 w-full aspect-square p-4 space-y-2"
-                  >
-                    <div className="absolute top-2 w-5/6 flex gap-1 justify-between">
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingCategoryId(id);
-                          setEditedName(name);
-                        }}
-                        className="p-1 rounded hover:bg-gray-100"
-                      >
-                        <Icon path={mdiPencilOutline} size={0.9} className="text-gray-500 hover:text-gray-800" />
-                      </div>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCategoryToDelete({ id, name });
-                          setShowDeleteModal(true);
-                        }}
-                        className="p-1 rounded hover:bg-gray-100"
-                      >
-                        <Icon path={mdiDeleteOutline} size={0.9} className="text-red-500 hover:text-red-700" />
-                      </div>
+            {categories.map(({ id, name, color }) => {
+              const isEditing = editingCategoryId === id;
+              return (
+                <div
+                  key={id}
+                  className="relative flex flex-col items-center justify-center rounded-xl cursor-pointer bg-white shadow-md hover:shadow-lg transition border border-gray-200 w-full aspect-square p-4 space-y-2"
+                >
+                  <div className="absolute top-2 w-5/6 flex gap-1 justify-between">
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingCategoryId(id);
+                        setEditedName(name);
+                      }}
+                      className="p-1 rounded hover:bg-gray-100"
+                    >
+                      <Icon path={mdiPencilOutline} size={0.9} className="text-gray-500 hover:text-gray-800" />
                     </div>
-                    <button onClick={() => !isEditing && setSelectedCategoryId(id)}>
-                      <Icon path={mdiFolderOutline} size={2.5} style={{ color }} />
-                    </button>
-                    {isEditing ? (
-                      <input
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        onBlur={() => handleCategoryRename(id, name, editedName)}
-                        className="text-xs border p-1 rounded w-full text-center bg-white"
-                        autoFocus
-                      />
-                    ) : (
-                      <span className="text-sm font-medium text-[#1A1E1D] text-center break-words truncate">{name}</span>
-                    )}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCategoryToDelete({ id, name });
+                        setShowDeleteModal(true);
+                      }}
+                      className="p-1 rounded hover:bg-gray-100"
+                    >
+                      <Icon path={mdiDeleteOutline} size={0.9} className="text-red-500 hover:text-red-700" />
+                    </div>
                   </div>
-                );
-              })}
+                  <button onClick={() => !isEditing && setSelectedCategoryId(id)}>
+                    <Icon path={mdiFolderOutline} size={2.5} style={{ color }} />
+                  </button>
+                  {isEditing ? (
+                    <input
+                      value={editedName}
+                      onChange={(e) => setEditedName(e.target.value)}
+                      onBlur={() => handleCategoryRename(id, name, editedName)}
+                      className="text-xs border p-1 rounded w-full text-center bg-white"
+                      autoFocus
+                    />
+                  ) : (
+                    <span className="text-sm font-medium text-[#1A1E1D] text-center break-words truncate">{name}</span>
+                  )}
+                </div>
+              );
+            })}
             {categories.length === 0 && <p className="text-sm text-gray-500 col-span-2">There are no saved categories.</p>}
           </motion.div>
         ) : (
           <motion.div
-            key="places"  
+            key="places"
             initial={{ x: '110%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '110%', opacity: 0 }}
@@ -208,7 +206,7 @@ const CategorySectionMobile = ({
             </button>
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-lg font-semibold">{selectedCategory?.name}</h3>
-              <button 
+              <button
                 onClick={() => selectedCategory && handleCategoryClick(selectedCategory.id)}
                 className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                 title="View on Map"
@@ -224,14 +222,14 @@ const CategorySectionMobile = ({
                   <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
                     <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
                     <div className="ml-2 flex gap-2 items-center">
-                      <button 
+                      <button
                         onClick={() => handleReviewClickWrapper(place)}
                         className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                         title="Write Review"
                       >
                         <Icon path={mdiCommentTextMultipleOutline} size={0.8} className="text-blue-600" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleRequestDeletePlace(selectedCategory!.id, place.dataId, place.placeName)}
                         className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                         title="Delete Place"
@@ -269,7 +267,7 @@ const CategorySectionMobile = ({
             placeholder="Category name"
             className="text-sm border p-1 rounded w-full focus:outline-none transition-all"
             style={{
-              borderColor: newColor || '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
+              borderColor: newColor || '#D1D5DB',
             }}
           />
           <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} />

@@ -6,10 +6,10 @@ const DotLottiePlayer = () => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
     const animation = new DotLottie({
       canvas: containerRef.current,
-      src: '/lottie/search.lottie', // public 폴더에 위치해야 함
+      src: '/lottie/search.lottie',
       autoplay: true,
       loop: true,
     });

@@ -1,10 +1,9 @@
-// src/components/Header.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import AuthModal from './AuthModal';
-import UserMenu from './User/interface/UserMenu.tsx'; // 추가된 사용자 메뉴 컴포넌트
+import UserMenu from './User/interface/UserMenu.tsx';
 
 const Header = () => {
   const navigate = useNavigate();

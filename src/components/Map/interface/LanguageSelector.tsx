@@ -1,5 +1,4 @@
 import Select, { components } from 'react-select';
-import { useState } from 'react';
 
 const languageOptions = [
   { value: 'English', label: 'EN', flag: 'us', language: '영어' },
@@ -51,48 +50,48 @@ const LanguageSelector = ({
         onChange={(selected) => setSelectedLanguage(selected?.language || '')}
         components={{ Option: CustomOption, SingleValue: CustomSingleValue }}
         styles={{
-            control: (base, state) => ({
-              ...base,
-              minHeight: '28px',
-              height: '28px',
-              fontSize: '0.75rem',
-              paddingLeft: '4px',
-              boxShadow: state.isFocused ? '0 0 0 1px #2684FF' : 'none',
-              borderColor: state.isFocused ? '#B5CC88' : base.borderColor,
-              '&:hover': {
-                borderColor: '#B5CC88',
-              },
-            }),
-            valueContainer: (base) => ({
-              ...base,
-              padding: '0px 6px',
-              height: '28px',
-            }),
-            input: (base) => ({
-              ...base,
-              margin: 0,
-              padding: 0,
-            }),
-            indicatorsContainer: (base) => ({
-              ...base,
-              height: '28px',
-            }),
-            dropdownIndicator: (base) => ({
-              ...base,
-              padding: '2px 4px',
-            }),
-            option: (base) => ({
-              ...base,
-              fontSize: '0.675rem',
-              padding: '2px 6px',
-            }),
-            singleValue: (base) => ({
-              ...base,
-              display: 'flex',
-              alignItems: 'center',
-            }),
-          }}
-          
+          control: (base, state) => ({
+            ...base,
+            minHeight: '28px',
+            height: '28px',
+            fontSize: '0.75rem',
+            paddingLeft: '4px',
+            boxShadow: state.isFocused ? '0 0 0 1px #2684FF' : 'none',
+            borderColor: state.isFocused ? '#B5CC88' : base.borderColor,
+            '&:hover': {
+              borderColor: '#B5CC88',
+            },
+          }),
+          valueContainer: (base) => ({
+            ...base,
+            padding: '0px 6px',
+            height: '28px',
+          }),
+          input: (base) => ({
+            ...base,
+            margin: 0,
+            padding: 0,
+          }),
+          indicatorsContainer: (base) => ({
+            ...base,
+            height: '28px',
+          }),
+          dropdownIndicator: (base) => ({
+            ...base,
+            padding: '2px 4px',
+          }),
+          option: (base) => ({
+            ...base,
+            fontSize: '0.675rem',
+            padding: '2px 6px',
+          }),
+          singleValue: (base) => ({
+            ...base,
+            display: 'flex',
+            alignItems: 'center',
+          }),
+        }}
+
         isSearchable={false}
       />
     </div>

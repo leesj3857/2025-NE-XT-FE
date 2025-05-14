@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { graphqlRequest } from '../../../api/graphqlClient';
 
 export const updateUserName = async (newName: string, accessToken: string): Promise<string> => {
@@ -12,7 +11,7 @@ export const updateUserName = async (newName: string, accessToken: string): Prom
   `;
 
   try {
-    const response = await graphqlRequest(query, { name: newName }, accessToken );
+    const response = await graphqlRequest(query, { name: newName }, accessToken);
     return response.updateUsername.name;
   } catch (error: any) {
     console.error('Update username error:', error);

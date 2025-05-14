@@ -6,14 +6,12 @@ import Services1 from '../components/HomePage/Services1.tsx';
 import Services2 from '../components/HomePage/Services2.tsx';
 import InfoSection from '../components/HomePage/InfoSection.tsx';
 import StartButton from '../components/HomePage/StartButton.tsx';
-import SlideProgressBar from "../components/HomePage/SlideProgressBar.tsx";
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Homepage() {
   const navigate = useNavigate();
   const handleStart = () => navigate('/step');
 
-  // 슬라이드 관련 상태
   const slides = [
     <Hero key="hero" />,
     <Services1 key="services1" />,
@@ -21,7 +19,6 @@ export default function Homepage() {
     <InfoSection key="info" />,
   ];
   const [currentIndex, setCurrentIndex] = useState(1);
-  //
   useEffect(() => {
     const timer = setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
@@ -41,7 +38,6 @@ export default function Homepage() {
 
   return (
     <>
-      {/* ✅ 모바일 뷰: 슬라이드 기반 */}
       <div className="md:hidden flex flex-col items-center w-full h-full bg-[#DCE7EB] homepage">
         {/* 슬라이드 영역 */}
         <div className="relative w-full h-[500px] overflow-hidden">
@@ -65,9 +61,8 @@ export default function Homepage() {
             {slides.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  currentIndex === idx ? 'bg-[#FF6B6B] scale-125' : 'bg-[#F7CAC9]'
-                }`}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${currentIndex === idx ? 'bg-[#FF6B6B] scale-125' : 'bg-[#F7CAC9]'
+                  }`}
               />
             ))}
           </div>
@@ -79,7 +74,6 @@ export default function Homepage() {
         </div>
       </div>
 
-      {/* ✅ PC 뷰: 전체 페이지 구성 */}
       <div className="hidden md:block homepage">
         <Hero />
         <Services />

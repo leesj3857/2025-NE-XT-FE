@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { graphqlRequest } from '../../api/graphqlClient';  
+import { graphqlRequest } from '../../api/graphqlClient';
 const translationCache = new Map<string, string>();
 
 export async function translateCategoryToEnglish(koreanCategory: string): Promise<string> {
@@ -21,7 +20,6 @@ export async function translateCategoryToEnglish(koreanCategory: string): Promis
     translationCache.set(koreanCategory, translated);
     return translated;
   } catch (e) {
-    console.error('GraphQL Translation API error:', e);
-    return koreanCategory; // 실패 시 원본 반환
+    return koreanCategory;
   }
 }

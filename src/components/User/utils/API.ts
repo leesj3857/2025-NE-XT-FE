@@ -65,7 +65,7 @@ export const fetchUserCategoriesWithPlaces = async (token: string): Promise<User
 
       const parsedPlaces = rawPlaces.map((p: any): PlaceItemType => ({
         ...p,
-        id: p.placeId,        // 우리가 쓰는 ID로 교체
+        id: p.placeId,
         dataId: p.id,
         roadAddressNameEN: p.roadAddressNameEn || p.roadAddressNameEN,
         categoryNameEN: p.categoryNameEn || p.categoryNameEN,

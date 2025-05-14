@@ -1,17 +1,17 @@
 import { CreateMarkersProps } from "../../../types/map/type.ts";
 import { InfoWindowInterface } from "../interface/InfoWindowInterface.tsx";
-import {setSelectedPlaceId, setOriginPlace, setDestinationPlace, setSelectedDetailedPlace} from "../../../store/slices/searchSlice.ts";
+import { setSelectedPlaceId, setOriginPlace, setDestinationPlace, setSelectedDetailedPlace } from "../../../store/slices/searchSlice.ts";
 import convertMarkerToPlaceItem from "./convertMarkerTypeToPlaceItemType.ts";
 
 export const createMarkersOnMap = ({
-                                     map,
-                                     markers,
-                                     infoWindowRef,
-                                     selectedMarkerRef,
-                                     dispatch,
-                                     origin,
-                                     destination
-                                   }: CreateMarkersProps ) => {
+  map,
+  markers,
+  infoWindowRef,
+  selectedMarkerRef,
+  dispatch,
+  origin,
+  destination
+}: CreateMarkersProps) => {
   return markers.map((markerProp) => {
 
     const {
@@ -75,7 +75,7 @@ export const createMarkersOnMap = ({
       const container = infoWindow.getContentElement?.();
       if (!container) return;
 
-      container.querySelectorAll("button[data-type]").forEach((btn:Element) => {
+      container.querySelectorAll("button[data-type]").forEach((btn: Element) => {
         btn.addEventListener("click", () => {
           const type = (btn as HTMLElement).getAttribute("data-type");
 
@@ -96,7 +96,6 @@ export const createMarkersOnMap = ({
             dispatch(setSelectedDetailedPlace(detailedPlace));
           }
 
-          // infoWindow.close(); // 버튼 누르면 닫기
         });
       });
     }, 0);

@@ -2,8 +2,8 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mapCenterResearch } from '../utils/mapCenterResearch';
 import { motion, AnimatePresence } from 'framer-motion';
-import {clearDestinationPlace, clearOriginPlace, clearRouteInfo, clearRouteErrorMessage} from "../../../store/slices/searchSlice.ts";
-import {useDispatch} from "react-redux";
+import { clearDestinationPlace, clearOriginPlace, clearRouteInfo, clearRouteErrorMessage } from "../../../store/slices/searchSlice.ts";
+import { useDispatch } from "react-redux";
 import Icon from '@mdi/react';
 import { mdiRefresh } from '@mdi/js';
 
@@ -30,7 +30,6 @@ const ResearchButton: FC<Props> = ({ mapInstance }) => {
     setIsSelecting(false);
   };
 
-  // 👇 밖 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

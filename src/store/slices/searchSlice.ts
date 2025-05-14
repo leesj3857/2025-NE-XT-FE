@@ -1,4 +1,3 @@
-// store/searchSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PlaceItemType, SelectedPlacePair } from "../../types/place/type.ts";
 

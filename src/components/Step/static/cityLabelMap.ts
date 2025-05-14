@@ -1,5 +1,3 @@
-// src/constants/cityLabelMap.ts
-
 const cityLabelMap: Record<string, string> = {
   '서울': 'Seoul',
   '부산': 'Busan',

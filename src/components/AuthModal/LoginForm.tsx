@@ -50,10 +50,10 @@ const LoginForm = ({ onModeChange, onClose }: Props) => {
 
   return (
     <form className="flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault(); // 기본 제출 방지
-            handleLogin();
-          }}>
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleLogin();
+      }}>
       <h2 className="text-2xl font-bold mb-4">Login</h2>
       <LoginSection
         email={email}

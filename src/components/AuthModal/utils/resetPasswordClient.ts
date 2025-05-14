@@ -1,4 +1,3 @@
-// src/api/resetPasswordClient.ts
 import { graphqlRequest } from '../../../api/graphqlClient';
 import {
   ResetRequestPayload,

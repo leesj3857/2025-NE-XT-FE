@@ -1,4 +1,3 @@
-// src/components/UserMenu.tsx
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../store/slices/userSlice.ts';
 import Icon from '@mdi/react';

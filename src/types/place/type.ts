@@ -20,8 +20,8 @@ export interface SelectedPlacePair {
   origin: PlaceItemType | null;
   destination: PlaceItemType | null;
   routeInfo?: {
-    duration: number; // milliseconds
-    distance: number; // meters
+    duration: number;
+    distance: number;
   } | null;
   errorMessage?: string | null;
 }

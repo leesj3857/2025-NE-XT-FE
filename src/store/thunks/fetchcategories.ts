@@ -1,4 +1,3 @@
-// fetchcategories.ts
 import { setCategories } from '../slices/userSlice';
 import { fetchUserCategoriesWithPlaces } from '../../components/User/utils/API';
 import type { RootState, AppDispatch } from '../index';

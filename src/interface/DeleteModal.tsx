@@ -1,4 +1,3 @@
-// src/components/common/ConfirmModal.tsx
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -23,12 +22,12 @@ const DeleteModal = ({
   cancelText = 'Cancel',
   confirmText = 'Delete',
   showReasonInput = false,
-  reasonPlaceholder = '신고 사유를 입력해주세요',
+  reasonPlaceholder = 'Please enter the reason for reporting',
 }: DeleteModalProps) => {
   const [reason, setReason] = useState('');
-  useEffect(()=>{
+  useEffect(() => {
     setReason('');
-  },[show])
+  }, [show])
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (show && event.key === 'Enter') {
@@ -70,7 +69,7 @@ const DeleteModal = ({
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
             <p className="text-gray-600 mb-4 text-sm md:text-base">{message}</p>
-            
+
             {showReasonInput && (
               <div className="mb-4">
                 <textarea

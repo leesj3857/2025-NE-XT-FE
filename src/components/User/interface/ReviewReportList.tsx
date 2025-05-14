@@ -3,7 +3,7 @@ import { getReviewReports, approveReviewReport, rejectReviewReport, ReviewReport
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import Icon from '@mdi/react';
-import { mdiCheck, mdiClose, mdiClockOutline, mdiStar } from '@mdi/js';
+import { mdiCheck, mdiClose, mdiStar } from '@mdi/js';
 import { useState } from 'react';
 import ToastMessage from '../../../interface/ToastMessage';
 import ImagePopup from '../../../interface/ImagePopup';
@@ -68,10 +68,10 @@ const ReviewReportList = () => {
   if (error) return <div className="text-center py-4 text-red-500">데이터를 불러오는 중 오류가 발생했습니다.</div>;
   if (!reports?.length) return <div className="text-center py-4 text-gray-500">신고된 리뷰가 없습니다.</div>;
 
-  const validReports = reports.filter(report => 
-    report && 
-    report.placeReview && 
-    report.placeReview.placeInfo && 
+  const validReports = reports.filter(report =>
+    report &&
+    report.placeReview &&
+    report.placeReview.placeInfo &&
     report.placeReview.user
   );
 
@@ -103,8 +103,8 @@ const ReviewReportList = () => {
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-2">
                 <button
-                  onClick={e => { 
-                    e.stopPropagation(); 
+                  onClick={e => {
+                    e.stopPropagation();
                     approveMutation.mutate(report.id);
                   }}
                   disabled={approveMutation.isPending || rejectMutation.isPending}
@@ -113,8 +113,8 @@ const ReviewReportList = () => {
                   <Icon path={mdiCheck} size={0.8} /> 승인
                 </button>
                 <button
-                  onClick={e => { 
-                    e.stopPropagation(); 
+                  onClick={e => {
+                    e.stopPropagation();
                     rejectMutation.mutate(report.id);
                   }}
                   disabled={approveMutation.isPending || rejectMutation.isPending}
@@ -124,7 +124,7 @@ const ReviewReportList = () => {
                 </button>
               </div>
             </div>
-            
+
             {openId === report.id && (
               <div className="mt-4 space-y-2">
                 <div className="border-t pt-2">

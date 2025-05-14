@@ -1,4 +1,3 @@
-// src/api/getPlaceInfoClient.ts
 import { graphqlRequest } from '../../../api/graphqlClient';
 
 const GET_PLACE_INFO_MUTATION = `
@@ -69,8 +68,7 @@ export const getPlaceInfo = async (
   });
 
   const raw = response.getPlaceInfo.place;
-  
-  // 장소 정보를 가져온 후 리뷰 정보도 함께 가져옵니다
+
   const reviews = await getPlaceReviews(raw.id);
 
   return {
@@ -124,7 +122,6 @@ const CREATE_PLACE_REVIEW_MUTATION = `
   }
 `;
 
-// 파일을 base64로 변환하는 유틸리티 함수
 export const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -134,7 +131,6 @@ export const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-// 리뷰 등록 함수
 export const createPlaceReview = async (
   placeInfoId: string,
   text: string,
@@ -143,7 +139,6 @@ export const createPlaceReview = async (
   accessToken: string
 ) => {
   try {
-    // 이미지 파일들을 base64로 변환
     const base64Images = await Promise.all(
       images.map(file => fileToBase64(file))
     );
@@ -161,7 +156,6 @@ export const createPlaceReview = async (
 
     return response.createPlaceReview;
   } catch (error) {
-    console.error('리뷰 등록 중 오류 발생:', error);
     throw error;
   }
 };
@@ -205,7 +199,6 @@ export const reportReview = async (
     );
     return response.createPlaceInfoReviewByUserReport;
   } catch (error) {
-    console.error('리뷰 신고 중 오류 발생:', error);
     throw error;
   }
 };

@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { DotLottie } from '@lottiefiles/dotlottie-web';
 
-const FetchingUI = () => {  
+const FetchingUI = () => {
   const containerRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
     const animation = new DotLottie({
       canvas: containerRef.current,
-      src: '/lottie/listLoading.lottie', // public 폴더에 위치해야 함
+      src: '/lottie/listLoading.lottie',
       autoplay: true,
       loop: true,
     });

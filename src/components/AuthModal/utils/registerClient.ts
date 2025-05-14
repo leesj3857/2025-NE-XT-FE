@@ -1,4 +1,3 @@
-// src/api/registerClient.ts
 import { graphqlRequest } from '../../../api/graphqlClient';
 import { RegisterPayload, VerifyCodePayload } from '../../../types/auth/type';
 

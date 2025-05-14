@@ -4,9 +4,8 @@ import { RootState } from '../../../store';
 import { initializeMap, registerMapClickClose } from '../../Map/utils/mapInitializer.ts';
 import { createMarkersOnMap } from '../../Map/utils/markerCreator.ts';
 import { NaverMapProps } from "../../../types/map/type.ts";
-import MoveToMyLocationButton from "../../Map/interface/MoveToMyLocationButton.tsx";
 import { renderKakaoRouteOnNaverMap } from "../../Map/utils/renderKakaoRoute.ts";
-import {clearRouteErrorMessage, clearRouteInfo, setRouteInfo} from "../../../store/slices/searchSlice.ts";
+import { clearRouteErrorMessage, clearRouteInfo, setRouteInfo } from "../../../store/slices/searchSlice.ts";
 
 declare global {
   interface Window {
@@ -26,7 +25,7 @@ export default function NaverMap({ markers }: NaverMapProps) {
   const { origin, destination } = useSelector((state: RootState) => state.search.selectedPlacePair);
   const currentPage = useSelector((state: RootState) => state.search.currentPage);
   const dispatch = useDispatch();
-  // Close InfoWindow when page changes
+
   useEffect(() => {
     if (infoWindowRef.current) {
       infoWindowRef.current.close();
@@ -34,7 +33,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
     }
   }, [currentPage]);
 
-  // Trigger marker click when selectedPlaceId changes
   useEffect(() => {
     if (!selectedPlaceId || !mapInstanceRef.current || markerRefs.current.length === 0) return;
     const markerIndex = markers.findIndex((m) => m.id === selectedPlaceId);
@@ -44,15 +42,8 @@ export default function NaverMap({ markers }: NaverMapProps) {
     if (!marker) return;
     window.naver.maps.Event.trigger(marker, 'click');
 
-    // 중심을 살짝 아래쪽으로 조정 (위도를 감소시키면 화면상 더 위쪽으로 올라가게 됨)
-    // const adjustedPosition = new window.naver.maps.LatLng(markers[markerIndex].lat + 0.002, markers[markerIndex].lng);
-    // setTimeout(() => {
-    //   console.log(adjustedPosition, markers[markerIndex].lat, markers[markerIndex].lng);
-    //   mapInstanceRef.current.setCenter(adjustedPosition);
-    // }, 0);
   }, [selectedPlaceId]);
 
-  // Initialize map once
   useEffect(() => {
     let isMapInitialized = false;
 
@@ -61,7 +52,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
       registerMapClickClose(mapInstanceRef, infoWindowRef, selectedMarkerRef);
       isMapInitialized = true;
 
-      // 맵 초기화 후 마커 렌더링 트리거
       if (markers.length > 0) {
         renderMarkers();
       }
@@ -86,7 +76,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
     }
   }, []);
 
-  // Render markers when markers data changes
   const renderMarkers = () => {
     if (!mapInstanceRef.current || !window.naver) return;
     const prev = prevMarkersRef.current;
@@ -102,10 +91,8 @@ export default function NaverMap({ markers }: NaverMapProps) {
         );
       });
 
-    // Clear old markers
     markerRefs.current.forEach((m) => m.setMap(null));
 
-    // Create and store new markers
     markerRefs.current = createMarkersOnMap({
       map: mapInstanceRef.current,
       markers,
@@ -116,7 +103,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
       destination
     });
 
-    // Fit bounds to new markers
     if (markers.length > 0 && !isSameMarkers) {
       const bounds = new window.naver.maps.LatLngBounds();
       markers.forEach(({ lat, lng }) => {
@@ -140,7 +126,6 @@ export default function NaverMap({ markers }: NaverMapProps) {
     }
 
     const updateRoute = async () => {
-      // 기존 선 제거
       if (origin && destination && mapInstanceRef.current) {
         dispatch(clearRouteInfo())
         dispatch(clearRouteErrorMessage())
@@ -168,6 +153,5 @@ export default function NaverMap({ markers }: NaverMapProps) {
   return <div className="relative w-full h-full">
     <div ref={mapRef} className="w-full h-full" />
 
-    {/*<MoveToMyLocationButton mapInstance={mapInstanceRef.current} />*/}
   </div>
 }

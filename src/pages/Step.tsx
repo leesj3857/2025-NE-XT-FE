@@ -19,7 +19,7 @@ const StepProgress = ({ current, total }: { current: number; total: number }) =>
 
 const Step = () => {
   const [step, setStep] = useState(1);
-  const [direction, setDirection] = useState(1); // 1 = 앞으로, -1 = 뒤로
+  const [direction, setDirection] = useState(1);
 
   const [city, setCity] = useState('');
   const [region, setRegion] = useState('');
@@ -80,7 +80,7 @@ const Step = () => {
               className="h-full"
             >
               <StepTwo region={region} setRegion={setRegion} regionEN={regionEN}
-                       setRegionEN={setRegionEN}onNext={nextStep} onBack={prevStep} />
+                setRegionEN={setRegionEN} onNext={nextStep} onBack={prevStep} />
             </motion.div>
           )}
           {step === 3 && (
@@ -94,7 +94,7 @@ const Step = () => {
               transition={{ duration: 0.3 }}
               className="h-full"
             >
-              <StepThree categories={categories} setCategories={setCategories} onNext={nextStep} onBack={prevStep}  />
+              <StepThree categories={categories} setCategories={setCategories} onNext={nextStep} onBack={prevStep} />
             </motion.div>
           )}
           {step === 4 && (

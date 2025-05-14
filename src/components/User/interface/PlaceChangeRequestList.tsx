@@ -3,7 +3,7 @@ import { getPlaceInfoChangeRequests, approvePlaceInfoChangeRequest, rejectPlaceI
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import Icon from '@mdi/react';
-import { mdiCheck, mdiClose, mdiClockOutline } from '@mdi/js';
+import { mdiCheck, mdiClose } from '@mdi/js';
 import { useState } from 'react';
 import ToastMessage from '../../../interface/ToastMessage';
 import ReviewReportList from './ReviewReportList';
@@ -68,7 +68,7 @@ const PlaceChangeRequestList = () => {
           {requests.map((request: PlaceInfoChangeRequest) => {
             const newValue = JSON.parse(request.newValue);
             const status = request.isApproved === true ? 'approved' : 'pending';
-            
+
             return (
               <div key={request.id} className="border rounded-lg p-4 bg-white shadow-sm">
                 <div
@@ -111,7 +111,7 @@ const PlaceChangeRequestList = () => {
                     )}
                   </div>
                 </div>
-                
+
                 {openId === request.id && (
                   <div className="mt-4 space-y-2">
                     <div className="border-t pt-2">

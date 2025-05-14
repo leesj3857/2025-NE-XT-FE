@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PlaceItemType } from '../../../types/place/type';
 import { motion } from 'framer-motion';
 import Icon from '@mdi/react';
 import { mdiFolder, mdiPlus, mdiMinusCircleOutline, mdiMapMarker } from '@mdi/js';
 import DeleteModal from '../../../interface/DeleteModal';
-import { RootState } from '../../../store'; 
+import { RootState } from '../../../store';
 import { useSelector } from 'react-redux';
-import { createSavedPlace , moveSavedPlace , deleteSavedPlace, createUserCategory, deleteUserCategory } from '../../User/utils/API';
+import { createSavedPlace, moveSavedPlace, deleteSavedPlace, createUserCategory, deleteUserCategory } from '../../User/utils/API';
 import { useAppDispatch } from '../../../store/hooks';
 import { fetchAndStoreUserCategories } from '../../../store/thunks/fetchcategories';
 
@@ -28,12 +28,12 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
   const currentCategoryId = categories.find(c =>
     c.places.some(p => p.id === place.id)
   )?.id;
-  
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(currentCategoryId ?? null);
   const [errorMessage, setErrorMessage] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newColor, setNewColor] = useState('#F87171'); // 기본색
+  const [newColor, setNewColor] = useState('#F87171');
   const [isEditMode, setIsEditMode] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
@@ -47,25 +47,23 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
 
   const handleSave = async () => {
     if (!accessToken) return;
-  
-    
+
+
     const currentCategoryId = currentCategory?.id;
     const selectedId = selectedCategory;
-  
+
     try {
       if (!selectedId && currentCategoryId) {
-        // ❌ 삭제
         const saved = currentCategory.places.find(p => p.id === place.id);
         if (saved && saved.dataId) await deleteSavedPlace(saved.dataId, accessToken);
       } else if (selectedId && currentCategoryId !== selectedId) {
         if (currentCategoryId) {
-          // 🔄 이동
           const saved = currentCategory.places.find(p => p.id === place.id);
           if (saved && saved.dataId) await moveSavedPlace(saved.dataId, selectedId, accessToken);
         } else {
           const variables = {
-            categoryId: selectedId,        // 선택된 카테고리 ID
-            placeId: place.id,                  // ✅ placeId 대신 id 사용
+            categoryId: selectedId,
+            placeId: place.id,
             placeName: place.placeName,
             addressName: place.addressName,
             roadAddressName: place.roadAddressName,
@@ -80,11 +78,11 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
             lat: String(place.lat),
             lng: String(place.lng),
           };
-  
+
           await createSavedPlace(variables, accessToken);
         }
       }
-      dispatch(fetchAndStoreUserCategories()); // ✅ 항상 동기화
+      dispatch(fetchAndStoreUserCategories());
       onClose();
     } catch (err: any) {
       console.error(err.message);
@@ -97,7 +95,7 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
       return;
     }
     if (!accessToken) return;
-  
+
     try {
       await createUserCategory(newName.trim(), newColor, accessToken);
       setNewName('');
@@ -110,8 +108,8 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 cursor-default" 
-    style={{ zIndex: 101 }} onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30 cursor-default"
+      style={{ zIndex: 101 }} onClick={(e) => e.stopPropagation()}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -144,14 +142,14 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
         </div>
         {/* 카테고리 목록 */}
         <div className="grid grid-cols-2 gap-3 mb-4 overflow-y-auto pr-2">
-          {categories.map(({ id : id, name, color }) => {
+          {categories.map(({ id: id, name, color }) => {
             const isSelected = selectedCategory === id;
             return (
               <div
                 key={name}
                 onClick={() => {
                   if (!isEditMode) {
-                    setSelectedCategory(selectedCategory === id ? null : id); // ✅ id 기준 토글
+                    setSelectedCategory(selectedCategory === id ? null : id);
                   }
                 }}
                 className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition border
@@ -205,7 +203,7 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
               }}
               className="w-full border px-3 py-2 rounded text-sm focus:outline-none transition-all"
               style={{
-                borderColor: newColor || '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
+                borderColor: newColor || '#D1D5DB',
               }}
             />
             <div className="flex items-center gap-2">
@@ -263,10 +261,10 @@ const SavePlaceModal = ({ place, onClose }: SavePlaceModalProps) => {
         }}
         onConfirm={async () => {
           if (!accessToken || !categoryToDelete?.id) return;
-        
+
           try {
             await deleteUserCategory(categoryToDelete.id, accessToken);
-            dispatch(fetchAndStoreUserCategories()); // 전역 상태 동기화
+            dispatch(fetchAndStoreUserCategories());
           } catch (err: any) {
             console.error('Failed to delete category:', err.message);
           } finally {

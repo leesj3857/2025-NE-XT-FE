@@ -10,7 +10,6 @@ export const getCategoryIcon = (
         : '';
   }
 
-  // 🍽️ FD6: 맛집 전용 아이콘 (레벨 3 > 2 > 1)
   const foodIcons = {
     level3: {
       조개: 'shell.webp',
@@ -66,7 +65,6 @@ export const getCategoryIcon = (
     return '/Icons/food/fooddefault.webp';
   }
 
-  // 🗺️ AT4: 볼거리 전용 아이콘
   const sightIcons: { [key: string]: string } = {
     산책: 'trail.webp',
     전망대: 'tower.webp',
@@ -99,6 +97,5 @@ export const getCategoryIcon = (
     return '/Icons/sight/defaultsight.webp';
   }
 
-  // 기본값 (예외 케이스)
   return '';
 };

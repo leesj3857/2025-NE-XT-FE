@@ -1,4 +1,3 @@
-// src/api/authClient.ts
 import { graphqlRequest } from '../../../api/graphqlClient';
 import { LoginPayload } from '../../../types/auth/type';
 

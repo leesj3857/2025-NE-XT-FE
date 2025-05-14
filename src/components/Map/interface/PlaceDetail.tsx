@@ -3,15 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from "../../../store";
 import { clearSelectedDetailedPlace } from "../../../store/slices/searchSlice.ts";
 import Icon from '@mdi/react';
-import { mdiClose, mdiClipboardTextOutline,
+import {
+  mdiClose, mdiClipboardTextOutline,
   mdiCommentTextMultipleOutline,
   mdiMapMarker, mdiLink, mdiPencil,
   mdiCheck,
   mdiCloseCircleOutline,
   mdiPlus,
   mdiImagePlus,
-  mdiImage,
-  mdiDelete,
   mdiSend,
   mdiCancel,
   mdiMinusCircle,
@@ -19,7 +18,6 @@ import { mdiClose, mdiClipboardTextOutline,
   mdiStarOutline,
   mdiAccountCircle,
   mdiClockOutline,
-  mdiFlagOutline,
   mdiAlarmLight,
   mdiBookmarkOutline
 } from '@mdi/js';
@@ -35,7 +33,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { optimizeImage, validateImageSize, getFileSizeInMB } from '../utils/imageOptimizer';
 import SavePlaceModal from './SavePlaceModal';
 
-// ===== Types =====
+
 interface MenuItem {
   name: string;
   price: string;
@@ -52,23 +50,11 @@ interface ReportData {
   reason: string;
 }
 
-interface UserReview {
-  id: string;
-  userId: string;
-  userName: string;
-  rating: number;
-  text: string;
-  images: string[];
-  createdAt: string;
-}
-
 interface PlaceDetailProps {
   focusReviewForm?: boolean;
 }
 
-// ===== Component =====
 const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
-  // ===== Redux & Props =====
   const dispatch = useDispatch();
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
@@ -78,7 +64,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     c.places.some(p => p.id === place?.id)
   );
   const bookmarkColor = currentCategory?.color;
-  // ===== State =====
   const [selectedLanguage, setSelectedLanguage] = useState("영어");
   const [editMode, setEditMode] = useState(false);
   const [editedMenu, setEditedMenu] = useState<MenuItem[]>([]);
@@ -99,7 +84,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const queryClient = useQueryClient();
   const [showSaveModal, setShowSaveModal] = useState(false);
 
-  // ===== Queries =====
   const {
     data: detailedInfo,
     isLoading,
@@ -116,11 +100,9 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     retryDelay: (attemptIndex) => Math.min(1000 * (attemptIndex + 1), 3000),
   });
 
-  // ===== Effects =====
   useEffect(() => {
     setSelectedLanguage("영어");
     setEditMode(false);
-    // place가 변경될 때만 hasFocusedRef 초기화
     if (place) {
       hasFocusedRef.current = false;
     }
@@ -149,7 +131,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   useEffect(() => {
     if (focusReviewForm && !hasFocusedRef.current) {
       setShowReviewForm(true);
-      
+
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.addedNodes.length > 0) {
@@ -180,7 +162,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     }
   }, [focusReviewForm]);
 
-  // ===== Handlers =====
   const resetEditMode = () => {
     setEditMode(false);
     if (detailedInfo?.menuOrTicketInfo) {
@@ -196,7 +177,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     const filteredMenu = editedMenu.filter(
       (item) => item.name.trim() !== '' && item.price.trim() !== ''
     );
-    
+
     if (filteredMenu.length === 0 || !detailedInfo?.id) {
       alert("Please provide valid menu items.");
       return;
@@ -209,7 +190,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       resetEditMode();
       return;
     }
-  
+
     try {
       await submitChangeRequest(detailedInfo.id, filteredMenu, accessToken!);
       setToastMessage('Change request submitted successfully!');
@@ -234,15 +215,14 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     for (const file of files) {
       try {
         if (!validateImageSize(file)) {
-          errors.push(`${file.name} (${getFileSizeInMB(file.size)}MB)는 5MB 이하여야 합니다.`);
+          errors.push(`${file.name} (${getFileSizeInMB(file.size)}MB) must be less than 5MB.`);
           continue;
         }
 
         const optimizedFile = await optimizeImage(file);
         processedFiles.push(optimizedFile);
       } catch (error) {
-        console.error('이미지 처리 중 오류:', error);
-        errors.push(`${file.name} 처리 중 오류가 발생했습니다.`);
+        errors.push(`${file.name} encountered an error.`);
       }
     }
 
@@ -261,7 +241,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     onHoverChange: (rating: number) => void;
   }) => {
     return (
-      <div 
+      <div
         className="flex items-center gap-0.5 relative"
         onMouseLeave={() => onHoverChange(0)}
       >
@@ -280,9 +260,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
             <Icon
               path={star <= (hoveredRating || rating) ? mdiStar : mdiStarOutline}
               size={1.2}
-              className={`transition-colors duration-150 ${
-                star <= (hoveredRating || rating) ? "text-yellow-400" : "text-gray-300"
-              }`}
+              className={`transition-colors duration-150 ${star <= (hoveredRating || rating) ? "text-yellow-400" : "text-gray-300"
+                }`}
             />
           </div>
         ))}
@@ -290,13 +269,11 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     );
   };
 
-  // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
   };
 
-  // 리뷰 폼을 닫을 때 hasFocusedRef 초기화
   const handleCloseReviewForm = () => {
     setShowReviewForm(false);
     setReviewData({ text: '', images: [], rating: 0 });
@@ -328,8 +305,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         setReportData(null);
       }
     } catch (error) {
-      console.error('리뷰 신고 중 오류 발생:', error);
-      setToastMessage('리뷰 신고 중 오류가 발생했습니다.');
+      setToastMessage('Error reporting review');
       setTimeout(() => setToastMessage(''), 1000);
     }
   };
@@ -355,7 +331,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         setTimeout(() => setToastMessage(''), 1000);
         setShowReviewForm(false);
         setReviewData({ text: '', images: [], rating: 0 });
-        // 리뷰 목록 새로고침을 위해 쿼리 무효화
         queryClient.invalidateQueries({ queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage] });
       }
     } catch (error) {
@@ -364,7 +339,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     }
   };
 
-  // ===== Render =====
   return (
     <>
       <ToastMessage show={!!toastMessage} message={toastMessage} />
@@ -444,7 +418,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                 {!editMode ? (
                   <button
                     onClick={() => {
-                      if(!accessToken) {
+                      if (!accessToken) {
                         document.getElementById('login-button')?.click();
                         return;
                       }
@@ -686,7 +660,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                         {reviewData.text.length}/{MAX_REVIEW_LENGTH}
                       </div>
                     </div>
-                    
+
                     {/* 이미지 업로드 영역 */}
                     <div className="mb-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -728,19 +702,18 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           <div className="flex justify-end mb-2">
                             <button
                               onClick={() => setIsImageEditMode(!isImageEditMode)}
-                              className={`px-2 py-1 text-xs rounded transition-colors ${
-                                isImageEditMode 
-                                  ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                              className={`px-2 py-1 text-xs rounded transition-colors ${isImageEditMode
+                                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              }`}
+                                }`}
                             >
                               {isImageEditMode ? 'Cancel Edit' : 'Edit Photos'}
                             </button>
                           </div>
                           <div className="grid grid-cols-5 gap-2 mt-2">
                             {reviewData.images.map((img, idx) => (
-                              <div 
-                                key={idx} 
+                              <div
+                                key={idx}
                                 className="relative aspect-square border rounded overflow-hidden group cursor-pointer"
                                 onClick={() => setSelectedImage(URL.createObjectURL(img))}
                               >
@@ -750,7 +723,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                                   className="object-cover w-full h-full"
                                 />
                                 {isImageEditMode && (
-                                  <div 
+                                  <div
                                     className="absolute inset-0 flex items-center justify-center bg-transparent bg-opacity-10 cursor-pointer"
                                     onClick={(e) => {
                                       e.stopPropagation();

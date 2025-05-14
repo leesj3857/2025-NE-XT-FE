@@ -75,7 +75,7 @@ const CategorySectionPC = ({
   };
 
   const handleRequestDeletePlace = (categoryId: string, placeId: string | undefined, placeName: string) => {
-    if(placeId) {
+    if (placeId) {
       setPlaceToDelete({ categoryId, placeId, placeName: placeName });
       setShowDeleteModal(true);
     }
@@ -88,8 +88,8 @@ const CategorySectionPC = ({
       return;
     }
     const original = categories.find(cat => cat.id === categoryId);
-    if (!original) return; // 해당 카테고리가 없으면 중단
-  
+    if (!original) return;
+
     try {
       await updateUserCategory(categoryId, newName, original.color, accessToken);
       dispatch(fetchAndStoreUserCategories());
@@ -100,7 +100,7 @@ const CategorySectionPC = ({
     }
   };
 
-   const handleAddCategory = async () => {
+  const handleAddCategory = async () => {
     if (!newCategory.trim()) {
       setErrorMessage('Please enter a category name.');
       return;
@@ -150,9 +150,8 @@ const CategorySectionPC = ({
               <div
                 key={id}
                 onClick={() => !isEditing && onSelectCategory(id)}
-                className={`group relative flex flex-col items-center justify-center rounded-lg cursor-pointer border border-transparent transition duration-200 w-[120px] aspect-square p-4 ${
-                  isSelected ? 'bg-opacity-20' : 'hover:bg-gray-100'
-                }`}
+                className={`group relative flex flex-col items-center justify-center rounded-lg cursor-pointer border border-transparent transition duration-200 w-[120px] aspect-square p-4 ${isSelected ? 'bg-opacity-20' : 'hover:bg-gray-100'
+                  }`}
                 style={{ backgroundColor: isSelected ? `${color}15` : undefined }}
               >
                 <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -196,7 +195,7 @@ const CategorySectionPC = ({
                   placeholder="Category name"
                   className="text-sm border p-1 rounded focus:outline-none transition-all"
                   style={{
-                    borderColor: newColor || '#D1D5DB', // 기본 테두리 색상 (Tailwind의 gray-300)
+                    borderColor: newColor || '#D1D5DB',
                   }}
                 />
                 <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} />
@@ -220,7 +219,7 @@ const CategorySectionPC = ({
         <h3 className="text-lg font-semibold text-[#1A1E1D] mb-5 flex justify-between items-center h-10">
           {selectedCategory ? 'Saved Places' : 'Select a category'}
           {selectedCategory && (
-            <button 
+            <button
               onClick={() => handleCategoryClick(selectedCategory)}
               className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
               title="View on Map"
@@ -239,14 +238,14 @@ const CategorySectionPC = ({
                   <div key={place.id} className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition flex justify-between items-center">
                     <p className="font-medium text-[#1A1E1D]">{place.placeName}</p>
                     <div className="flex gap-2 items-center">
-                      <button 
+                      <button
                         onClick={() => handleReviewClick(place)}
                         className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                         title="Write Review"
                       >
                         <Icon path={mdiCommentTextMultipleOutline} size={1} className="text-blue-600" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleRequestDeletePlace(selectedCategory, place.dataId, place.placeName)}
                         className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                         title="Delete Place"

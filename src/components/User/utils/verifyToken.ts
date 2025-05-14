@@ -10,7 +10,7 @@ export const verifyAccessToken = async (token: string): Promise<boolean> => {
   `;
 
   try {
-    await graphqlRequest(query, { token }, token); // token도 인증 헤더에 포함
+    await graphqlRequest(query, { token }, token);
     return true;
   } catch (err) {
     return false;

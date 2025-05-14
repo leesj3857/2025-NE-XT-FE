@@ -1,8 +1,6 @@
-// src/components/User/interface/UserProfile.tsx
 import { useState } from 'react';
 import Icon from '@mdi/react';
 import { mdiAccountCircle } from '@mdi/js';
-import { AnimatePresence, motion } from 'framer-motion';
 import DeleteModal from '../../../interface/DeleteModal';
 
 interface UserProfileProps {
@@ -61,7 +59,7 @@ const UserProfile = ({ name, email, onChangeName, isDeleting, handleDeleteAccoun
           setShowDeleteConfirm(false);
         }}
       />
-      
+
       <Icon
         path={mdiAccountCircle}
         size={3}

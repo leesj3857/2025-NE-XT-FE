@@ -1,4 +1,3 @@
-// components/common/ToastMessage.tsx
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface ToastMessageProps {

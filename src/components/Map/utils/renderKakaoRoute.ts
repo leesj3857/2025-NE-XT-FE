@@ -1,7 +1,6 @@
-// src/components/Map/utils/renderKakaoRoute.ts
 import axios from "axios";
-import {kakaoRouteErrorMap} from "../static/errorCodeMap.ts";
-import {setRouteErrorMessage} from "../../../store/slices/searchSlice.ts";
+import { kakaoRouteErrorMap } from "../static/errorCodeMap.ts";
+import { setRouteErrorMessage } from "../../../store/slices/searchSlice.ts";
 
 interface Coordinate {
   lat?: number | string;
@@ -37,7 +36,7 @@ export const renderKakaoRouteOnNaverMap = async (
       const errorCode = route?.result_code || response.data?.routes?.[0]?.result_code || 104;
       const errorMsg = kakaoRouteErrorMap[errorCode] || "Unknown error occurred during route search.";
 
-      dispatch(setRouteErrorMessage(errorMsg)); // 새 액션 필요
+      dispatch(setRouteErrorMessage(errorMsg));
       return;
     }
 
@@ -47,7 +46,6 @@ export const renderKakaoRouteOnNaverMap = async (
     const distanceM = summary?.distance;
 
     if (!roads.length) {
-      console.warn("경로 데이터를 찾을 수 없습니다.");
       return;
     }
 
@@ -75,16 +73,11 @@ export const renderKakaoRouteOnNaverMap = async (
       map: mapInstance,
     });
 
-    // 경로 중심으로 이동
-    const middleIndex = Math.floor(path.length / 2);
-    // mapInstance.setCenter(path[middleIndex]);
-
     return {
       polyline: routeLine,
       duration: durationMs,
       distance: distanceM,
     };
   } catch (error) {
-    console.error("카카오 길찾기 API 요청 실패:", error);
   }
 };

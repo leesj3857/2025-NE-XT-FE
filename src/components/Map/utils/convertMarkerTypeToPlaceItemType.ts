@@ -1,7 +1,7 @@
-import {PlaceItemType} from "../../../types/place/type.ts";
-import {MarkerType} from "../../../types/map/type.ts";
+import { PlaceItemType } from "../../../types/place/type.ts";
+import { MarkerType } from "../../../types/map/type.ts";
 
-export default function convertMarkerToPlaceItem (marker: MarkerType): PlaceItemType {
+export default function convertMarkerToPlaceItem(marker: MarkerType): PlaceItemType {
   return {
     id: marker.id,
     placeName: marker.title,
@@ -15,7 +15,7 @@ export default function convertMarkerToPlaceItem (marker: MarkerType): PlaceItem
     categoryGroupCode: marker.categoryGroupCode,
     lat: marker.lat,
     lng: marker.lng,
-    x: marker.lng?.toString(), // 문자열 변환
+    x: marker.lng?.toString(),
     y: marker.lat?.toString(),
   };
 };

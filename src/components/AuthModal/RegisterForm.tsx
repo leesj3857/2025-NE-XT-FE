@@ -1,5 +1,3 @@
-// src/components/AuthModal/RegisterForm.tsx
-
 import { useState, useEffect } from 'react';
 import { registerClient } from './utils/registerClient';
 import EmailInputSection from './interface/register/EmailInputSection';

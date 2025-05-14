@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import {AnimatePresence} from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import queryString from 'query-string';
 
 import { RootState } from '../store';
@@ -34,7 +34,6 @@ const ResultPage = () => {
 
   const [searchKey, setSearchKey] = useState('');
 
-  // Redux 상태
   const { keyword, currentPage, resultsByPage, meta, categories } = useSelector(
     (state: RootState) => state.search
   );
@@ -43,16 +42,14 @@ const ResultPage = () => {
   const selectedDetailedPlace = useSelector((state: RootState) => state.search.selectedDetailedPlace);
 
 
-  // 쿼리 파싱
   const parsed = useMemo(() => queryString.parse(location.search), [location.search]);
 
-  // searchKey 갱신 (한 번만 실행 제어용)
+
   useEffect(() => {
     dispatch(clearSelectedDetailedPlace());
     setSearchKey(location.search);
   }, [location.search]);
 
-  // searchParams 계산
   const searchParams = useMemo(() => {
     const isCoordSearch = parsed.type === 'coord' && parsed.x && parsed.y;
     const categoryGroupCode =
@@ -85,10 +82,8 @@ const ResultPage = () => {
     return null;
   }, [parsed, keyword, categories, currentPage]);
 
-  // 장소 데이터 요청
   const { data, refetch, isFetching } = useKakaoPlaces(searchParams!, searchKey === location.search);
 
-  // 1. 검색 조건 상태 Redux에 저장
   useEffect(() => {
     const { city, region, food, sights, type } = parsed;
     const categories = {
@@ -104,10 +99,9 @@ const ResultPage = () => {
       }));
     }
 
-    dispatch(setCurrentPage(1)); // 검색 조건이 바뀌면 무조건 1페이지부터
+    dispatch(setCurrentPage(1));
   }, [location.search]);
 
-  // 2. 1페이지 결과 저장
   useEffect(() => {
     if (data && currentPage === 1 && !resultsByPage[1]) {
       const normalized = data.map(toCamelCase);
@@ -115,7 +109,6 @@ const ResultPage = () => {
     }
   }, [data, currentPage, dispatch, resultsByPage]);
 
-  // 3. 페이지 변경 시 refetch
   useEffect(() => {
     if (currentPage === 1) return;
 
@@ -131,7 +124,6 @@ const ResultPage = () => {
     if (listRef.current) listRef.current.scrollTop = 0;
   }, [currentPage]);
 
-  // 4. 선택된 아이템 스크롤 이동
   useEffect(() => {
     if (selectedPlaceId) {
       const el = document.getElementById(`place-item-${selectedPlaceId}`);
@@ -141,7 +133,6 @@ const ResultPage = () => {
     }
   }, [selectedPlaceId]);
 
-  // 5. 현재 페이지 결과에 origin/destination 포함
   const currentResults: PlaceItemType[] = useMemo(() => {
     const base = resultsByPage[currentPage] ?? [];
     const ids = new Set(base.map((p) => p.id));
@@ -159,7 +150,6 @@ const ResultPage = () => {
     return [...base, ...additions];
   }, [resultsByPage, currentPage, origin, destination]);
 
-  // 6. 마커 변환
   const markers: MarkerType[] = currentResults.map((place) => ({
     id: place.id,
     lat: parseFloat(place.y ?? '0'),
