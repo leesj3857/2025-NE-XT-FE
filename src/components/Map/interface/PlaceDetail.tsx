@@ -19,7 +19,8 @@ import {
   mdiAccountCircle,
   mdiClockOutline,
   mdiAlarmLight,
-  mdiBookmarkOutline
+  mdiBookmarkOutline,
+  mdiRefresh
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
 import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview } from '../utils/getPlaceInfoClient';
@@ -89,6 +90,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     isLoading,
     isError,
     error,
+    refetch
   } = useQuery({
     queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage],
     queryFn: () => {
@@ -407,7 +409,17 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
             </div>
           )}
           {isError && (
-            <p className="text-sm text-red-500 mt-4">❌ {error.message}</p>
+            <div className="text-sm text-gray-600 mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+              <p className="mb-2">We're having trouble loading the place information due to high server traffic.</p>
+              <p className="mb-3">Please wait a moment and try again. The information should be available shortly.</p>
+              <button
+                onClick={() => refetch()}
+                className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors inline-flex items-center gap-2"
+              >
+                <Icon path={mdiRefresh} size={0.9} />
+                Try Again
+              </button>
+            </div>
           )}
 
           {/* Detailed Info */}
@@ -703,8 +715,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                             <button
                               onClick={() => setIsImageEditMode(!isImageEditMode)}
                               className={`px-2 py-1 text-xs rounded transition-colors ${isImageEditMode
-                                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                             >
                               {isImageEditMode ? 'Cancel Edit' : 'Edit Photos'}
