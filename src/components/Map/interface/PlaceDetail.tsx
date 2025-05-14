@@ -414,9 +414,9 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
               <p className="mb-3">Please wait a moment and try again. The information should be available shortly.</p>
               <button
                 onClick={() => refetch()}
-                className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors inline-flex items-center gap-2"
+                className="px-2 py-1 bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors inline-flex items-center gap-2"
               >
-                <Icon path={mdiRefresh} size={0.9} />
+                <Icon path={mdiRefresh} size={0.8} />
                 Try Again
               </button>
             </div>
