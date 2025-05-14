@@ -23,7 +23,9 @@ const PlaceChangeRequestList = () => {
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const isStaff = useSelector((state: RootState) => state.user.isStaff);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const queryClient = useQueryClient();
   const [openId, setOpenId] = useState<number | null>(null);
 
@@ -35,21 +37,60 @@ const PlaceChangeRequestList = () => {
 
   const approveMutation = useMutation({
     mutationFn: (id: number) => approvePlaceInfoChangeRequest(id, accessToken!),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['placeChangeRequests'] });
+      
+      const previousRequests = queryClient.getQueryData(['placeChangeRequests']);
+      
+      queryClient.setQueryData(['placeChangeRequests'], (oldData: PlaceInfoChangeRequest[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.map(request => 
+          request.id === id ? { ...request, isApproved: true } : request
+        );
+      });
+      
+      return { previousRequests };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['placeChangeRequests'] });
-      setSuccessMessage('Request approved successfully!');
+      setSuccessMessage('변경 요청이 승인되었습니다.');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
+    },
+    onError: (error: any, id, context) => {
+      if (context?.previousRequests) {
+        queryClient.setQueryData(['placeChangeRequests'], context.previousRequests);
+      }
+      setErrorMessage(error.message || '변경 요청 승인 중 오류가 발생했습니다.');
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
     },
   });
 
   const rejectMutation = useMutation({
     mutationFn: (id: number) => rejectPlaceInfoChangeRequest(id, accessToken!),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['placeChangeRequests'] });
+      const previousRequests = queryClient.getQueryData(['placeChangeRequests']);
+      
+      queryClient.setQueryData(['placeChangeRequests'], (oldData: PlaceInfoChangeRequest[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.filter(request => request.id !== id);
+      });
+      
+      return { previousRequests };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['placeChangeRequests'] });
-      setSuccessMessage('Request rejected successfully!');
+      setSuccessMessage('변경 요청이 거절되었습니다.');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
+    },
+    onError: (error: any, id, context) => {
+      if (context?.previousRequests) {
+        queryClient.setQueryData(['placeChangeRequests'], context.previousRequests);
+      }
+      setErrorMessage(error.message || '변경 요청 거절 중 오류가 발생했습니다.');
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
     },
   });
 
@@ -62,7 +103,8 @@ const PlaceChangeRequestList = () => {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <ToastMessage show={showSuccess} message={successMessage} />
+        <ToastMessage show={showSuccess} message={successMessage} type="success" />
+        <ToastMessage show={showError} message={errorMessage} type="error" />
         <h2 className="text-xl font-bold text-gray-800 mb-4">장소 정보 변경 요청</h2>
         <div className="space-y-4">
           {requests.map((request: PlaceInfoChangeRequest) => {

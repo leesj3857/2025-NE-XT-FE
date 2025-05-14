@@ -186,7 +186,7 @@ const CREATE_REVIEW_REPORT_MUTATION = `
 export const reportReview = async (
   placeReviewId: string,
   reason: string | undefined,
-  accessToken: string
+  accessToken?: string
 ) => {
   try {
     const response = await graphqlRequest(
@@ -195,7 +195,7 @@ export const reportReview = async (
         placeReviewId,
         reason
       },
-      accessToken
+      accessToken || ''
     );
     return response.createPlaceInfoReviewByUserReport;
   } catch (error) {

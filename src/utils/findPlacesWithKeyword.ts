@@ -3,8 +3,8 @@ import axios from 'axios';
 import { KakaoPlaceSearchParams } from '../types';
 import { useDispatch } from 'react-redux';
 import { setSearchMeta } from '../store/slices/searchSlice';
-import { convertKoreanToEnglishAddress } from "./utils/convertKoreanToEnglishAddress.ts";
-import { translateCategoryToEnglish } from "./utils/translateCategoryToEnglish.ts";
+import { convertKoreanToEnglishAddress } from './convertKoreanToEnglishAddress.ts';
+import { translateCategoryToEnglish } from './translateCategoryToEnglish.ts';
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
 

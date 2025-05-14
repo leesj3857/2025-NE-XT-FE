@@ -1,4 +1,4 @@
-import { graphqlRequest } from '../../api/graphqlClient';
+import { graphqlRequest } from '../api/graphqlClient';
 const translationCache = new Map<string, string>();
 
 export async function translateCategoryToEnglish(koreanCategory: string): Promise<string> {

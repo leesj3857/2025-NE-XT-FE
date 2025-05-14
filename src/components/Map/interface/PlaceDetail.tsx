@@ -55,6 +55,11 @@ interface PlaceDetailProps {
   focusReviewForm?: boolean;
 }
 
+interface ToastState {
+  message: string;
+  type: 'success' | 'error';
+}
+
 const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const dispatch = useDispatch();
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
@@ -81,7 +86,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const MAX_REVIEW_LENGTH = 150;
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportData, setReportData] = useState<ReportData | null>(null);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toast, setToast] = useState<ToastState | null>(null);
   const queryClient = useQueryClient();
   const [showSaveModal, setShowSaveModal] = useState(false);
 
@@ -181,7 +186,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     );
 
     if (filteredMenu.length === 0 || !detailedInfo?.id) {
-      alert("Please provide valid menu items.");
+      setToast({ message: "Please provide valid menu items.", type: 'error' });
+      setTimeout(() => setToast(null), 1000);
       return;
     }
 
@@ -195,12 +201,13 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
 
     try {
       await submitChangeRequest(detailedInfo.id, filteredMenu, accessToken!);
-      setToastMessage('Change request submitted successfully!');
-      setTimeout(() => setToastMessage(''), 1000);
+      setToast({ message: "Change request submitted successfully!", type: 'success' });
+      setTimeout(() => setToast(null), 1000);
       resetEditMode();
     } catch (err) {
       console.error(err);
-      alert("Failed to submit change request.");
+      setToast({ message: "Failed to submit change request.", type: 'error' });
+      setTimeout(() => setToast(null), 1000);
     }
   };
 
@@ -229,8 +236,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     }
 
     if (errors.length > 0) {
-      setToastMessage(errors.join('\n'));
-      setTimeout(() => setToastMessage(''), 1000);
+      setToast({ message: errors.join('\n'), type: 'error' });
+      setTimeout(() => setToast(null), 1000);
     }
 
     return processedFiles;
@@ -283,39 +290,35 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   };
 
   const handleReportClick = (reviewId: string) => {
-    if (!accessToken) {
-      document.getElementById('login-button')?.click();
-      return;
-    }
     setReportData({ reviewId, reason: '' });
     setShowReportModal(true);
   };
 
   const handleReportConfirm = async (reason?: string) => {
-    if (!reportData || !accessToken) {
-      setToastMessage('Need to login');
-      setTimeout(() => setToastMessage(''), 1000);
+    if (!reportData) {
+      setToast({ message: "Please provide a reason for reporting.", type: 'error' });
+      setTimeout(() => setToast(null), 1000);
       return;
     }
 
     try {
-      const result = await reportReview(reportData.reviewId, reason, accessToken);
+      const result = await reportReview(reportData.reviewId, reason);
       if (result.message) {
-        setToastMessage(result.message);
-        setTimeout(() => setToastMessage(''), 1000);
+        setToast({ message: result.message, type: 'success' });
+        setTimeout(() => setToast(null), 1000);
         setShowReportModal(false);
         setReportData(null);
       }
     } catch (error) {
-      setToastMessage('Error reporting review');
-      setTimeout(() => setToastMessage(''), 1000);
+      setToast({ message: "Error reporting review.", type: 'error' });
+      setTimeout(() => setToast(null), 1000);
     }
   };
 
   const handleSubmitReview = async () => {
     if (!accessToken || !detailedInfo?.id) {
-      setToastMessage('Need to login');
-      setTimeout(() => setToastMessage(''), 1000);
+      setToast({ message: "Please login to continue.", type: 'error' });
+      setTimeout(() => setToast(null), 1000);
       return;
     }
 
@@ -329,21 +332,25 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       );
 
       if (result.message) {
-        setToastMessage(result.message);
-        setTimeout(() => setToastMessage(''), 1000);
+        setToast({ message: result.message, type: 'success' });
+        setTimeout(() => setToast(null), 1000);
         setShowReviewForm(false);
         setReviewData({ text: '', images: [], rating: 0 });
         queryClient.invalidateQueries({ queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage] });
       }
     } catch (error) {
-      setToastMessage('Failed to write review');
-      setTimeout(() => setToastMessage(''), 1000);
+      setToast({ message: "Failed to write review.", type: 'error' });
+      setTimeout(() => setToast(null), 1000);
     }
   };
 
   return (
     <>
-      <ToastMessage show={!!toastMessage} message={toastMessage} />
+      <ToastMessage 
+        show={!!toast} 
+        message={toast?.message || ''} 
+        type={toast?.type || 'success'} 
+      />
       <motion.div
         initial={isMobile ? { y: '-20px', opacity: 0 } : { x: '-20px', opacity: 0 }}
         animate={isMobile ? { y: 0, opacity: 1 } : { x: 0, opacity: 1 }}
@@ -692,8 +699,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                           onChange={async (e) => {
                             const files = Array.from(e.target.files || []);
                             if (files.length + reviewData.images.length > 4) {
-                              setToastMessage("최대 4장의 이미지만 업로드할 수 있습니다.");
-                              setTimeout(() => setToastMessage(''), 1000);
+                              setToast({ message: "Maximum 4 images can be uploaded.", type: 'error' });
+                              setTimeout(() => setToast(null), 1000);
                               return;
                             }
 

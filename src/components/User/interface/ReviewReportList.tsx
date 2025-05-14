@@ -23,7 +23,9 @@ const ReviewReportList = () => {
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const isStaff = useSelector((state: RootState) => state.user.isStaff);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const queryClient = useQueryClient();
   const [openId, setOpenId] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -36,29 +38,64 @@ const ReviewReportList = () => {
 
   const approveMutation = useMutation({
     mutationFn: (id: number) => approveReviewReport(id, accessToken!),
-    onSuccess: (_, id) => {
+    onMutate: async (id) => {
+      // 진행 중인 리페치 취소
+      await queryClient.cancelQueries({ queryKey: ['reviewReports'] });
+      
+      // 이전 데이터 저장
+      const previousReports = queryClient.getQueryData(['reviewReports']);
+      
+      // 낙관적 업데이트
       queryClient.setQueryData(['reviewReports'], (oldData: ReviewReport[] | undefined) => {
         if (!oldData) return [];
         return oldData.filter(report => report.id !== id);
       });
+      
+      return { previousReports };
+    },
+    onSuccess: (_, id) => {
       setSuccessMessage('리뷰 신고가 승인되었습니다.');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
       setOpenId(null);
     },
+    onError: (error: any, id, context) => {
+      // 에러 발생 시 이전 데이터로 롤백
+      if (context?.previousReports) {
+        queryClient.setQueryData(['reviewReports'], context.previousReports);
+      }
+      setErrorMessage(error.message || '리뷰 신고 승인 중 오류가 발생했습니다.');
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+    },
   });
 
   const rejectMutation = useMutation({
     mutationFn: (id: number) => rejectReviewReport(id, accessToken!),
-    onSuccess: (_, id) => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['reviewReports'] });
+      const previousReports = queryClient.getQueryData(['reviewReports']);
+      
       queryClient.setQueryData(['reviewReports'], (oldData: ReviewReport[] | undefined) => {
         if (!oldData) return [];
         return oldData.filter(report => report.id !== id);
       });
+      
+      return { previousReports };
+    },
+    onSuccess: (_, id) => {
       setSuccessMessage('리뷰 신고가 거절되었습니다.');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
       setOpenId(null);
+    },
+    onError: (error: any, id, context) => {
+      if (context?.previousReports) {
+        queryClient.setQueryData(['reviewReports'], context.previousReports);
+      }
+      setErrorMessage(error.message || '리뷰 신고 거절 중 오류가 발생했습니다.');
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
     },
   });
 
@@ -80,6 +117,7 @@ const ReviewReportList = () => {
   return (
     <div className="space-y-4">
       <ToastMessage show={showSuccess} message={successMessage} />
+      <ToastMessage show={showError} message={errorMessage} type="error" />
       <h2 className="text-xl font-bold text-gray-800 mb-4">리뷰 신고 목록</h2>
       <div className="space-y-4">
         {validReports.map((report: ReviewReport) => (

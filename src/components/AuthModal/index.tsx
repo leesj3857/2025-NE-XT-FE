@@ -15,10 +15,20 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
   const [mode, setMode] = useState<AuthMode>('login');
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+
     return () => {
       document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleEscKey);
     };
-  }, []);
+  }, [onClose]);
   return (
     <div className="fixed inset-0 bg-[#00000078] bg-opacity-30 flex items-center justify-center" style={{ zIndex: 200 }}>
       <motion.div

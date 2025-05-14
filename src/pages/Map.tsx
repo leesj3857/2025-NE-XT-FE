@@ -12,7 +12,7 @@ import {
   clearSelectedDetailedPlace,
 } from '../store/slices/searchSlice';
 
-import { useKakaoPlaces } from '../hooks/findPlacesWithKeyword';
+import { useKakaoPlaces } from '../utils/findPlacesWithKeyword.ts';
 import { toCamelCase } from '../components/Map/utils/placeResponseKeyToCamelCase.ts';
 
 import NaverMap from '../components/Map/NaverMap.tsx';
