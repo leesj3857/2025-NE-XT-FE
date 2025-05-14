@@ -9,6 +9,10 @@
 
 body {
   font-family: 'DefaultFont', sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 @font-face {
@@ -20,6 +24,21 @@ body {
 
 .homepage {
   font-family: 'HomepageFont', sans-serif;
+}
+
+/* input 요소는 텍스트 선택과 커서를 허용 */
+input,
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* input을 제외한 모든 요소에 대한 스타일 */
+*:not(input):not(textarea) {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button {
@@ -38,6 +57,17 @@ button:focus {
 }
 
 button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* input을 제외한 모든 요소의 포커스 스타일 제거 */
+*:not(input):not(textarea):focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+*:not(input):not(textarea):focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
