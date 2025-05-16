@@ -52,6 +52,7 @@ const PlaceChangeRequestList = () => {
       return { previousRequests };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['placeChangeRequests'] });
       setSuccessMessage('변경 요청이 승인되었습니다.');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
@@ -80,6 +81,7 @@ const PlaceChangeRequestList = () => {
       return { previousRequests };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['placeChangeRequests'] });
       setSuccessMessage('변경 요청이 거절되었습니다.');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1000);
