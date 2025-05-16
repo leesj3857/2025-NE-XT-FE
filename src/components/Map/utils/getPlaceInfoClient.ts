@@ -72,22 +72,19 @@ const translateText = async (text: string, targetLanguage: string): Promise<stri
   return response.translateText.translatedText;
 };
 
-const MENU_SPLIT = '  ++++++++++  ';
-const REVIEW_SPLIT = '  ++++++++++  ';
-const REVIEW_SPLIT_REGEX = / *\+{10,} */g;
-
-const makeNumberedJoin = (arr: string[]) => arr.map((v, i) => `(${i + 1})${v}`).join('');
+const makeNumberedJoin = (arr: string[]) => arr.map((v, i) => `${i + 1}. ${v}`).join('');
 const numberedSplit = (str: string, count: number) => {
-  const regex = /(\(\d+\))/g;
+  const regex = /\d+\. ?/g;
   const result: string[] = [];
-  let lastIdx = 0;
   let match;
   const indices: number[] = [];
   while ((match = regex.exec(str)) !== null) {
     indices.push(match.index);
   }
   for (let i = 0; i < indices.length; i++) {
-    const start = indices[i] + (`(${i + 1})`).length;
+    const marker = str.slice(indices[i], indices[i] + (`${i + 1}.`).length + 1);
+    let start = indices[i] + (`${i + 1}.`).length;
+    if (marker.startsWith(`${i + 1}. `)) start += 1;
     const end = indices[i + 1] !== undefined ? indices[i + 1] : str.length;
     result.push(str.slice(start, end));
   }
