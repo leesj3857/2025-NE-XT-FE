@@ -627,7 +627,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                     {detailedInfo.translatedReviews.map((review: string, idx: number) => (
                       <li
                         key={idx}
-                        className="border border-[#8D6E63] p-2 rounded-md bg-[#FAFAFA]"
+                        className="border border-[#8D6E63] p-2 rounded-md bg-[#FAFAFA] break-words whitespace-pre-wrap"
                       >
                         {review}
                       </li>
@@ -672,7 +672,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                             <span>{formatDate(review.createdAt)}</span>
                           </div>
                         </div>
-                        <p className="text-[#555555] mb-3">{review.text}</p>
+                        <p className="text-[#555555] mb-3 break-words whitespace-pre-wrap">{review.text}</p>
                         {review.images && review.images.length > 0 && (
                           <div className="grid grid-cols-4 gap-2">
                             {review.images.map((image: string, idx: number) => (
