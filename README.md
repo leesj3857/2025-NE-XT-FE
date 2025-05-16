@@ -5,12 +5,21 @@
 
 ---
 
-## 🚀 현재 개발 현황
+## 🚀 주요 기능
 
-- 🔍 **장소 키워드 및 지도 좌표 기반 검색 / 표시 기능 구현**
+- 🔍 **장소 키워드 및 지도 좌표 기반 검색 / 표시 기능**
 - 📌 **선택된 장소는 네이버 지도를 통해 마커로 시각화**
-- 🚗 **차를 이용한 경로 및 시간 계산 기능 구현**
-- 🌐 **카테고리 및 주소 영문 변환 기능 구현**
+- 🚗 **차를 이용한 경로 및 시간 계산 기능**
+- 🌐 **카테고리 및 주소 영문 변환 기능**
+- 📝 **장소 요약 상세보기 기능**
+  - 메뉴/티켓 정보 제공
+  - 현지인 리뷰 및 사용자 리뷰 시스템
+  - 별점 평가 및 사진 첨부 기능
+  - 리뷰 신고 기능
+- 🔐 **로그인 및 장소 저장 기능**
+  - 사용자별 장소 북마크
+  - 카테고리별 저장 관리
+  - 커스텀 카테고리 생성
 
 ---
 
@@ -42,39 +51,6 @@
 
 ---
 
-## ⚙️ 프로젝트 실행 방법
-
-### 1. `.env` 파일 생성
-
-```env
-VITE_KAKAO_JS_KEY=
-VITE_KAKAO_REST_API_KEY=
-VITE_NAVER_CLIENT_ID=
-VITE_NAVER_CLIENT_SECRET=
-VITE_ADDRESS_KEY=
-```
-
-### 2. 의존성 설치
-
-```bash
-npm install
-```
-
-### 3. 개발 서버 실행
-
-```bash
-npm run dev
-```
-
----
-
-## 📷 향후 추가 기능 (예정)
-
-- 📝 장소 요약 상세보기 기능
-- 🔐 로그인 및 장소 저장 기능
-
----
-
 # 🇺🇸 KOREAT
 
 **KOREAT** is a service that provides food and sightseeing recommendations for foreign travelers visiting Korea.  
@@ -82,12 +58,21 @@ It allows users to view local reviews, menus, prices, and photos all in one plac
 
 ---
 
-## 🚀 Current Development Status
+## 🚀 Key Features
 
-- 🔍 **Implemented place search and map display using keywords and coordinates**
+- 🔍 **Place search and map display using keywords and coordinates**
 - 📌 **Visualized selected places using markers on Naver Map**
-- 🚗 **Implemented route and travel time calculation by car**
+- 🚗 **Route and travel time calculation by car**
 - 🌐 **Converted categories and addresses into English**
+- 📝 **Place summary and detail view**
+  - Menu/Ticket information
+  - Local and user review system
+  - Rating and photo upload features
+  - Review reporting system
+- 🔐 **Login and place saving features**
+  - User-specific place bookmarks
+  - Category-based storage management
+  - Custom category creation
 
 ---
 
@@ -111,36 +96,3 @@ It allows users to view local reviews, menus, prices, and photos all in one plac
 - Kakao Local API: **Place search and directions**
 - DeepL API: **Multilingual translation**
 - Perplexity API: **Web information search**
-
----
-
-## ⚙️ How to Run the Project
-
-### 1. Create `.env` file
-
-```env
-VITE_KAKAO_JS_KEY=
-VITE_KAKAO_REST_API_KEY=
-VITE_NAVER_CLIENT_ID=
-VITE_NAVER_CLIENT_SECRET=
-VITE_ADDRESS_KEY=
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Start the dev server
-
-```bash
-npm run dev
-```
-
----
-
-## 📷 Upcoming Features
-
-- 📝 Place summary and detail view
-- 🔐 Login and place saving
