@@ -89,20 +89,25 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const [toast, setToast] = useState<ToastState | null>(null);
   const queryClient = useQueryClient();
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [languageReady, setLanguageReady] = useState(true);
+
 
   const {
     data: detailedInfo,
     isLoading,
     isError,
     error,
-    refetch
+    refetch,
+    isFetching,
+    isSuccess,
+    isError: isQueryError,
   } = useQuery({
     queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage],
     queryFn: () => {
       if (!place) throw new Error('No place selected');
       return getPlaceInfo(place.placeName!, place.roadAddressName!, selectedLanguage);
     },
-    enabled: !!place,
+    enabled: !!place && languageReady,
     retry: (failureCount) => failureCount < 5,
     retryDelay: (attemptIndex) => Math.min(1000 * (attemptIndex + 1), 3000),
   });
@@ -110,6 +115,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   useEffect(() => {
     setSelectedLanguage("영어");
     setEditMode(false);
+    setLanguageReady(true);
     if (place) {
       hasFocusedRef.current = false;
     }
@@ -134,6 +140,12 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       setEditedMenu(deepCopied);
     }
   }, [detailedInfo, editMode]);
+
+  useEffect(() => {
+    if (!isFetching && languageReady) {
+      setLanguageReady(false);
+    }
+  }, [isFetching, languageReady]);
 
   useEffect(() => {
     if (focusReviewForm && !hasFocusedRef.current) {
@@ -343,6 +355,10 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
       setTimeout(() => setToast(null), 1000);
     }
   };
+
+  useEffect(() => {
+    setLanguageReady(true);
+  }, [selectedLanguage]);
 
   return (
     <>

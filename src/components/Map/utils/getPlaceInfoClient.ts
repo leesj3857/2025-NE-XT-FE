@@ -1,8 +1,8 @@
 import { graphqlRequest } from '../../../api/graphqlClient';
 
 const GET_PLACE_INFO_MUTATION = `
-  mutation GetPlaceInfo($name: String!, $address: String!, $language: String!) {
-    getPlaceInfo(name: $name, address: $address, language: $language) {
+  mutation GetPlaceInfoKorean($name: String!, $address: String!, $language: String!) {
+    getPlaceInfoKorean(name: $name, address: $address, language: $language) {
       place {
         id
         menuOrTicketInfo
@@ -56,10 +56,49 @@ export const getPlaceReviews = async (placeInfoId: string): Promise<PlaceReview[
   return response.placeReviews;
 };
 
+const TRANSLATE_TEXT_MUTATION = `
+  mutation TranslateText($text: String!, $targetLanguage: String!) {
+    translateText(text: $text, targetLanguage: $targetLanguage) {
+      translatedText
+    }
+  }
+`;
+
+const translateText = async (text: string, targetLanguage: string): Promise<string> => {
+  const response = await graphqlRequest(TRANSLATE_TEXT_MUTATION, {
+    text,
+    targetLanguage,
+  });
+  return response.translateText.translatedText;
+};
+
+const MENU_SPLIT = '  ++++++++++  ';
+const REVIEW_SPLIT = '  ++++++++++  ';
+const REVIEW_SPLIT_REGEX = / *\+{10,} */g;
+
+const translateMenuItems = async (menuItems: Array<{ name: string; price: string }>, targetLanguage: string) => {
+  if (!menuItems.length) return [];
+  const translatedItems = await Promise.all(
+    menuItems.map(async (item) => ({
+      name: await translateText(item.name, targetLanguage),
+      price: await translateText(item.price, targetLanguage),
+    }))
+  );
+  return translatedItems;
+};
+
+const translateReviews = async (reviews: string[], targetLanguage: string) => {
+  if (reviews.length === 0) return [];
+  const translatedReviews = await Promise.all(
+    reviews.map(review => translateText(review, targetLanguage))
+  );
+  return translatedReviews;
+};
+
 export const getPlaceInfo = async (
   name: string,
   address: string,
-  language: string = 'EN'
+  language: string = '영어'
 ): Promise<PlaceInfo> => {
   const response = await graphqlRequest(GET_PLACE_INFO_MUTATION, {
     name,
@@ -67,14 +106,23 @@ export const getPlaceInfo = async (
     language,
   });
 
-  const raw = response.getPlaceInfo.place;
+  const raw = response.getPlaceInfoKorean.place;
+
+  // 메뉴 정보와 리뷰 번역
+  const translatedMenuItems = raw.menuOrTicketInfo ? 
+    await translateMenuItems(raw.menuOrTicketInfo, language) : 
+    undefined;
+  
+  const translatedReviews = raw.translatedReviews ? 
+    await translateReviews(raw.translatedReviews, language) : 
+    undefined;
 
   const reviews = await getPlaceReviews(raw.id);
-
+  
   return {
     id: raw.id,
-    menuOrTicketInfo: raw.menuOrTicketInfo,
-    translatedReviews: raw.translatedReviews,
+    menuOrTicketInfo: translatedMenuItems,
+    translatedReviews: translatedReviews,
     referenceUrls: typeof raw.referenceUrls === 'string' ? JSON.parse(raw.referenceUrls) : raw.referenceUrls,
     reviews,
   };
@@ -202,3 +250,4 @@ export const reportReview = async (
     throw error;
   }
 };
+
