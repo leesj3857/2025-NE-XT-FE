@@ -23,7 +23,7 @@ import {
   mdiRefresh
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
-import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview, fileToBase64 } from '../utils/getPlaceInfoClient';
+import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview, fileToBase64, getPlaceReviews } from '../utils/getPlaceInfoClient';
 import FetchingUI from './FetchingUI.tsx';
 import { useState, useEffect, useRef } from 'react';
 import LanguageSelector from './LanguageSelector.tsx';
@@ -60,7 +60,19 @@ interface ToastState {
   type: 'success' | 'error';
 }
 
+interface Review {
+  id: string;
+  text: string;
+  rating: number;
+  images: string[];
+  createdAt: string;
+  user: {
+    name: string;
+  };
+}
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_BASE64_SIZE = 1 * 1024 * 1024; // 1MB
 
 const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const dispatch = useDispatch();
@@ -112,6 +124,18 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     enabled: !!place && languageReady,
     retry: (failureCount) => failureCount < 5,
     retryDelay: (attemptIndex) => Math.min(1000 * (attemptIndex + 1), 3000),
+  });
+
+  const {
+    data: reviews,
+    refetch: refetchReviews,
+  } = useQuery({
+    queryKey: ['placeReviews', detailedInfo?.id],
+    queryFn: () => {
+      if (!detailedInfo?.id) throw new Error('No place selected');
+      return getPlaceReviews(detailedInfo.id);
+    },
+    enabled: !!detailedInfo?.id,
   });
 
   useEffect(() => {
@@ -243,13 +267,12 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         }
 
         const optimizedFile = await optimizeImage(file);
-        if (optimizedFile.size > MAX_FILE_SIZE) {
-          errors.push(`Unable to reduce size of ${file.name}. Please select a different image.`);
+        if (optimizedFile.size > MAX_BASE64_SIZE) {
+          errors.push(`Unable to compress ${file.name} to a suitable size. Please try a different image.`);
           continue;
         }
         processedFiles.push(optimizedFile);
       } catch (error: any) {
-        // Specific error message for image processing
         const errorMessage = error.message || 'Unknown error';
         errors.push(`Error processing ${file.name}: ${errorMessage}`);
       }
@@ -346,21 +369,20 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     }
 
     try {
-      // Notify user that image processing is in progress
       if (reviewData.images.length > 0) {
         setToast({ message: "Processing images...", type: 'success' });
       }
 
-      // Image optimization and base64 conversion
       const processedImages = await Promise.all(
         reviewData.images.map(async (file) => {
           try {
             const optimizedFile = await optimizeImage(file);
+            if (optimizedFile.size > MAX_BASE64_SIZE) {
+              throw new Error(`Image ${file.name} is too large after optimization`);
+            }
             return await fileToBase64(optimizedFile);
           } catch (error: any) {
-            // Specific error message for image processing
-            const errorMessage = error.message || 'Unknown error';
-            throw new Error(`Error processing image '${file.name}': ${errorMessage}`);
+            throw new Error(`Error processing image '${file.name}': ${error.message}`);
           }
         })
       );
@@ -378,10 +400,14 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         setTimeout(() => setToast(null), 1000);
         setShowReviewForm(false);
         setReviewData({ text: '', images: [], rating: 0 });
-        queryClient.invalidateQueries({ queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage] });
+        
+        await refetchReviews();
+        
+        queryClient.invalidateQueries({ 
+          queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage] 
+        });
       }
     } catch (error: any) {
-      // Display more detailed error message
       let errorMessage = "An error occurred while writing the review.";
       
       if (error.message) {
@@ -393,6 +419,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
           errorMessage = "Request timed out. Please try again.";
         } else if (error.message.includes('unauthorized')) {
           errorMessage = "Your login has expired. Please login again.";
+        } else if (error.message.includes('413')) {
+          errorMessage = "The image is too large. Please try a smaller image.";
         } else {
           errorMessage = `Error: ${error.message}`;
         }
@@ -615,8 +643,8 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                   User Reviews
                 </h3>
                 <div className="space-y-4">
-                  {detailedInfo?.reviews && detailedInfo.reviews.length > 0 ? (
-                    detailedInfo.reviews.map((review) => (
+                  {reviews && reviews.length > 0 ? (
+                    reviews.map((review: Review) => (
                       <div key={review.id} className="border border-[#F5B041] p-3 rounded-md bg-white">
                         <div className="flex flex-col gap-1 mb-3">
                           <div className="flex justify-between items-center">
@@ -647,7 +675,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                         <p className="text-[#555555] mb-3">{review.text}</p>
                         {review.images && review.images.length > 0 && (
                           <div className="grid grid-cols-4 gap-2">
-                            {review.images.map((image, idx) => (
+                            {review.images.map((image: string, idx: number) => (
                               <div
                                 key={idx}
                                 className="aspect-square rounded overflow-hidden cursor-pointer"
