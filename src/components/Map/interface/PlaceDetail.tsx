@@ -23,7 +23,7 @@ import {
   mdiRefresh
 } from '@mdi/js';
 import { useQuery } from '@tanstack/react-query';
-import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview } from '../utils/getPlaceInfoClient';
+import { getPlaceInfo, submitChangeRequest, createPlaceReview, reportReview, fileToBase64 } from '../utils/getPlaceInfoClient';
 import FetchingUI from './FetchingUI.tsx';
 import { useState, useEffect, useRef } from 'react';
 import LanguageSelector from './LanguageSelector.tsx';
@@ -60,6 +60,8 @@ interface ToastState {
   type: 'success' | 'error';
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   const dispatch = useDispatch();
   const place = useSelector((state: RootState) => state.search.selectedDetailedPlace);
@@ -70,7 +72,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     c.places.some(p => p.id === place?.id)
   );
   const bookmarkColor = currentCategory?.color;
-  const [selectedLanguage, setSelectedLanguage] = useState("영어");
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [editMode, setEditMode] = useState(false);
   const [editedMenu, setEditedMenu] = useState<MenuItem[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -113,7 +115,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   });
 
   useEffect(() => {
-    setSelectedLanguage("영어");
+    setSelectedLanguage("English");
     setEditMode(false);
     setLanguageReady(true);
     if (place) {
@@ -241,15 +243,24 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         }
 
         const optimizedFile = await optimizeImage(file);
+        if (optimizedFile.size > MAX_FILE_SIZE) {
+          errors.push(`Unable to reduce size of ${file.name}. Please select a different image.`);
+          continue;
+        }
         processedFiles.push(optimizedFile);
-      } catch (error) {
-        errors.push(`${file.name} encountered an error.`);
+      } catch (error: any) {
+        // Specific error message for image processing
+        const errorMessage = error.message || 'Unknown error';
+        errors.push(`Error processing ${file.name}: ${errorMessage}`);
       }
     }
 
     if (errors.length > 0) {
-      setToast({ message: errors.join('\n'), type: 'error' });
-      setTimeout(() => setToast(null), 1000);
+      setToast({ 
+        message: errors.join('\n'), 
+        type: 'error' 
+      });
+      setTimeout(() => setToast(null), 3000);
     }
 
     return processedFiles;
@@ -335,11 +346,30 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     }
 
     try {
+      // Notify user that image processing is in progress
+      if (reviewData.images.length > 0) {
+        setToast({ message: "Processing images...", type: 'success' });
+      }
+
+      // Image optimization and base64 conversion
+      const processedImages = await Promise.all(
+        reviewData.images.map(async (file) => {
+          try {
+            const optimizedFile = await optimizeImage(file);
+            return await fileToBase64(optimizedFile);
+          } catch (error: any) {
+            // Specific error message for image processing
+            const errorMessage = error.message || 'Unknown error';
+            throw new Error(`Error processing image '${file.name}': ${errorMessage}`);
+          }
+        })
+      );
+
       const result = await createPlaceReview(
         detailedInfo.id,
         reviewData.text,
         reviewData.rating,
-        reviewData.images,
+        processedImages,
         accessToken
       );
 
@@ -350,9 +380,29 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
         setReviewData({ text: '', images: [], rating: 0 });
         queryClient.invalidateQueries({ queryKey: ['placeInfo', place?.placeName, place?.roadAddressName, selectedLanguage] });
       }
-    } catch (error) {
-      setToast({ message: "Failed to write review.", type: 'error' });
-      setTimeout(() => setToast(null), 1000);
+    } catch (error: any) {
+      // Display more detailed error message
+      let errorMessage = "An error occurred while writing the review.";
+      
+      if (error.message) {
+        if (error.message.includes('image')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('network')) {
+          errorMessage = "Please check your network connection.";
+        } else if (error.message.includes('timeout')) {
+          errorMessage = "Request timed out. Please try again.";
+        } else if (error.message.includes('unauthorized')) {
+          errorMessage = "Your login has expired. Please login again.";
+        } else {
+          errorMessage = `Error: ${error.message}`;
+        }
+      }
+
+      setToast({ 
+        message: errorMessage,
+        type: 'error' 
+      });
+      setTimeout(() => setToast(null), 3000);
     }
   };
 
@@ -720,7 +770,6 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
                               return;
                             }
 
-                            // 이미지 최적화 처리
                             const processedFiles = await processImageFiles(files);
                             if (processedFiles.length > 0) {
                               setReviewData(prev => ({ ...prev, images: [...prev.images, ...processedFiles] }));

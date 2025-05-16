@@ -202,21 +202,17 @@ export const createPlaceReview = async (
   placeInfoId: string,
   text: string,
   rating: number,
-  images: File[],
+  images: string[],
   accessToken: string
 ) => {
   try {
-    const base64Images = await Promise.all(
-      images.map(file => fileToBase64(file))
-    );
-
     const response = await graphqlRequest(
       CREATE_PLACE_REVIEW_MUTATION,
       {
         placeInfoId,
         text,
         rating,
-        images: base64Images
+        images
       },
       accessToken
     );
