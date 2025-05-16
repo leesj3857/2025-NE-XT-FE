@@ -84,7 +84,7 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
     c.places.some(p => p.id === place?.id)
   );
   const bookmarkColor = currentCategory?.color;
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [selectedLanguage, setSelectedLanguage] = useState("영어");
   const [editMode, setEditMode] = useState(false);
   const [editedMenu, setEditedMenu] = useState<MenuItem[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -139,11 +139,16 @@ const PlaceDetail = ({ focusReviewForm = false }: PlaceDetailProps) => {
   });
 
   useEffect(() => {
-    setSelectedLanguage("English");
-    setEditMode(false);
-    setLanguageReady(true);
     if (place) {
+      setSelectedLanguage("영어");
+      setEditMode(false);
+      setLanguageReady(false);
       hasFocusedRef.current = false;
+      
+      // 언어 선택기가 제대로 초기화되도록 약간의 지연을 줍니다
+      setTimeout(() => {
+        setLanguageReady(true);
+      }, 0);
     }
   }, [place]);
 
