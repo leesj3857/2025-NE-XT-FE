@@ -76,23 +76,45 @@ const MENU_SPLIT = '  ++++++++++  ';
 const REVIEW_SPLIT = '  ++++++++++  ';
 const REVIEW_SPLIT_REGEX = / *\+{10,} */g;
 
+const makeNumberedJoin = (arr: string[]) => arr.map((v, i) => `(${i + 1})${v}`).join('');
+const numberedSplit = (str: string, count: number) => {
+  const regex = /(\(\d+\))/g;
+  const result: string[] = [];
+  let lastIdx = 0;
+  let match;
+  const indices: number[] = [];
+  while ((match = regex.exec(str)) !== null) {
+    indices.push(match.index);
+  }
+  for (let i = 0; i < indices.length; i++) {
+    const start = indices[i] + (`(${i + 1})`).length;
+    const end = indices[i + 1] !== undefined ? indices[i + 1] : str.length;
+    result.push(str.slice(start, end));
+  }
+  return result;
+};
+
 const translateMenuItems = async (menuItems: Array<{ name: string; price: string }>, targetLanguage: string) => {
   if (!menuItems.length) return [];
-  const translatedItems = await Promise.all(
-    menuItems.map(async (item) => ({
-      name: await translateText(item.name, targetLanguage),
-      price: await translateText(item.price, targetLanguage),
-    }))
-  );
-  return translatedItems;
+  const allTexts = menuItems.flatMap(item => [item.name, item.price]);
+  const joined = makeNumberedJoin(allTexts);
+  const translatedJoined = await translateText(joined, targetLanguage);
+  const translatedArr = numberedSplit(translatedJoined, allTexts.length);
+  const translatedMenuItems = [];
+  for (let i = 0; i < translatedArr.length; i += 2) {
+    translatedMenuItems.push({
+      name: translatedArr[i],
+      price: translatedArr[i + 1],
+    });
+  }
+  return translatedMenuItems;
 };
 
 const translateReviews = async (reviews: string[], targetLanguage: string) => {
   if (reviews.length === 0) return [];
-  const translatedReviews = await Promise.all(
-    reviews.map(review => translateText(review, targetLanguage))
-  );
-  return translatedReviews;
+  const joined = makeNumberedJoin(reviews);
+  const translatedJoined = await translateText(joined, targetLanguage);
+  return numberedSplit(translatedJoined, reviews.length);
 };
 
 export const getPlaceInfo = async (
